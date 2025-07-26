@@ -1,5 +1,4 @@
 using OnTime.API.Extensions;
-
 using OnTime.API.Models.Requests;
 
 namespace OnTime.API.Services.Appointment;
