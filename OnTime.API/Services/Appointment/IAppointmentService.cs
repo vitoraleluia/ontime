@@ -4,5 +4,5 @@ namespace OnTime.API.Services.Appointment;
 
 public interface IAppointmentService
 {
-    int Create(AppointmentRequest request);
+    int Create(CreateAppointmentRequest request);
 }

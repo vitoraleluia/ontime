@@ -12,11 +12,11 @@ public class AppointmentService : IAppointmentService
         _logger = logger;
     }
 
-    public int Create(AppointmentRequest request)
+    public int Create(CreateAppointmentRequest request)
     {
-        var totalDuration = request.Services
-        .Select(s => s.Duration)
-        .Aggregate(TimeSpan.Zero, (t1, t2) => t1 + t2);
+        var totalDuration = request.Sessions
+        .Select(s => s.DurationInMinutes)
+        .Aggregate(TimeSpan.Zero, (t1, t2) => t1 + TimeSpan.FromMinutes(t2));
 
         var endDate = request.StartDate.Add(totalDuration);
 
