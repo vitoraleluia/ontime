@@ -1,7 +1,10 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 
+using OnTime.API.Extensions;
+
 using OnTime.API.Models.Requests;
-using OnTime.API.Services.Session;
+using OnTime.API.Models.Results;
+using OnTime.API.Services.Sessions;
 
 namespace OnTime.API.Endpoints;
 
@@ -9,7 +12,7 @@ public static class SessionsEndpoint
 {
     public static void MapSessionsEndpoint(this IEndpointRouteBuilder builder)
     {
-        var group = builder.MapGroup("/enpoints");
+        var group = builder.MapGroup("/sessions");
 
         group.MapGet("{id}", Get);
         group.MapPost("", Create);
@@ -22,12 +25,21 @@ public static class SessionsEndpoint
         throw new NotImplementedException();
     }
 
-    private static Results<Ok<int>, BadRequest> Create(
+    private static async Task<Results<Ok<int>, BadRequest, ProblemHttpResult>> Create(
         CreateSessionRequest request,
         ISessionService sessionService)
     {
-        var id = sessionService.Create(request);
-        return TypedResults.Ok(id);
+        var response = await sessionService.Create(request);
+        if (response.IsFailure)
+        {
+            return response.Error.Type switch
+            {
+                ErrorTypes.Validation => TypedResults.BadRequest(),
+                _ => response.Error.ToProblemDetails(),
+            };
+        }
+
+        return TypedResults.Ok(response.Value);
     }
 
     private static async Task Update(int id, ISessionService sessionService)

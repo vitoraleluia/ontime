@@ -1,5 +1,3 @@
-using System;
-
 namespace OnTime.API.Models.Domain;
 
 public class Session
@@ -7,12 +5,12 @@ public class Session
     public int Id { get; set; }
     public string Title { get; set; }
     public string Description { get; set; }
-    public TimeSpan Duration { get; set; }
+    public int DurationInMinutes { get; set; }
 
-    public Session(string title, string description, TimeSpan duration)
+    public Session(string title, string description, int durationInMinutes)
     {
         Title = title;
         Description = description;
-        Duration = duration;
+        DurationInMinutes = durationInMinutes;
     }
 }

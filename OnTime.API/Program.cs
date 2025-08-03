@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 
-using OnTime.API.Endpoints;
+using OnTime.API.Database;
 
-using OnTime.API.Repositories;
+using OnTime.API.Endpoints;
 using OnTime.API.Services.Appointment;
-using OnTime.API.Services.Session;
+using OnTime.API.Services.Sessions;
 
 using Scalar.AspNetCore;
 
