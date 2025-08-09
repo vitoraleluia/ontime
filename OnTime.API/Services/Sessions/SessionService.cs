@@ -2,7 +2,6 @@ using OnTime.API.Database;
 using OnTime.API.Extensions;
 using OnTime.API.Models.Requests;
 using OnTime.API.Models.Responses;
-using OnTime.API.Models.Results;
 
 namespace OnTime.API.Services.Sessions;
 
@@ -18,61 +17,43 @@ class SessionService : ISessionService
 
     }
 
-    public async Task<Result<int>> Create(CreateSessionRequest request)
+    public async Task<int> Create(CreateSessionRequest request)
     {
-        if (string.IsNullOrWhiteSpace(request.Title))
-            return Result.Failure<int>(Error.Empty);
-
-        if (request.DurationInMinutes < 1)
-            return Result.Failure<int>(Error.Negative);
-
         var session = request.ToDomain();
 
         dbContext.Sessions.Add(session);
         await dbContext.SaveChangesAsync();
 
-        return Result.Success(session.Id);
+        return session.Id;
     }
 
-    public async Task<Result> Delete(int id)
+    public async Task<bool> Delete(int id)
     {
-        if (id < 1)
-            return Result.Failure(Error.Negative);
-
         var session = await dbContext.Sessions.FindAsync(id);
         if (session is null)
-            return Result.Failure(Error.NotFound);
+            return false;
 
         dbContext.Sessions.Remove(session);
         await dbContext.SaveChangesAsync();
 
-        return Result.Success();
+        return true;
     }
 
-    public async Task<Result<SessionResponse>> Get(int id)
+    public async Task<SessionResponse?> Get(int id)
     {
-        if (id < 1)
-            return Result.Failure<SessionResponse>(Error.Negative);
-
         var session = await dbContext.Sessions.FindAsync(id);
-        if (session is null)
-            return Result.Failure<SessionResponse>(Error.NotFound);
-
-        return Result.Success(session.ToResponse());
+        return session?.ToResponse();
     }
 
-    public async Task<Result> Update(int id, UpdateSessionRequest request)
+    public async Task<bool> Update(int id, UpdateSessionRequest request)
     {
-        if (id < 1)
-            return Result.Failure<SessionResponse>(Error.Negative);
-
         var session = await dbContext.Sessions.FindAsync(id);
         if (session is null)
-            return Result.Failure<SessionResponse>(Error.NotFound);
+            return false;
 
         session.Update(request);
         await dbContext.SaveChangesAsync();
 
-        return Result.Success();
+        return true;
     }
 }

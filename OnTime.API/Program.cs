@@ -1,8 +1,8 @@
+using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
 using Microsoft.EntityFrameworkCore;
 
 using OnTime.API.Database;
 
-using OnTime.API.Endpoints;
 using OnTime.API.Services.Appointment;
 using OnTime.API.Services.Sessions;
 
@@ -11,6 +11,11 @@ using Scalar.AspNetCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddControllers(opt =>
+{
+    // Validation errors for SPA apps
+    opt.ModelMetadataDetailsProviders.Add(new SystemTextJsonValidationMetadataProvider());
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApi();
 builder.Services.AddDbContext<OnTimeContext>(
@@ -34,7 +39,6 @@ app.UseHttpsRedirection();
 
 //app.UseAuthorization();
 
-app.MapAppointmentEndpoint();
-app.MapSessionsEndpoint();
+app.MapControllers();
 
 app.Run();
