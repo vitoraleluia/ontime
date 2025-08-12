@@ -2,7 +2,7 @@ using System;
 
 namespace OnTime.API.Models.Domain;
 
-public class Appointment
+public class Appointment : BaseEntity
 {
     public int Id { get; set; }
     public DateTime StartDate { get; set; }

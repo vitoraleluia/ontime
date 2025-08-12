@@ -3,7 +3,7 @@ using OnTime.API.Models.Responses;
 
 namespace OnTime.API.Services.Sessions;
 
-interface ISessionService
+public interface ISessionService
 {
     Task<SessionResponse?> Get(int id);
     Task<int> Create(CreateSessionRequest request);

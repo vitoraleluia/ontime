@@ -1,7 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-
-using OnTime.API.Extensions;
 
 using OnTime.API.Models.Requests;
 using OnTime.API.Models.Responses;
@@ -9,7 +6,7 @@ using OnTime.API.Services.Sessions;
 
 namespace OnTime.API.Controllers;
 
-class SessionsController : BaseApiController
+public class SessionsController : BaseApiController
 {
     private readonly ISessionService sessionService;
 
