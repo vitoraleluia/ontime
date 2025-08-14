@@ -1,0 +1,12 @@
+services:
+  postgres:
+    image: postgres:17
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: example
+      POSTGRES_USER: ontime
+      POSTGRES_DB: ontime
+    volumes:
+      - ./database:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
