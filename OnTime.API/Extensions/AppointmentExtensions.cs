@@ -10,7 +10,6 @@ public static class AppointmentExtensions
         return new Appointment(
             request.StartDate,
             endDate,
-            request.Sessions.Select(s => s.ToDomain()),
-            null);
+            request.Sessions.Select(s => s.ToDomain()));
     }
 }

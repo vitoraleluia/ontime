@@ -24,6 +24,8 @@ public class SessionsController : BaseApiController
     }
 
     [HttpPost]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<int>> Create(CreateSessionRequest request)
     {
         var id = await sessionService.Create(request);

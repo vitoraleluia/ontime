@@ -8,13 +8,16 @@ public class Appointment : BaseEntity
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
     public IEnumerable<Session> Services { get; set; }
-    public Costumer Costumer { get; set; }
 
-    public Appointment(DateTime startDate, DateTime endDate, IEnumerable<Session> services, Costumer costumer)
+    private Appointment()
+    {
+        Services = [];
+    }
+
+    public Appointment(DateTime startDate, DateTime endDate, IEnumerable<Session> services)
     {
         StartDate = startDate;
         EndDate = endDate;
         Services = services;
-        Costumer = costumer;
     }
 }

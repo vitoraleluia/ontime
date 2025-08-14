@@ -8,9 +8,9 @@ namespace OnTime.API.Services.Sessions;
 class SessionService : ISessionService
 {
     private readonly ILogger<SessionService> logger;
-    private readonly OnTimeContext dbContext;
+    private readonly AppDbContext dbContext;
 
-    public SessionService(ILogger<SessionService> logger, OnTimeContext dbContext)
+    public SessionService(ILogger<SessionService> logger, AppDbContext dbContext)
     {
         this.logger = logger;
         this.dbContext = dbContext;

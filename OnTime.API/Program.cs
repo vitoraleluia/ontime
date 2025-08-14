@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
 using Microsoft.EntityFrameworkCore;
 
 using OnTime.API.Database;
-using OnTime.API.Extensions;
 using OnTime.API.Models.Domain;
 
 using OnTime.API.Services.Appointment;
@@ -15,7 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddAuthorization();
 builder.Services.AddIdentityApiEndpoints<User>()
-    .AddEntityFrameworkStores<UserDbContext>();
+    .AddEntityFrameworkStores<AppDbContext>();
 
 // Add services to the container.
 builder.Services.AddControllers(opt =>
@@ -27,8 +26,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApi();
 
 var connectionString = builder.Configuration.GetConnectionString("Database");
-builder.Services.AddDbContext<OnTimeContext>(options => options.UseNpgsql(connectionString));
-builder.Services.AddDbContext<UserDbContext>(options => options.UseNpgsql(connectionString));
+builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
 
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<ISessionService, SessionService>();
