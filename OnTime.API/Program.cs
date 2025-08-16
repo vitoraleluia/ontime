@@ -12,8 +12,12 @@ using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(b =>
+{
+    b.AddPolicy("RequireServiceProvider", policy => policy.RequireRole("ServiceProvider"));
+});
 builder.Services.AddIdentityApiEndpoints<User>()
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>();
 
 // Add services to the container.
@@ -42,10 +46,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
+app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapGroup("/api/auth").MapIdentityApi<User>();
+app.MapGroup("/api/Auth").MapIdentityApi<User>();
 app.MapControllers();
 
 app.Run();
