@@ -3,14 +3,11 @@ namespace OnTime.API.Models.Domain;
 public class Session : BaseEntity
 {
     public int Id { get; set; }
-    public string Title { get; set; }
+    public required string Title { get; set; }
     public string? Description { get; set; }
-    public int DurationInMinutes { get; set; }
+    public required int DurationInMinutes { get; set; }
 
-    public Session(string title, string? description, int durationInMinutes)
-    {
-        Title = title;
-        Description = description;
-        DurationInMinutes = durationInMinutes;
-    }
+    public int OrganizationId { get; set; }
+    public required Organization Organization { get; set; }
+    public IEnumerable<Appointment>? Appointments { get; set; }
 }

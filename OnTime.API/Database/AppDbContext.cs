@@ -1,3 +1,5 @@
+using System.Reflection;
+
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,9 +11,16 @@ public class AppDbContext : IdentityDbContext<User>
 {
     public DbSet<Appointment> Appoitnments { get; set; }
     public DbSet<Session> Sessions { get; set; }
+    public DbSet<Organization> Organizations { get; set; }
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
+    }
+
+    protected override void OnModelCreating(ModelBuilder builder)
+    {
+        base.OnModelCreating(builder);
+        builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
     }
 
     public override int SaveChanges()

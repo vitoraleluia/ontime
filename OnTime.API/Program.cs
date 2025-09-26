@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using OnTime.API.Database;
 using OnTime.API.Models.Domain;
 
-using OnTime.API.Services.Appointment;
+using OnTime.API.Services.Appointments;
 using OnTime.API.Services.Sessions;
 
 using Scalar.AspNetCore;

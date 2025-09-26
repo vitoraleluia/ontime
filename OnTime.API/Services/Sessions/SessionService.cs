@@ -1,5 +1,6 @@
 using OnTime.API.Database;
 using OnTime.API.Extensions;
+using OnTime.API.Models.Domain;
 using OnTime.API.Models.Requests;
 using OnTime.API.Models.Responses;
 
@@ -19,12 +20,21 @@ class SessionService : ISessionService
 
     public async Task<int> Create(CreateSessionRequest request)
     {
-        var session = request.ToDomain();
+        var org = await dbContext.Organizations.FindAsync(request.OrganizationId);
+        if (org is null)
+            return 0;
 
-        dbContext.Sessions.Add(session);
+        var newSession = new Session()
+        {
+            DurationInMinutes = request.DurationInMinutes,
+            Organization = org,
+            Title = request.Title
+        };
+
+        dbContext.Sessions.Add(newSession);
         await dbContext.SaveChangesAsync();
 
-        return session.Id;
+        return newSession.Id;
     }
 
     public async Task<bool> Delete(int id)

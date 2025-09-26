@@ -1,28 +1,33 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
+using OnTime.API.Models.Domain;
 using OnTime.API.Models.Requests;
-using OnTime.API.Services.Appointment;
+using OnTime.API.Services.Appointments;
 
 namespace OnTime.API.Controllers;
 
-public class AppointmentsController : BaseApiController
+[Authorize]
+public class AppointmentsController(
+    IAppointmentService appointmentService,
+    UserManager<User> userManager) : BaseApiController
 {
-    private readonly IAppointmentService appointmentService;
-
-    public AppointmentsController(IAppointmentService appointmentService)
-    {
-        this.appointmentService = appointmentService;
-    }
+    private readonly IAppointmentService appointmentService = appointmentService;
 
     [HttpPost]
-    public ActionResult<int> Create(CreateAppointmentRequest request)
+    public async Task<ActionResult<int>> Create(CreateAppointmentRequest request)
     {
-        var id = appointmentService.Create(request);
-        return id;
+        var user = await userManager.GetUserAsync(HttpContext.User);
+        if (user is null)
+            return Unauthorized();
+
+        var id = await appointmentService.Create(request, user);
+        return id > 0 ? id : Problem();
     }
 
     [HttpDelete]
-    public static IResult Cancel(int id)
+    public IResult Cancel(int id)
     {
         return Results.Ok();
     }

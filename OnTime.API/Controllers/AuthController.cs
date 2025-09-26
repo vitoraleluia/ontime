@@ -6,16 +6,29 @@ using OnTime.API.Models.Domain;
 
 namespace OnTime.API.Controllers;
 
-public class AuthController : BaseApiController
+[Authorize]
+public class AuthController(SignInManager<User> signInManager, UserManager<User> userManager) : BaseApiController
 {
-    private readonly SignInManager<User> signInManager;
-
-    public AuthController(SignInManager<User> signInManager)
+    [AllowAnonymous]
+    public async Task<ActionResult> Register()
     {
-        this.signInManager = signInManager;
+        var result = await userManager.CreateAsync(new Models.Domain.User());
+        if (!result.Succeeded)
+            return BadRequest();
+
+        return Ok();
     }
 
-    [Authorize]
+    [AllowAnonymous]
+    public async Task<ActionResult> Login()
+    {
+        var result = await userManager.CreateAsync(new User());
+        if (!result.Succeeded)
+            return BadRequest();
+
+        return Ok();
+    }
+
     [HttpPost("[action]")]
     public async Task<ActionResult> Logout()
     {

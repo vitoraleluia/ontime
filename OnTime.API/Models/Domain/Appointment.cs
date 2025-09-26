@@ -1,23 +1,15 @@
-using System;
-
 namespace OnTime.API.Models.Domain;
 
 public class Appointment : BaseEntity
 {
     public int Id { get; set; }
-    public DateTime StartDate { get; set; }
-    public DateTime EndDate { get; set; }
-    public IEnumerable<Session> Services { get; set; }
+    public required DateTime StartDate { get; set; }
+    public required DateTime EndDate { get; set; }
+    public required IEnumerable<Session> Services { get; set; }
 
-    private Appointment()
-    {
-        Services = [];
-    }
+    public required string ProfessionalId { get; set; }
+    public required User Professional { get; set; }
 
-    public Appointment(DateTime startDate, DateTime endDate, IEnumerable<Session> services)
-    {
-        StartDate = startDate;
-        EndDate = endDate;
-        Services = services;
-    }
+    public required string ClientId { get; set; }
+    public required User Client { get; set; }
 }

@@ -6,14 +6,6 @@ namespace OnTime.API.Extensions;
 
 public static class SessionExtensions
 {
-    public static Session ToDomain(this CreateSessionRequest request)
-    {
-        return new Session(
-            request.Title,
-            request.Description,
-            request.DurationInMinutes);
-    }
-
     public static SessionResponse ToResponse(this Session domain)
     {
         return new SessionResponse(
