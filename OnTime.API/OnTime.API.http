@@ -1,6 +1,56 @@
-@OnTime.API_HostAddress = http://localhost:5019
+### Register a new client user
+POST {{apiUrl}}/api/Auth/register
+Content-Type: application/json
 
-GET {{OnTime.API_HostAddress}}/weatherforecast/
-Accept: application/json
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "john.doe@example.com",
+  "phoneNumber": "1234567890",
+  "password": "Password123!",
+  "isProfessional": false,
+  "organizationId": null
+}
 
 ###
+
+### Register a new professional user
+POST {{apiUrl}}/api/Auth/register
+Content-Type: application/json
+
+{
+  "firstName": "Jane",
+  "lastName": "Smith",
+  "email": "jane.smith@example.com",
+  "phoneNumber": "0987654321",
+  "password": "Password123!",
+  "isProfessional": true,
+  "organizationId": 1
+}
+
+###
+
+### Login with client user
+POST {{apiUrl}}/api/Auth/login
+Content-Type: application/json
+
+{
+  "email": "john.doe@example.com",
+  "password": "Password123!"
+}
+
+###
+
+### Login with professional user
+POST {{apiUrl}}/api/Auth/login
+Content-Type: application/json
+
+{
+  "email": "jane.smith@example.com",
+  "password": "Password123!"
+}
+
+###
+
+### Logout
+POST {{apiUrl}}/api/Auth/logout

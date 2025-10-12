@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 using OnTime.API.Models.Domain;
+using OnTime.API.Models.Requests;
 
 namespace OnTime.API.Controllers;
 
@@ -10,21 +11,71 @@ namespace OnTime.API.Controllers;
 public class AuthController(SignInManager<User> signInManager, UserManager<User> userManager) : BaseApiController
 {
     [AllowAnonymous]
-    public async Task<ActionResult> Register()
+    [HttpPost("[action]")]
+    public async Task<ActionResult> Register(RegisterRequest request)
     {
-        var result = await userManager.CreateAsync(new Models.Domain.User());
+
+        // Check if user already exists
+        var existingUser = await userManager.FindByEmailAsync(request.Email);
+        if (existingUser != null)
+        {
+            return BadRequest("User with this email already exists.");
+        }
+
+        // Validate organization if user is a professional and organizationId is provided
+        if (request.IsProfessional && request.OrganizationId.HasValue)
+        {
+            // Note: You might want to validate that the organization exists
+            // This would require injecting the DbContext and checking the organization
+        }
+
+        // Create new user
+        var user = new User
+        {
+            FirstName = request.FirstName.Trim(),
+            LastName = request.LastName.Trim(),
+            Email = request.Email.Trim().ToLower(),
+            UserName = request.Email.Trim().ToLower(),
+            PhoneNumber = string.IsNullOrWhiteSpace(request.PhoneNumber) ? null : request.PhoneNumber.Trim(),
+            IsProfessional = request.IsProfessional,
+            OrganizationId = request.OrganizationId
+        };
+
+        var result = await userManager.CreateAsync(user, request.Password);
+
         if (!result.Succeeded)
-            return BadRequest();
+        {
+            var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+            return BadRequest($"Failed to create user: {errors}");
+        }
+
+        // Sign in the user
+        await signInManager.SignInAsync(user, isPersistent: false);
 
         return Ok();
     }
 
     [AllowAnonymous]
-    public async Task<ActionResult> Login()
+    [HttpPost("[action]")]
+    public async Task<ActionResult> Login(LoginRequest request)
     {
-        var result = await userManager.CreateAsync(new User());
+
+        // Find user by email
+        var user = await userManager.FindByEmailAsync(request.Email.Trim().ToLower());
+        if (user == null)
+        {
+            return BadRequest("Invalid email or password.");
+        }
+
+        // Check password
+        var result = await signInManager.CheckPasswordSignInAsync(user, request.Password, lockoutOnFailure: false);
         if (!result.Succeeded)
-            return BadRequest();
+        {
+            return BadRequest("Invalid email or password.");
+        }
+
+        // Sign in the user
+        await signInManager.SignInAsync(user, isPersistent: false);
 
         return Ok();
     }

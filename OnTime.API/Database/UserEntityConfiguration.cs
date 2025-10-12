@@ -11,6 +11,14 @@ namespace OnTime.API.Database
         {
             builder.HasKey(u => u.Id);
 
+            builder.Property(u => u.FirstName)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            builder.Property(u => u.LastName)
+                .IsRequired()
+                .HasMaxLength(100);
+
             builder.Property(u => u.IsProfessional)
                 .IsRequired();
 
