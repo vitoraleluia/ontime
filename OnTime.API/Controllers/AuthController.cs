@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 using OnTime.API.Models.Domain;
 using OnTime.API.Models.Requests;
+using OnTime.API.Models.Responses;
 
 namespace OnTime.API.Controllers;
 
@@ -12,7 +13,7 @@ public class AuthController(SignInManager<User> signInManager, UserManager<User>
 {
     [AllowAnonymous]
     [HttpPost("[action]")]
-    public async Task<ActionResult> Register(RegisterRequest request)
+    public async Task<ActionResult<UserResponse>> Register(RegisterRequest request)
     {
 
         // Check if user already exists
@@ -52,12 +53,22 @@ public class AuthController(SignInManager<User> signInManager, UserManager<User>
         // Sign in the user
         await signInManager.SignInAsync(user, isPersistent: false);
 
-        return Ok();
+        var userResponse = new UserResponse(
+            user.Id,
+            user.Email!,
+            user.FirstName,
+            user.LastName,
+            user.IsProfessional,
+            user.OrganizationId,
+            user.PhoneNumber
+        );
+
+        return Ok(userResponse);
     }
 
     [AllowAnonymous]
     [HttpPost("[action]")]
-    public async Task<ActionResult> Login(LoginRequest request)
+    public async Task<ActionResult<UserResponse>> Login(LoginRequest request)
     {
 
         // Find user by email
@@ -77,7 +88,17 @@ public class AuthController(SignInManager<User> signInManager, UserManager<User>
         // Sign in the user
         await signInManager.SignInAsync(user, isPersistent: false);
 
-        return Ok();
+        var userResponse = new UserResponse(
+            user.Id,
+            user.Email!,
+            user.FirstName,
+            user.LastName,
+            user.IsProfessional,
+            user.OrganizationId,
+            user.PhoneNumber
+        );
+
+        return Ok(userResponse);
     }
 
     [HttpPost("[action]")]
