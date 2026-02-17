@@ -22,7 +22,7 @@ public class AppointmentsController(
         if (user is null)
             return Unauthorized();
 
-        var id = await appointmentService.Create(request, user);
+        var id = await this.appointmentService.Create(request, user);
         return id > 0 ? id : Problem();
     }
 

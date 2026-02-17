@@ -31,7 +31,7 @@ file_header_template = unset
 
 # this. and Me. preferences
 dotnet_style_qualification_for_event = false:silent
-dotnet_style_qualification_for_field = false:silent
+dotnet_style_qualification_for_field = true:warning
 dotnet_style_qualification_for_method = false:silent
 dotnet_style_qualification_for_property = false:silent
 
@@ -123,6 +123,9 @@ csharp_style_unused_value_expression_statement_preference = discard_variable:sil
 
 # 'using' directive preferences
 csharp_using_directive_placement = outside_namespace:silent
+
+# Namespace preferences
+dotnet_style_namespace_match_folder = true:warning
 
 #### C# Formatting Rules ####
 

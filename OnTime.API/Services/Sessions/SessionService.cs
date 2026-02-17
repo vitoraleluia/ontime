@@ -20,7 +20,7 @@ class SessionService : ISessionService
 
     public async Task<int> Create(CreateSessionRequest request)
     {
-        var org = await dbContext.Organizations.FindAsync(request.OrganizationId);
+        var org = await this.dbContext.Organizations.FindAsync(request.OrganizationId);
         if (org is null)
             return 0;
 
@@ -31,38 +31,38 @@ class SessionService : ISessionService
             Title = request.Title
         };
 
-        dbContext.Sessions.Add(newSession);
-        await dbContext.SaveChangesAsync();
+        this.dbContext.Sessions.Add(newSession);
+        await this.dbContext.SaveChangesAsync();
 
         return newSession.Id;
     }
 
     public async Task<bool> Delete(int id)
     {
-        var session = await dbContext.Sessions.FindAsync(id);
+        var session = await this.dbContext.Sessions.FindAsync(id);
         if (session is null)
             return false;
 
-        dbContext.Sessions.Remove(session);
-        await dbContext.SaveChangesAsync();
+        this.dbContext.Sessions.Remove(session);
+        await this.dbContext.SaveChangesAsync();
 
         return true;
     }
 
     public async Task<SessionResponse?> Get(int id)
     {
-        var session = await dbContext.Sessions.FindAsync(id);
+        var session = await this.dbContext.Sessions.FindAsync(id);
         return session?.ToResponse();
     }
 
     public async Task<bool> Update(int id, UpdateSessionRequest request)
     {
-        var session = await dbContext.Sessions.FindAsync(id);
+        var session = await this.dbContext.Sessions.FindAsync(id);
         if (session is null)
             return false;
 
         session.Update(request);
-        await dbContext.SaveChangesAsync();
+        await this.dbContext.SaveChangesAsync();
 
         return true;
     }

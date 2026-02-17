@@ -1,33 +1,33 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
+using OnTime.API.Constants;
 using OnTime.API.Models.Domain;
 using OnTime.API.Models.Requests;
 using OnTime.API.Models.Responses;
+using OnTime.API.Models.Settings;
+using OnTime.API.Services.Authentication;
 
 namespace OnTime.API.Controllers;
 
 [Authorize]
-public class AuthController(SignInManager<User> signInManager, UserManager<User> userManager) : BaseApiController
+public class AuthController(
+    UserManager<User> userManager,
+    IJwtService jwtService,
+    IRefreshTokenService refreshTokenService,
+    IOptions<JwtSettings> jwtSettings) : BaseApiController
 {
     [AllowAnonymous]
     [HttpPost("[action]")]
-    public async Task<ActionResult<UserResponse>> Register(RegisterRequest request)
+    public async Task<ActionResult<AuthResponse>> Register(RegisterRequest request)
     {
-
         // Check if user already exists
         var existingUser = await userManager.FindByEmailAsync(request.Email);
         if (existingUser != null)
         {
             return BadRequest("User with this email already exists.");
-        }
-
-        // Validate organization if user is a professional and organizationId is provided
-        if (request.IsProfessional && request.OrganizationId.HasValue)
-        {
-            // Note: You might want to validate that the organization exists
-            // This would require injecting the DbContext and checking the organization
         }
 
         // Create new user
@@ -50,8 +50,12 @@ public class AuthController(SignInManager<User> signInManager, UserManager<User>
             return BadRequest($"Failed to create user: {errors}");
         }
 
-        // Sign in the user
-        await signInManager.SignInAsync(user, isPersistent: false);
+        // Generate tokens
+        var accessToken = jwtService.GenerateAccessToken(user);
+        var refreshToken = await refreshTokenService.GenerateRefreshTokenAsync(user.Id);
+
+        // Set refresh token as HTTP-only cookie
+        SetRefreshTokenCookie(refreshToken.Token);
 
         var userResponse = new UserResponse(
             user.Id,
@@ -63,14 +67,13 @@ public class AuthController(SignInManager<User> signInManager, UserManager<User>
             user.PhoneNumber
         );
 
-        return Ok(userResponse);
+        return Ok(new AuthResponse(accessToken, userResponse));
     }
 
     [AllowAnonymous]
     [HttpPost("[action]")]
-    public async Task<ActionResult<UserResponse>> Login(LoginRequest request)
+    public async Task<ActionResult<AuthResponse>> Login(LoginRequest request)
     {
-
         // Find user by email
         var user = await userManager.FindByEmailAsync(request.Email.Trim().ToLower());
         if (user == null)
@@ -79,14 +82,18 @@ public class AuthController(SignInManager<User> signInManager, UserManager<User>
         }
 
         // Check password
-        var result = await signInManager.CheckPasswordSignInAsync(user, request.Password, lockoutOnFailure: false);
-        if (!result.Succeeded)
+        var result = await userManager.CheckPasswordAsync(user, request.Password);
+        if (!result)
         {
             return BadRequest("Invalid email or password.");
         }
 
-        // Sign in the user
-        await signInManager.SignInAsync(user, isPersistent: false);
+        // Generate tokens
+        var accessToken = jwtService.GenerateAccessToken(user);
+        var refreshToken = await refreshTokenService.GenerateRefreshTokenAsync(user.Id);
+
+        // Set refresh token as HTTP-only cookie
+        SetRefreshTokenCookie(refreshToken.Token);
 
         var userResponse = new UserResponse(
             user.Id,
@@ -98,13 +105,76 @@ public class AuthController(SignInManager<User> signInManager, UserManager<User>
             user.PhoneNumber
         );
 
-        return Ok(userResponse);
+        return Ok(new AuthResponse(accessToken, userResponse));
+    }
+
+    [AllowAnonymous]
+    [HttpPost("[action]")]
+    public async Task<ActionResult<RefreshResponse>> Refresh()
+    {
+        var refreshTokenValue = Request.Cookies[CookieNames.RefreshToken];
+        if (string.IsNullOrEmpty(refreshTokenValue))
+        {
+            return Unauthorized(new { message = "Refresh token not found" });
+        }
+
+        var newRefreshToken = await refreshTokenService.ValidateAndRotateAsync(refreshTokenValue);
+
+        if (newRefreshToken == null)
+        {
+            // Clear the invalid cookie
+            ClearRefreshTokenCookie();
+            return Unauthorized(new { message = "Invalid or expired refresh token" });
+        }
+
+        // Generate new access token
+        var accessToken = jwtService.GenerateAccessToken(newRefreshToken.User);
+
+        // Set new refresh token as HTTP-only cookie
+        SetRefreshTokenCookie(newRefreshToken.Token);
+
+        return Ok(new RefreshResponse(accessToken));
     }
 
     [HttpPost("[action]")]
     public async Task<ActionResult> Logout()
     {
-        await signInManager.SignOutAsync();
-        return Ok();
+        var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (!string.IsNullOrEmpty(userId))
+        {
+            await refreshTokenService.RevokeTokenAsync(userId);
+        }
+
+        ClearRefreshTokenCookie();
+        return Ok(new { message = "Logged out successfully" });
+    }
+
+    private void SetRefreshTokenCookie(string token)
+    {
+        var cookieOptions = new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.Strict,
+            Expires = DateTime.UtcNow.AddDays(jwtSettings.Value.RefreshTokenExpirationDays)
+        };
+
+        Response.Cookies.Append(CookieNames.RefreshToken, token, cookieOptions);
+    }
+
+    private void ClearRefreshTokenCookie()
+    {
+        var cookieOptions = new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.Strict,
+            Expires = DateTime.UtcNow.AddDays(-1)
+        };
+
+        Response.Cookies.Append(CookieNames.RefreshToken, "", cookieOptions);
     }
 }
+
+public record AuthResponse(string AccessToken, UserResponse User);
+public record RefreshResponse(string AccessToken);

@@ -1,5 +1,7 @@
-﻿using System;
+using System;
+
 using Microsoft.EntityFrameworkCore.Migrations;
+
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
@@ -48,7 +50,7 @@ namespace OnTime.API.Migrations
                 table: "Sessions",
                 type: "timestamp with time zone",
                 nullable: false,
-                defaultValue: new DateTime(2025, 9, 26, 22, 46, 39, 354, DateTimeKind.Local).AddTicks(8989),
+                defaultValue: new DateTime(2025, 9, 26, 22, 46, 39, 354, DateTimeKind.Utc).AddTicks(8989),
                 oldClrType: typeof(DateTime),
                 oldType: "timestamp with time zone");
 
@@ -141,7 +143,7 @@ namespace OnTime.API.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "character varying(250)", maxLength: 250, nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValue: new DateTime(2025, 9, 26, 22, 46, 39, 346, DateTimeKind.Local).AddTicks(1313)),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValue: new DateTime(2025, 9, 26, 22, 46, 39, 346, DateTimeKind.Utc).AddTicks(1313)),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
@@ -301,7 +303,7 @@ namespace OnTime.API.Migrations
                 nullable: false,
                 oldClrType: typeof(DateTime),
                 oldType: "timestamp with time zone",
-                oldDefaultValue: new DateTime(2025, 9, 26, 22, 46, 39, 354, DateTimeKind.Local).AddTicks(8989));
+                oldDefaultValue: new DateTime(2025, 9, 26, 22, 46, 39, 354, DateTimeKind.Utc).AddTicks(8989));
 
             migrationBuilder.AddColumn<int>(
                 name: "AppointmentId",

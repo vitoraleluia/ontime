@@ -19,7 +19,7 @@ public class AppointmentService : IAppointmentService
 
     public async Task<int> Create(CreateAppointmentRequest request, User client)
     {
-        var sessions = await dbContext.Sessions
+        var sessions = await this.dbContext.Sessions
             .AsNoTracking()
             .Where(s => request.SessionIds.Contains(s.Id))
             .ToListAsync();
@@ -37,7 +37,7 @@ public class AppointmentService : IAppointmentService
             return 0;
         }
 
-        var professional = await dbContext.Users
+        var professional = await this.dbContext.Users
             .AsNoTracking()
             .FirstOrDefaultAsync(user => request.ProfessionalId.Equals(user.Id));
 
@@ -65,8 +65,8 @@ public class AppointmentService : IAppointmentService
 
         };
 
-        await dbContext.Appoitnments.AddAsync(appointment);
-        await dbContext.SaveChangesAsync();
+        await this.dbContext.Appoitnments.AddAsync(appointment);
+        await this.dbContext.SaveChangesAsync();
 
         return appointment.Id;
     }

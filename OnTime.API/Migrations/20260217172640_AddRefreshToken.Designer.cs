@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using OnTime.API.Database;
@@ -11,9 +12,11 @@ using OnTime.API.Database;
 namespace OnTime.API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260217172640_AddRefreshToken")]
+    partial class AddRefreshToken
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -197,11 +200,16 @@ namespace OnTime.API.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ClientId");
 
                     b.HasIndex("ProfessionalId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Appoitnments");
                 });
@@ -451,14 +459,18 @@ namespace OnTime.API.Migrations
                     b.HasOne("OnTime.API.Models.Domain.User", "Client")
                         .WithMany()
                         .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("OnTime.API.Models.Domain.User", "Professional")
                         .WithMany()
                         .HasForeignKey("ProfessionalId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("OnTime.API.Models.Domain.User", null)
+                        .WithMany("Appointments")
+                        .HasForeignKey("UserId");
 
                     b.Navigation("Client");
 
@@ -501,6 +513,11 @@ namespace OnTime.API.Migrations
                     b.Navigation("Professionals");
 
                     b.Navigation("Sessions");
+                });
+
+            modelBuilder.Entity("OnTime.API.Models.Domain.User", b =>
+                {
+                    b.Navigation("Appointments");
                 });
 #pragma warning restore 612, 618
         }

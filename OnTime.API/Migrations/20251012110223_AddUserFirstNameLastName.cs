@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -16,20 +17,20 @@ namespace OnTime.API.Migrations
                 table: "Sessions",
                 type: "timestamp with time zone",
                 nullable: false,
-                defaultValue: new DateTime(2025, 10, 12, 12, 2, 22, 646, DateTimeKind.Local).AddTicks(4239),
+defaultValue: new DateTime(2025, 10, 12, 12, 2, 22, 646, DateTimeKind.Utc).AddTicks(4239),
                 oldClrType: typeof(DateTime),
                 oldType: "timestamp with time zone",
-                oldDefaultValue: new DateTime(2025, 9, 26, 22, 46, 39, 354, DateTimeKind.Local).AddTicks(8989));
+                oldDefaultValue: new DateTime(2025, 9, 26, 22, 46, 39, 354, DateTimeKind.Utc).AddTicks(8989));
 
             migrationBuilder.AlterColumn<DateTime>(
                 name: "CreatedAt",
                 table: "Organizations",
                 type: "timestamp with time zone",
                 nullable: false,
-                defaultValue: new DateTime(2025, 10, 12, 12, 2, 22, 639, DateTimeKind.Local).AddTicks(188),
+defaultValue: new DateTime(2025, 10, 12, 12, 2, 22, 639, DateTimeKind.Utc).AddTicks(188),
                 oldClrType: typeof(DateTime),
                 oldType: "timestamp with time zone",
-                oldDefaultValue: new DateTime(2025, 9, 26, 22, 46, 39, 346, DateTimeKind.Local).AddTicks(1313));
+                oldDefaultValue: new DateTime(2025, 9, 26, 22, 46, 39, 346, DateTimeKind.Utc).AddTicks(1313));
 
             migrationBuilder.AddColumn<string>(
                 name: "FirstName",
@@ -64,20 +65,20 @@ namespace OnTime.API.Migrations
                 table: "Sessions",
                 type: "timestamp with time zone",
                 nullable: false,
-                defaultValue: new DateTime(2025, 9, 26, 22, 46, 39, 354, DateTimeKind.Local).AddTicks(8989),
+defaultValue: new DateTime(2025, 9, 26, 22, 46, 39, 354, DateTimeKind.Utc).AddTicks(8989),
                 oldClrType: typeof(DateTime),
                 oldType: "timestamp with time zone",
-                oldDefaultValue: new DateTime(2025, 10, 12, 12, 2, 22, 646, DateTimeKind.Local).AddTicks(4239));
+                oldDefaultValue: new DateTime(2025, 10, 12, 12, 2, 22, 646, DateTimeKind.Utc).AddTicks(4239));
 
             migrationBuilder.AlterColumn<DateTime>(
                 name: "CreatedAt",
                 table: "Organizations",
                 type: "timestamp with time zone",
                 nullable: false,
-                defaultValue: new DateTime(2025, 9, 26, 22, 46, 39, 346, DateTimeKind.Local).AddTicks(1313),
+defaultValue: new DateTime(2025, 9, 26, 22, 46, 39, 346, DateTimeKind.Utc).AddTicks(1313),
                 oldClrType: typeof(DateTime),
                 oldType: "timestamp with time zone",
-                oldDefaultValue: new DateTime(2025, 10, 12, 12, 2, 22, 639, DateTimeKind.Local).AddTicks(188));
+                oldDefaultValue: new DateTime(2025, 10, 12, 12, 2, 22, 639, DateTimeKind.Utc).AddTicks(188));
         }
     }
 }

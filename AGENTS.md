@@ -67,14 +67,10 @@ npm run lint          # Run ESLint
 
 No explicit linting configured. Follow C# conventions in `.editorconfig`.
 
-## Test Commands
-
-**No test framework is currently configured.**
-
-When adding tests:
-
-- Backend: Use `dotnet test` (xUnit/NUnit)
-- Frontend: Consider Vitest or Jest
+```bash
+# Formats code
+dotnet format
+```
 
 ## Code Style Guidelines
 
@@ -86,6 +82,7 @@ When adding tests:
 - **camelCase**: Local variables, parameters
 - **PascalCase**: Interfaces with `I` prefix (e.g., `IAppointmentService`)
 - **PascalCase**: File-scoped namespaces
+- Use `this.` when using class variables
 
 #### Imports
 
@@ -103,6 +100,7 @@ When adding tests:
 #### Classes
 
 - Use primary constructor syntax for dependency injection (preferred)
+- Use constants classes to store magic strings, generaly they follow the structure `{Concern}Names`
 
 #### Error Handling
 

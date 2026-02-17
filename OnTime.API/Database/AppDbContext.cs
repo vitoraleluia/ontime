@@ -5,15 +5,12 @@ using OnTime.API.Models.Domain;
 
 namespace OnTime.API.Database;
 
-public class AppDbContext : IdentityDbContext<User>
+public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbContext<User>(options)
 {
     public DbSet<Appointment> Appoitnments { get; set; }
     public DbSet<Session> Sessions { get; set; }
     public DbSet<Organization> Organizations { get; set; }
-
-    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
-    {
-    }
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

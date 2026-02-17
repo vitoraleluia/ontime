@@ -18,7 +18,7 @@ public class SessionsController : BaseApiController
     [HttpGet("{id:int}")]
     public async Task<ActionResult<SessionResponse>> Get(int id)
     {
-        var response = await sessionService.Get(id);
+        var response = await this.sessionService.Get(id);
 
         return response is not null ? response : NotFound();
     }
@@ -28,7 +28,7 @@ public class SessionsController : BaseApiController
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<int>> Create(CreateSessionRequest request)
     {
-        var id = await sessionService.Create(request);
+        var id = await this.sessionService.Create(request);
         return id < 1 ? Problem("Error while creating a session.") : id;
     }
 
@@ -41,7 +41,7 @@ public class SessionsController : BaseApiController
             return BadRequest(ModelState);
         }
 
-        var sucess = await sessionService.Update(id, request);
+        var sucess = await this.sessionService.Update(id, request);
         return sucess ? NoContent() : NotFound();
     }
 
@@ -54,7 +54,7 @@ public class SessionsController : BaseApiController
             return BadRequest(ModelState);
         }
 
-        var success = await sessionService.Delete(id);
+        var success = await this.sessionService.Delete(id);
         return success ? NoContent() : NotFound();
     }
 }
