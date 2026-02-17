@@ -1,8 +1,9 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace OnTime.API.Models.Domain;
 
 public class Appointment : BaseEntity
 {
-    public int Id { get; set; }
     public required DateTime StartDate { get; set; }
     public required DateTime EndDate { get; set; }
     public required IEnumerable<Session> Services { get; set; }
