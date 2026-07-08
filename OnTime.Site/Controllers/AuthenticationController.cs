@@ -1,19 +1,19 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-
+using OnTime.Site.Models;
 using OnTime.Site.ViewModels;
 
 namespace OnTime.Site.Controllers;
 
 public class AuthenticationController : Controller
 {
-    private readonly UserManager<IdentityUser> userManager;
-    private readonly SignInManager<IdentityUser> signInManager;
+    private readonly UserManager<ApplicationUser> userManager;
+    private readonly SignInManager<ApplicationUser> signInManager;
 
     public AuthenticationController(
-        UserManager<IdentityUser> userManager,
-        SignInManager<IdentityUser> signInManager)
+        UserManager<ApplicationUser> userManager,
+        SignInManager<ApplicationUser> signInManager)
     {
         this.userManager = userManager;
         this.signInManager = signInManager;
@@ -22,7 +22,7 @@ public class AuthenticationController : Controller
     [HttpGet]
     public IActionResult Register()
     {
-        return View();
+        return View(new RegisterViewModel());
     }
 
     [HttpPost]
@@ -38,7 +38,14 @@ public class AuthenticationController : Controller
             return PartialView("_RegisterForm", model);
         }
 
-        var user = new IdentityUser { UserName = model.Email, Email = model.Email };
+        var user = new ApplicationUser
+        {
+            UserName = model.Email,
+            Email = model.Email,
+            FirstName = model.FirstName,
+            LastName = model.LastName,
+            PhoneNumber = model.PhoneNumber
+        };
         var identityResult = await this.userManager.CreateAsync(user, model.Password);
         if (!identityResult.Succeeded)
         {
@@ -58,7 +65,7 @@ public class AuthenticationController : Controller
     [HttpGet]
     public IActionResult Login()
     {
-        return View();
+        return View(new LoginViewModel());
     }
 
     [HttpPost]
