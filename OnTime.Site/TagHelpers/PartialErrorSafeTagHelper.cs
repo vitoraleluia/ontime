@@ -26,7 +26,7 @@ public class PartialErrorSafeTagHelper : TagHelper
 
     [ViewContext]
     [HtmlAttributeNotBound]
-    public ViewContext ViewContext { get; set; }
+    public ViewContext ViewContext { get; set; } = null!;
 
     public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
