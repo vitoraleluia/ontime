@@ -12,15 +12,28 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => { options.SignIn.RequireConfirmedAccount = true; })
+// Register the AuthenticationSettings options
+builder.Services.Configure<AuthenticationSettings>(
+    builder.Configuration.GetSection(nameof(AuthenticationSettings)));
+
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => { options.SignIn.RequireConfirmedAccount = false; })
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
+builder.Services.AddAuthentication()
+    .AddGoogle(options =>
+    {
+        var authSettings = builder.Configuration.GetSection(nameof(AuthenticationSettings)).Get<AuthenticationSettings>();
+        var settings = authSettings?.Google;
+        options.ClientId = !string.IsNullOrWhiteSpace(settings?.ClientId) ? settings.ClientId : "placeholder-id";
+        options.ClientSecret = !string.IsNullOrWhiteSpace(settings?.ClientSecret) ? settings.ClientSecret : "placeholder-secret";
+    });
+
 builder.Services.ConfigureApplicationCookie(options =>
 {
-    options.LoginPath = "/Authentication/Login";
-    options.LogoutPath = "/Authentication/Logout";
-    options.AccessDeniedPath = "/Authentication/AccessDenied";
+    options.LoginPath = "/Auth/Login";
+    options.LogoutPath = "/Auth/Logout";
+    options.AccessDeniedPath = "/Auth/AccessDenied";
 });
 
 builder.Services.AddControllersWithViews();
@@ -52,8 +65,8 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.HttpOnly = true;
     options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
 
-    options.LoginPath = "/Identity/Account/Login";
-    options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+    options.LoginPath = "/Auth/Login";
+    options.AccessDeniedPath = "/Auth/AccessDenied";
     options.SlidingExpiration = true;
 });
 

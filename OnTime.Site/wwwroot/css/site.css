@@ -1,2 +1,15 @@
 @import "tailwindcss";
+@source "/home/vitor/code/ontime/OnTime.Site/Views/**/*.cshtml";
+@source "/home/vitor/code/ontime/OnTime.Site/Controllers/**/*.cs";
+@source "/home/vitor/code/ontime/OnTime.Site/ViewModels/**/*.cs";
 @plugin "daisyui";
+
+.input-validation-error {
+  border-color: #dc2626 !important;
+}
+.field-validation-error {
+  color: #dc2626;
+  font-size: 0.75rem;
+  display: block;
+  margin-top: 0.25rem;
+}

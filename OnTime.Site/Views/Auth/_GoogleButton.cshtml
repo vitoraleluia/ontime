@@ -1,0 +1,18 @@
+@model string
+@{
+    var text = Model ?? "Entrar com o Google";
+}
+
+<div class="mb-6">
+    <a href="/Auth/GoogleLogin" class="btn bg-white hover:bg-gray-100 text-gray-900 border border-gray-300 w-full flex items-center justify-center gap-3 transition-all duration-200 font-semibold shadow-sm">
+        <svg class="h-5 w-5" viewBox="0 0 24 24" width="24" height="24" xmlns="http://www.w3.org/2000/svg">
+            <g transform="matrix(1, 0, 0, 1, 0, 0)">
+                <path d="M21.35,11.1H12v2.7h5.38c-0.24,1.28 -0.96,2.37 -2.04,3.1v2.58h3.3c1.93,-1.78 3.04,-4.4 3.04,-7.39C21.68,11.75 21.56,11.41 21.35,11.1z" fill="#4285F4" />
+                <path d="M12,20.82c2.43,0 4.47,-0.81 5.96,-2.19l-3.3,-2.58c-0.91,0.61 -2.08,0.98 -2.66,0.98c-2.04,0 -3.77,-1.38 -4.39,-3.23h-3.41v2.64C5.72,18.77 8.65,20.82 12,20.82z" fill="#34A853" />
+                <path d="M7.61,13.8a5.535,5.535 0 0 1 -0.29,-1.8c0,-0.63 0.11,-1.24 0.29,-1.8V7.56H4.2C3.43,9.09 3,10.81 3,12.63c0,1.82 0.43,3.54 1.2,5.07L7.61,13.8z" fill="#FBBC05" />
+                <path d="M12,6.98c1.32,0 2.5,0.45 3.44,1.35l2.58,-2.58C16.47,4.32 14.43,3.5 12,3.5c-3.35,0 -6.28,2.05 -7.8,5.07l3.41,2.64C8.23,8.36 9.96,6.98 12,6.98z" fill="#EA4335" />
+            </g>
+        </svg>
+        @text
+    </a>
+</div>

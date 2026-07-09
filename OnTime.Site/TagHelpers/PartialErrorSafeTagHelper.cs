@@ -19,10 +19,10 @@ public class PartialErrorSafeTagHelper : TagHelper
     }
 
     [HtmlAttributeName("name")]
-    private string Name { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
 
     [HtmlAttributeName("model")]
-    private object? Model { get; set; }
+    public object? Model { get; set; }
 
     [ViewContext]
     [HtmlAttributeNotBound]

@@ -1,0 +1,82 @@
+@model RegisterViewModel
+
+<div id="register-form-container" class="w-full">
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert shadow-sm mb-6 flex items-start gap-3 rounded-xl p-4" style="background-color: #fef2f2 !important; border: 1px solid #f87171 !important; color: #991b1b !important;">
+            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6 mt-0.5" fill="none" viewBox="0 0 24 24" style="color: #dc2626 !important;">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <div>
+                <h3 class="font-bold text-sm" style="color: #991b1b !important;">Por favor corrija os seguintes erros:</h3>
+                <div asp-validation-summary="All" class="text-xs list-disc pl-4 mt-1 space-y-1" style="color: #991b1b !important;"></div>
+            </div>
+        </div>
+    }
+
+    <form hx-post="/Auth/Register" hx-target="#register-form-container" hx-swap="outerHTML" class="space-y-5">
+        @Html.AntiForgeryToken()
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="form-control w-full">
+                <label class="label pb-1.5">
+                    <span class="label-text font-semibold text-base-content/80">Primeiro Nome</span>
+                </label>
+                <input asp-for="FirstName" type="text" placeholder="Ex: João" class="input input-bordered w-full focus:input-primary transition-all duration-200" required />
+                <span asp-validation-for="FirstName" class="text-error text-xs mt-1"></span>
+            </div>
+            
+            <div class="form-control w-full">
+                <label class="label pb-1.5">
+                    <span class="label-text font-semibold text-base-content/80">Apelido</span>
+                </label>
+                <input asp-for="LastName" type="text" placeholder="Ex: Silva" class="input input-bordered w-full focus:input-primary transition-all duration-200" required />
+                <span asp-validation-for="LastName" class="text-error text-xs mt-1"></span>
+            </div>
+        </div>
+
+        <div class="form-control w-full">
+            <label class="label pb-1.5">
+                <span class="label-text font-semibold text-base-content/80">E-mail</span>
+            </label>
+            <input asp-for="Email" type="email" placeholder="joao.silva@exemplo.com" class="input input-bordered w-full focus:input-primary transition-all duration-200" required />
+            <span asp-validation-for="Email" class="text-error text-xs mt-1"></span>
+        </div>
+
+        <div class="form-control w-full">
+            <label class="label pb-1.5">
+                <span class="label-text font-semibold text-base-content/80 flex items-center justify-between w-full">
+                    <span>Telemóvel</span>
+                    <span class="text-xs text-base-content/40 font-normal uppercase tracking-wider">Opcional</span>
+                </span>
+            </label>
+            <input asp-for="PhoneNumber" type="tel" placeholder="Ex: 912345678" class="input input-bordered w-full focus:input-primary transition-all duration-200" />
+            <span asp-validation-for="PhoneNumber" class="text-error text-xs mt-1"></span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="form-control w-full">
+                <label class="label pb-1.5">
+                    <span class="label-text font-semibold text-base-content/80">Palavra-passe</span>
+                </label>
+                <input asp-for="Password" type="password" placeholder="••••••••" class="input input-bordered w-full focus:input-primary transition-all duration-200" required />
+                <span asp-validation-for="Password" class="text-error text-xs mt-1"></span>
+            </div>
+
+            <div class="form-control w-full">
+                <label class="label pb-1.5">
+                    <span class="label-text font-semibold text-base-content/80">Confirmar Palavra-passe</span>
+                </label>
+                <input asp-for="PasswordConfirmation" type="password" placeholder="••••••••" class="input input-bordered w-full focus:input-primary transition-all duration-200" required />
+                <span asp-validation-for="PasswordConfirmation" class="text-error text-xs mt-1"></span>
+            </div>
+        </div>
+
+        <div class="pt-4">
+            <button type="submit" class="btn btn-primary w-full shadow-md hover:shadow-lg transition-all duration-200">
+                <span class="loading loading-spinner loading-sm htmx-indicator mr-2"></span>
+                Criar Conta
+            </button>
+        </div>
+    </form>
+</div>
