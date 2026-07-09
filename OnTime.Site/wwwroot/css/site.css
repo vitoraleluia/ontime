@@ -1,8 +1,18 @@
 @import "tailwindcss";
-@source "/home/vitor/code/ontime/OnTime.Site/Views/**/*.cshtml";
-@source "/home/vitor/code/ontime/OnTime.Site/Controllers/**/*.cs";
-@source "/home/vitor/code/ontime/OnTime.Site/ViewModels/**/*.cs";
+@source "./Views/**/*.cshtml";
 @plugin "daisyui";
+
+@font-face {
+  font-family: 'Outfit';
+  src: url('../fonts/Outfit-VariableFont_wght.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme {
+  --font-sans: 'Outfit', sans-serif;
+}
 
 .input-validation-error {
   border-color: #dc2626 !important;

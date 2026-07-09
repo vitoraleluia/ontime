@@ -1,9 +1,10 @@
+@model BaseViewModel
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="emerald">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Document</title>
+    <title>@(string.IsNullOrEmpty(Model?.PageTitle) ? "On Time" : Model.PageTitle)</title>
 
     <link href="~/css/styles.css" rel="stylesheet" asp-append-version="true"/>
 </head>

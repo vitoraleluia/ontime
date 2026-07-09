@@ -1,7 +1,10 @@
 using System.Security.Claims;
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+
+using OnTime.Site.Constants;
 using OnTime.Site.Models;
 using OnTime.Site.ViewModels;
 
@@ -23,7 +26,7 @@ public class AuthController : Controller
     [HttpGet]
     public IActionResult Register()
     {
-        return View(new RegisterViewModel());
+        return View(new RegisterViewModel { PageTitle = "Registar - On Time" });
     }
 
     [HttpPost]
@@ -31,12 +34,19 @@ public class AuthController : Controller
     public async Task<IActionResult> Register(RegisterViewModel model, string? returnUrl = null)
     {
         if (!ModelState.IsValid)
-            return PartialView("_RegistrationForm", model);
+            return PartialView(ViewNames.RegistrationForm, model);
 
         if (model.Password != model.PasswordConfirmation)
         {
             ModelState.AddModelError(nameof(model.PasswordConfirmation), "As passwords não coincidem.");
-            return PartialView("_RegistrationForm", model);
+            return PartialView(ViewNames.RegistrationForm, model);
+        }
+
+        var existingUser = await this.userManager.FindByEmailAsync(model.Email);
+        if (existingUser != null)
+        {
+            ModelState.AddModelError(nameof(model.Email), "Este e-mail já está em uso.");
+            return PartialView(ViewNames.RegistrationForm, model);
         }
 
         var user = new ApplicationUser
@@ -54,7 +64,7 @@ public class AuthController : Controller
             {
                 ModelState.AddModelError(string.Empty, error.Description);
             }
-            return PartialView("_RegistrationForm", model);
+            return PartialView(ViewNames.RegistrationForm, model);
         }
 
         await this.signInManager.SignInAsync(user, true);
@@ -66,7 +76,7 @@ public class AuthController : Controller
     [HttpGet]
     public IActionResult Login()
     {
-        return View(new LoginViewModel());
+        return View(new LoginViewModel { PageTitle = "Entrar - On Time" });
     }
 
     [HttpPost]
@@ -74,7 +84,7 @@ public class AuthController : Controller
     public async Task<IActionResult> Login(LoginViewModel model, string? returnUrl = null)
     {
         if (!ModelState.IsValid)
-            return PartialView("_LoginForm", model);
+            return PartialView(ViewNames.LoginForm, model);
 
         var signInResult = await this.signInManager.PasswordSignInAsync(
             model.Email,
@@ -92,7 +102,7 @@ public class AuthController : Controller
             {
                 ModelState.AddModelError(string.Empty, "E-mail ou palavra-passe incorretos.");
             }
-            return PartialView("_LoginForm", model);
+            return PartialView(ViewNames.LoginForm, model);
         }
 
         return string.IsNullOrWhiteSpace(returnUrl)
@@ -113,9 +123,9 @@ public class AuthController : Controller
     [HttpGet]
     public IActionResult GoogleLogin(string? returnUrl = null)
     {
-        var redirectUrl = Url.Action("GoogleCallback", "Auth", new { returnUrl });
-        var properties = signInManager.ConfigureExternalAuthenticationProperties("Google", redirectUrl);
-        return Challenge(properties, "Google");
+        var redirectUrl = Url.Action(nameof(GoogleCallback), "Auth", new { returnUrl });
+        var properties = signInManager.ConfigureExternalAuthenticationProperties(ExternalProviderNames.Google, redirectUrl);
+        return Challenge(properties, ExternalProviderNames.Google);
     }
 
     [HttpGet]
@@ -125,14 +135,14 @@ public class AuthController : Controller
         if (remoteError != null)
         {
             ModelState.AddModelError(string.Empty, $"Erro do Google: {remoteError}");
-            return View("Login", new LoginViewModel());
+            return View(ViewNames.Login, new LoginViewModel { PageTitle = "Entrar - On Time" });
         }
 
         var info = await signInManager.GetExternalLoginInfoAsync();
         if (info == null)
         {
             ModelState.AddModelError(string.Empty, "Erro ao carregar informações do login externo.");
-            return View("Login", new LoginViewModel());
+            return View(ViewNames.Login, new LoginViewModel { PageTitle = "Entrar - On Time" });
         }
 
         var result = await signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
@@ -143,19 +153,19 @@ public class AuthController : Controller
         if (result.IsLockedOut)
         {
             ModelState.AddModelError(string.Empty, "A sua conta está bloqueada.");
-            return View("Login", new LoginViewModel());
+            return View(ViewNames.Login, new LoginViewModel { PageTitle = "Entrar - On Time" });
         }
-        
+
         // If the user does not have an account, create it automatically.
         var email = info.Principal.FindFirstValue(ClaimTypes.Email);
         var name = info.Principal.FindFirstValue(ClaimTypes.Name);
-        
+
         if (email != null)
         {
             var user = await userManager.FindByEmailAsync(email);
             if (user == null)
             {
-                var names = name?.Split(' ', 2) ?? new[] { "Google", "User" };
+                var names = name?.Split(' ', 2) ?? new[] { ExternalProviderNames.Google, "User" };
                 user = new ApplicationUser
                 {
                     UserName = email,
@@ -171,7 +181,7 @@ public class AuthController : Controller
                     {
                         ModelState.AddModelError(string.Empty, error.Description);
                     }
-                    return View("Login", new LoginViewModel());
+                    return View(ViewNames.Login, new LoginViewModel { PageTitle = "Entrar - On Time" });
                 }
             }
 
@@ -184,18 +194,7 @@ public class AuthController : Controller
         }
 
         ModelState.AddModelError(string.Empty, "Não foi possível associar a sua conta do Google.");
-        return View("Login", new LoginViewModel());
+        return View(ViewNames.Login, new LoginViewModel { PageTitle = "Entrar - On Time" });
     }
 
-    [HttpGet]
-    [HttpPost]
-    public async Task<IActionResult> VerifyEmail(string email)
-    {
-        var user = await userManager.FindByEmailAsync(email);
-        if (user != null)
-        {
-            return Json("Este e-mail já está em uso.");
-        }
-        return Json(true);
-    }
 }

@@ -1,9 +1,10 @@
 using System.ComponentModel.DataAnnotations;
+
 using Microsoft.AspNetCore.Mvc;
 
 namespace OnTime.Site.ViewModels;
 
-public class RegisterViewModel
+public class RegisterViewModel : BaseViewModel
 {
     [Required(AllowEmptyStrings = false, ErrorMessage = "Por favor forneça o primeiro nome.")]
     [RegularExpression(@"^[a-zA-ZÀ-ÿ\s]+$", ErrorMessage = "O primeiro nome deve conter apenas letras.")]
@@ -15,12 +16,11 @@ public class RegisterViewModel
 
     [Required(ErrorMessage = "Por favor forneça o e-mail.")]
     [EmailAddress(ErrorMessage = "Por favor forneça um e-mail válido.")]
-    [Remote(action: "VerifyEmail", controller: "Authentication", ErrorMessage = "Este e-mail já está em uso.")]
     public string Email { get; set; } = string.Empty;
-    
+
     [Phone(ErrorMessage = "Por favor forneça um número de telemóvel válido.")]
     public string? PhoneNumber { get; set; }
-    
+
     [Required(ErrorMessage = "Por favor forneça a palavra-passe.")]
     public string Password { get; set; } = string.Empty;
 
