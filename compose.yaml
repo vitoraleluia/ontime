@@ -1,0 +1,24 @@
+services:
+  postgres:
+    image: postgres:18-alpine
+    container_name: ontime-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: ontime
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql
+
+  mailpit:
+    image: axllent/mailpit:v1.30
+    container_name: ontime-mailpit
+    restart: always
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+
+volumes:
+  postgres-data:
