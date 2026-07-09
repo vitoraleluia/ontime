@@ -13,13 +13,16 @@ public class AuthController : Controller
 {
     private readonly UserManager<ApplicationUser> userManager;
     private readonly SignInManager<ApplicationUser> signInManager;
+    private readonly IEmailSender<ApplicationUser> emailSender;
 
     public AuthController(
         UserManager<ApplicationUser> userManager,
-        SignInManager<ApplicationUser> signInManager)
+        SignInManager<ApplicationUser> signInManager,
+        IEmailSender<ApplicationUser> emailSender)
     {
         this.userManager = userManager;
         this.signInManager = signInManager;
+        this.emailSender = emailSender;
     }
 
     [HttpGet]
@@ -67,10 +70,17 @@ public class AuthController : Controller
             return PartialView(ViewNames.RegistrationForm, model);
         }
 
-        await this.signInManager.SignInAsync(user, true);
-        return string.IsNullOrWhiteSpace(returnUrl)
-            ? Redirect("/")
-            : LocalRedirect(returnUrl);
+        // Generate confirmation token and link
+        var code = await this.userManager.GenerateEmailConfirmationTokenAsync(user);
+        var callbackUrl = Url.Action(
+            nameof(ConfirmEmail),
+            "Auth",
+            new { userId = user.Id, code = code },
+            protocol: HttpContext.Request.Scheme);
+
+        await this.emailSender.SendConfirmationLinkAsync(user, model.Email, callbackUrl!);
+
+        return PartialView(ViewNames.RegisterSuccess, model.Email);
     }
 
     [HttpGet]
@@ -97,6 +107,12 @@ public class AuthController : Controller
             if (signInResult.IsLockedOut)
             {
                 ModelState.AddModelError(string.Empty, "A sua conta está bloqueada.");
+            }
+            else if (signInResult.IsNotAllowed)
+            {
+                ModelState.AddModelError(string.Empty, "A sua conta ainda não foi confirmada. Verifique o seu e-mail ou clique no link abaixo para reenviar.");
+                model.IsResendConfirmationVisible = true;
+                model.UnconfirmedEmail = model.Email;
             }
             else
             {
@@ -201,5 +217,168 @@ public class AuthController : Controller
 
         ModelState.AddModelError(string.Empty, "Não foi possível associar a sua conta do Google.");
         return View(ViewNames.Login, new LoginViewModel { PageTitle = "Entrar - On Time" });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> ConfirmEmail(string userId, string code)
+    {
+        if (userId == null || code == null)
+        {
+            return RedirectToAction(nameof(Login));
+        }
+
+        var user = await userManager.FindByIdAsync(userId);
+        if (user == null)
+        {
+            return NotFound($"Não foi possível carregar o utilizador com o ID '{userId}'.");
+        }
+
+        var result = await userManager.ConfirmEmailAsync(user, code);
+        var success = result.Succeeded;
+        if (success)
+        {
+            await userManager.ResetAccessFailedCountAsync(user);
+        }
+        
+        var model = new ConfirmEmailViewModel 
+        { 
+            PageTitle = "Confirmar E-mail - On Time",
+            IsSucceeded = success,
+            Email = user.Email ?? string.Empty
+        };
+        return View(model);
+    }
+
+    [HttpGet]
+    public IActionResult ForgotPassword()
+    {
+        return View(new ForgotPasswordViewModel { PageTitle = "Recuperar Palavra-passe - On Time" });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+    {
+        if (!ModelState.IsValid)
+            return PartialView(ViewNames.ForgotPasswordForm, model);
+
+        var user = await userManager.FindByEmailAsync(model.Email);
+        if (user == null || !(await userManager.IsEmailConfirmedAsync(user)))
+        {
+            return PartialView(ViewNames.ForgotPasswordFailed);
+        }
+
+        if (await userManager.IsLockedOutAsync(user))
+        {
+            ModelState.AddModelError(string.Empty, "A sua conta está bloqueada devido a excesso de tentativas. Por favor, tente mais tarde.");
+            return PartialView(ViewNames.ForgotPasswordForm, model);
+        }
+
+        await userManager.AccessFailedAsync(user);
+        if (await userManager.IsLockedOutAsync(user))
+        {
+            ModelState.AddModelError(string.Empty, "A sua conta foi bloqueada devido a excesso de tentativas. Por favor, tente mais tarde.");
+            return PartialView(ViewNames.ForgotPasswordForm, model);
+        }
+
+        var code = await userManager.GeneratePasswordResetTokenAsync(user);
+        var callbackUrl = Url.Action(
+            nameof(ResetPassword),
+            "Auth",
+            new { code = code },
+            protocol: HttpContext.Request.Scheme);
+
+        await emailSender.SendPasswordResetLinkAsync(user, model.Email, callbackUrl!);
+
+        return PartialView(ViewNames.ForgotPasswordSuccess);
+    }
+
+    [HttpGet]
+    public IActionResult ResetPassword(string? code = null)
+    {
+        if (code == null)
+        {
+            return BadRequest("É necessário um código para repor a palavra-passe.");
+        }
+        return View(new ResetPasswordViewModel 
+        { 
+            PageTitle = "Repor Palavra-passe - On Time",
+            Code = code 
+        });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+    {
+        if (!ModelState.IsValid)
+            return PartialView(ViewNames.ResetPasswordForm, model);
+
+        var user = await userManager.FindByEmailAsync(model.Email);
+        if (user == null)
+        {
+            return PartialView(ViewNames.ResetPasswordSuccess);
+        }
+
+        var result = await userManager.ResetPasswordAsync(user, model.Code, model.Password);
+        if (result.Succeeded)
+        {
+            await userManager.ResetAccessFailedCountAsync(user);
+            return PartialView(ViewNames.ResetPasswordSuccess);
+        }
+
+        foreach (var error in result.Errors)
+        {
+            ModelState.AddModelError(string.Empty, error.Description);
+        }
+        return PartialView(ViewNames.ResetPasswordForm, model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ResendEmailConfirmation(string email)
+    {
+        if (string.IsNullOrEmpty(email))
+        {
+            return BadRequest("E-mail inválido.");
+        }
+
+        var user = await userManager.FindByEmailAsync(email);
+        if (user == null)
+        {
+            return BadRequest("Utilizador não registado.");
+        }
+
+        if (await userManager.IsLockedOutAsync(user))
+        {
+            ModelState.AddModelError(string.Empty, "A sua conta está bloqueada devido a excesso de tentativas. Por favor, tente mais tarde.");
+            return PartialView(ViewNames.ResendEmailConfirmationError);
+        }
+
+        if (!(await userManager.IsEmailConfirmedAsync(user)))
+        {
+            await userManager.AccessFailedAsync(user);
+            if (await userManager.IsLockedOutAsync(user))
+            {
+                ModelState.AddModelError(string.Empty, "A sua conta foi bloqueada devido a excesso de tentativas. Por favor, tente mais tarde.");
+                return PartialView(ViewNames.ResendEmailConfirmationError);
+            }
+
+            var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
+            var callbackUrl = Url.Action(
+                nameof(ConfirmEmail),
+                "Auth",
+                new { userId = user.Id, code = code },
+                protocol: HttpContext.Request.Scheme);
+            await emailSender.SendConfirmationLinkAsync(user, email, callbackUrl!);
+        }
+
+        return PartialView(ViewNames.ResendEmailConfirmationSuccess);
+    }
+
+    [HttpGet]
+    public IActionResult AccessDenied()
+    {
+        return View(ViewNames.AccessDenied, new BaseViewModel { PageTitle = "Acesso Recusado - On Time" });
     }
 }

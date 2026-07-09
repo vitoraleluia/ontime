@@ -31,8 +31,9 @@
         </div>
 
         <div class="form-control w-full">
-            <label class="label pb-1.5">
+            <label class="label pb-1.5 flex justify-between">
                 <span class="label-text font-semibold text-base-content/80">Palavra-passe</span>
+                <a href="/Auth/ForgotPassword" class="text-xs text-primary hover:underline font-medium">Esqueceu-se da palavra-passe?</a>
             </label>
             <input asp-for="Password" type="password" placeholder="••••••••"
                    class="input input-bordered w-full focus:input-primary transition-all duration-200" required/>
@@ -46,4 +47,18 @@
             </button>
         </div>
     </form>
+
+    @if (Model.IsResendConfirmationVisible)
+    {
+        <div id="resend-confirmation-container" class="mt-4">
+            <form hx-post="/Auth/ResendEmailConfirmation" hx-target="#resend-confirmation-container" hx-swap="outerHTML">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="email" value="@Model.UnconfirmedEmail" />
+                <button type="submit" class="btn btn-outline btn-sm w-full transition-all duration-200">
+                    <span class="loading loading-spinner loading-sm htmx-indicator mr-2"></span>
+                    Reenviar e-mail de confirmação
+                </button>
+            </form>
+        </div>
+    }
 </div>

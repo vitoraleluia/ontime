@@ -10,4 +10,7 @@ public class LoginViewModel : BaseViewModel
 
     [Required(ErrorMessage = "Por favor forneça a palavra-passe.")]
     public string Password { get; set; } = string.Empty;
+
+    public bool IsResendConfirmationVisible { get; set; }
+    public string UnconfirmedEmail { get; set; } = string.Empty;
 }

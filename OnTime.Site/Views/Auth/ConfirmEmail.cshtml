@@ -1,0 +1,41 @@
+@model ConfirmEmailViewModel
+
+<div class="min-h-screen flex items-center justify-center bg-base-200 px-4 py-12 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8">
+        <!-- Card Container -->
+        <div class="bg-base-100 border border-base-300 rounded-2xl shadow-xl p-6 sm:p-8 text-center">
+            <div class="mb-6">
+                @if (Model.IsSucceeded)
+                {
+                    <div class="inline-flex items-center justify-center p-3 rounded-full bg-success/15 text-success mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-base-content">E-mail Confirmado!</h3>
+                    <p class="text-sm text-base-content/60 mt-2">
+                        Obrigado por confirmar o seu e-mail (@Model.Email). A sua conta está agora ativa.
+                    </p>
+                }
+                else
+                {
+                    <div class="inline-flex items-center justify-center p-3 rounded-full bg-error/15 text-error mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-base-content">Erro na Confirmação</h3>
+                    <p class="text-sm text-base-content/60 mt-2">
+                        Não foi possível confirmar o seu e-mail. O link pode ser inválido ou ter expirado.
+                    </p>
+                }
+            </div>
+
+            <div class="mt-8">
+                <a href="/Auth/Login" class="btn btn-primary w-full transition-all duration-200 font-semibold shadow-md">
+                    Ir para Login
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

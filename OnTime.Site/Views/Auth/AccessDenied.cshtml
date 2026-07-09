@@ -1,0 +1,29 @@
+@model BaseViewModel
+
+<div class="min-h-screen flex items-center justify-center bg-base-200 px-4 py-12 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8">
+        <!-- Card Container -->
+        <div class="bg-base-100 border border-base-300 rounded-2xl shadow-xl p-6 sm:p-8 text-center">
+            <div class="mb-6">
+                <div class="inline-flex items-center justify-center p-3 rounded-full bg-error/15 text-error mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                </div>
+                <h3 class="text-2xl font-bold text-base-content">Acesso Recusado</h3>
+                <p class="text-sm text-base-content/60 mt-2">
+                    Não tem permissão para aceder ao recurso solicitado. Certifique-se de que tem sessão iniciada com a conta correta.
+                </p>
+            </div>
+
+            <div class="mt-8 flex flex-col gap-3">
+                <a href="/Auth/Login" class="btn btn-primary w-full transition-all duration-200 font-semibold shadow-md">
+                    Iniciar Sessão
+                </a>
+                <a href="/" class="btn btn-outline w-full transition-all duration-200 font-semibold shadow-sm">
+                    Ir para Início
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

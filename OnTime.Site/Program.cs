@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 using OnTime.Site.Data;
 using OnTime.Site.Models;
+using OnTime.Site.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,13 +14,24 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-// Register the AuthenticationSettings options
+// Register options
 builder.Services.Configure<AuthenticationSettings>(
     builder.Configuration.GetSection(nameof(AuthenticationSettings)));
+builder.Services.Configure<EmailSettings>(
+    builder.Configuration.GetSection(nameof(EmailSettings)));
 
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => { options.SignIn.RequireConfirmedAccount = false; })
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+    {
+        options.SignIn.RequireConfirmedAccount = true;
+        options.Lockout.AllowedForNewUsers = true;
+        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
+        options.Lockout.MaxFailedAccessAttempts = 5;
+    })
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
+
+builder.Services.AddTransient<IEmailSender<ApplicationUser>, EmailSender>();
+builder.Services.AddTransient<IServerSideRenderer, ServerSideRenderer>();
 
 builder.Services.AddAuthentication()
     .AddGoogle(options =>
