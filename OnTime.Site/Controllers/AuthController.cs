@@ -2,7 +2,6 @@ using System.Security.Claims;
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 using OnTime.Site.Constants;
 using OnTime.Site.Models;
@@ -64,6 +63,7 @@ public class AuthController : Controller
             {
                 ModelState.AddModelError(string.Empty, error.Description);
             }
+
             return PartialView(ViewNames.RegistrationForm, model);
         }
 
@@ -102,6 +102,7 @@ public class AuthController : Controller
             {
                 ModelState.AddModelError(string.Empty, "E-mail ou palavra-passe incorretos.");
             }
+
             return PartialView(ViewNames.LoginForm, model);
         }
 
@@ -124,7 +125,8 @@ public class AuthController : Controller
     public IActionResult GoogleLogin(string? returnUrl = null)
     {
         var redirectUrl = Url.Action(nameof(GoogleCallback), "Auth", new { returnUrl });
-        var properties = signInManager.ConfigureExternalAuthenticationProperties(ExternalProviderNames.Google, redirectUrl);
+        var properties =
+            signInManager.ConfigureExternalAuthenticationProperties(ExternalProviderNames.Google, redirectUrl);
         return Challenge(properties, ExternalProviderNames.Google);
     }
 
@@ -145,11 +147,13 @@ public class AuthController : Controller
             return View(ViewNames.Login, new LoginViewModel { PageTitle = "Entrar - On Time" });
         }
 
-        var result = await signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
+        var result = await signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey,
+            isPersistent: false, bypassTwoFactor: true);
         if (result.Succeeded)
         {
             return LocalRedirect(returnUrl);
         }
+
         if (result.IsLockedOut)
         {
             ModelState.AddModelError(string.Empty, "A sua conta está bloqueada.");
@@ -181,12 +185,14 @@ public class AuthController : Controller
                     {
                         ModelState.AddModelError(string.Empty, error.Description);
                     }
+
                     return View(ViewNames.Login, new LoginViewModel { PageTitle = "Entrar - On Time" });
                 }
             }
 
             var loginResult = await userManager.AddLoginAsync(user, info);
-            if (loginResult.Succeeded || userManager.GetLoginsAsync(user).Result.Any(l => l.LoginProvider == info.LoginProvider))
+            if (loginResult.Succeeded ||
+                userManager.GetLoginsAsync(user).Result.Any(l => l.LoginProvider == info.LoginProvider))
             {
                 await signInManager.SignInAsync(user, isPersistent: false, info.LoginProvider);
                 return LocalRedirect(returnUrl);
@@ -196,5 +202,4 @@ public class AuthController : Controller
         ModelState.AddModelError(string.Empty, "Não foi possível associar a sua conta do Google.");
         return View(ViewNames.Login, new LoginViewModel { PageTitle = "Entrar - On Time" });
     }
-
 }
