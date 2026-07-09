@@ -32,15 +32,15 @@ public class ServerSideRenderer : IServerSideRenderer
 
     public async Task<string> RenderView<TModel>(string viewName, TModel model)
     {
-        var httpContext = new DefaultHttpContext { RequestServices = serviceProvider };
+        var httpContext = new DefaultHttpContext { RequestServices = this.serviceProvider };
         var actionContext = new ActionContext(httpContext, new RouteData(), new ActionDescriptor());
 
         using var sw = new StringWriter();
-        var viewResult = razorViewEngine.GetView(executingFilePath: null, viewPath: viewName, isMainPage: false);
+        var viewResult = this.razorViewEngine.GetView(executingFilePath: null, viewPath: viewName, isMainPage: false);
 
         if (!viewResult.Success)
         {
-            viewResult = razorViewEngine.FindView(actionContext, viewName, isMainPage: false);
+            viewResult = this.razorViewEngine.FindView(actionContext, viewName, isMainPage: false);
         }
 
         if (!viewResult.Success)
@@ -57,7 +57,7 @@ public class ServerSideRenderer : IServerSideRenderer
             actionContext,
             viewResult.View,
             viewDictionary,
-            new TempDataDictionary(actionContext.HttpContext, tempDataProvider),
+            new TempDataDictionary(actionContext.HttpContext, this.tempDataProvider),
             sw,
             new HtmlHelperOptions()
         );

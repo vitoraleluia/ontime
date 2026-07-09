@@ -7,14 +7,8 @@ namespace OnTime.Site.Controllers;
 
 public class HomeController : Controller
 {
-    public IActionResult Index()
-    {
-        return View();
-    }
+    public IActionResult Index() => View();
 
     [Authorize]
-    public IActionResult Private()
-    {
-        return View();
-    }
+    public IActionResult Private() => View();
 }

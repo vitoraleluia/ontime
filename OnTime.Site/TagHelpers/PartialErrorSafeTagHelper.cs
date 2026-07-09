@@ -39,17 +39,15 @@ public class PartialErrorSafeTagHelper : TagHelper
             output.TagName = null;
 
             // Attempt to render the partial view into a string writer
-            using (var writer = new StringWriter())
-            {
-                var viewBuffer = await this.htmlHelper.PartialAsync(this.Name, this.Model);
-                viewBuffer.WriteTo(writer, HtmlEncoder.Default);
+            using var writer = new StringWriter();
+            var viewBuffer = await this.htmlHelper.PartialAsync(this.Name, this.Model);
+            viewBuffer.WriteTo(writer, HtmlEncoder.Default);
 
-                output.Content.SetHtmlContent(writer.ToString());
-            }
+            output.Content.SetHtmlContent(writer.ToString());
         }
         catch (Exception ex)
         {
-            this.logger.LogError(ex, ex.Message);
+            this.logger.LogError(ex, "Erro ao renderizar a vista parcial {PartialName}: {Message}", this.Name, ex.Message);
         }
     }
 }
