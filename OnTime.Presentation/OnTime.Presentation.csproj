@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web"><PropertyGroup>  <UserSecretsId>1faf9df3-32e2-4778-b9e0-9b05fc55668a</UserSecretsId>
+﻿<Project Sdk="Microsoft.NET.Sdk.Web"><PropertyGroup>  <UserSecretsId>1faf9df3-32e2-4778-b9e0-9b05fc55668a</UserSecretsId>  <RootNamespace>OnTime.Site</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <None Update="app.db" CopyToOutputDirectory="PreserveNewest" ExcludeFromSingleFile="true" />
@@ -12,5 +12,10 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" PrivateAssets="all" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OnTime.Application\OnTime.Application.csproj" />
+    <ProjectReference Include="..\OnTime.Infrastructure\OnTime.Infrastructure.csproj" />
   </ItemGroup>
 </Project>

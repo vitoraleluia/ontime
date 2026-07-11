@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
+using OnTime.Application.DependencyInjection;
+using OnTime.Infrastructure.DependencyInjection;
 using OnTime.Site.Data;
 using OnTime.Site.Models;
 using OnTime.Site.Services;
@@ -36,10 +38,13 @@ builder.Services.AddTransient<IServerSideRenderer, ServerSideRenderer>();
 builder.Services.AddAuthentication()
     .AddGoogle(options =>
     {
-        var authSettings = builder.Configuration.GetSection(nameof(AuthenticationSettings)).Get<AuthenticationSettings>();
+        var authSettings = builder.Configuration.GetSection(nameof(AuthenticationSettings))
+            .Get<AuthenticationSettings>();
         var settings = authSettings?.Google;
         options.ClientId = !string.IsNullOrWhiteSpace(settings?.ClientId) ? settings.ClientId : "placeholder-id";
-        options.ClientSecret = !string.IsNullOrWhiteSpace(settings?.ClientSecret) ? settings.ClientSecret : "placeholder-secret";
+        options.ClientSecret = !string.IsNullOrWhiteSpace(settings?.ClientSecret)
+            ? settings.ClientSecret
+            : "placeholder-secret";
     });
 
 builder.Services.ConfigureApplicationCookie(options =>
@@ -82,6 +87,10 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.AccessDeniedPath = "/Auth/AccessDenied";
     options.SlidingExpiration = true;
 });
+
+builder.Services.AddInfrastructureServices();
+builder.Services.AddApplicationServices();
+
 
 var app = builder.Build();
 

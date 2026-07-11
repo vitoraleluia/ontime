@@ -1,3 +1,6 @@
 <Solution>
-  <Project Path="OnTime.Site/OnTime.Site.csproj" />
+  <Project Path="OnTime.Application/OnTime.Application.csproj" />
+  <Project Path="OnTime.Domain/OnTime.Domain.csproj" />
+  <Project Path="OnTime.Infrastructure/OnTime.Infrastructure.csproj" />
+  <Project Path="OnTime.Presentation\OnTime.Presentation.csproj" />
 </Solution>
