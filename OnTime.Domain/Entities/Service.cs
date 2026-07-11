@@ -19,12 +19,10 @@ public class Service : AuditableEntity
     [Range(1, 480, ErrorMessage = "A duração do serviço deve ser entre 1 e 480 minutos.")]
     public int DurationMinutes { get; set; }
 
-    [MaxLength(450)]
-    public string ProfessionalId { get; set; } = string.Empty;
-
     [Range(0.00, 10000.00)]
     [Precision(18, 2)]
     public decimal Price { get; set; }
+
     public bool IsActive { get; set; } = true;
 
     [MaxLength(200)]
@@ -32,4 +30,7 @@ public class Service : AuditableEntity
 
     // Appointments navigation (many-to-many relationship mapping)
     public List<Appointment> Appointments { get; } = [];
+    
+    public int ShopProfessionalsId { get; set; }
+    public ShopProfessional ShopProfessional { get; set; } = null!;
 }
