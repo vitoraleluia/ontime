@@ -6,10 +6,10 @@ using MediatR;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 
+using OnTime.Application.Domain;
+using OnTime.Application.Features.Auth.Commands;
 using OnTime.Site.Constants;
 using OnTime.Site.ViewModels;
-using OnTime.Application.Features.Auth.Commands;
-using OnTime.Application.Domain;
 
 namespace OnTime.Site.Controllers;
 
@@ -107,7 +107,7 @@ public class AuthController : Controller
         var redirectUrl = Url.Action(nameof(GoogleCallback), "Auth", new { returnUrl });
         var properties = new AuthenticationProperties
         {
-            RedirectUri = redirectUrl, 
+            RedirectUri = redirectUrl,
             Items = { ["LoginProvider"] = ExternalProviderNames.Google }
         };
         return Challenge(properties, ExternalProviderNames.Google);
@@ -139,7 +139,9 @@ public class AuthController : Controller
         {
             var model = new ConfirmEmailViewModel
             {
-                PageTitle = "Confirmar E-mail - On Time", IsSucceeded = true, Email = result.Value!
+                PageTitle = "Confirmar E-mail - On Time",
+                IsSucceeded = true,
+                Email = result.Value!
             };
             return View(model);
         }

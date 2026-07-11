@@ -1,8 +1,8 @@
 using OnTime.Application.DependencyInjection;
-using OnTime.Infrastructure.DependencyInjection;
-using OnTime.Identity.DependencyInjection;
-using OnTime.Site.Services;
 using OnTime.Application.Services;
+using OnTime.Identity.DependencyInjection;
+using OnTime.Infrastructure.DependencyInjection;
+using OnTime.Site.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,7 +16,7 @@ builder.Services.AddScoped<ICallbackUrlGenerator, CallbackUrlGenerator>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddInfrastructureServices();
+builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddApplicationServices();
 
 var app = builder.Build();

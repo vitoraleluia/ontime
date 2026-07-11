@@ -3,12 +3,13 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
+using MediatR;
+
 using Microsoft.AspNetCore.Identity;
 
-using MediatR;
-using OnTime.Application.Services;
 using OnTime.Application.Domain;
 using OnTime.Application.Domain.Results;
+using OnTime.Application.Services;
 using OnTime.Identity.Entities;
 
 namespace OnTime.Identity.Services;
@@ -213,7 +214,7 @@ public class IdentityService : IIdentityService
 
         var result = await this.signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey,
             isPersistent: false, bypassTwoFactor: true);
-        
+
         if (result.Succeeded)
         {
             return Result<string>.Success(returnUrl);

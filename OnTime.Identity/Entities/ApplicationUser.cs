@@ -11,4 +11,7 @@ public class ApplicationUser : IdentityUser
 
     [MaxLength(50)]
     public string LastName { get; set; } = string.Empty;
+
+    [MaxLength(200)]
+    public string ProfilePhotoPath { get; set; } = string.Empty;
 }

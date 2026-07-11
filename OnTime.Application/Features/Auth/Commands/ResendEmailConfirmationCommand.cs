@@ -1,11 +1,14 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+
 using MediatR;
+
 using Microsoft.Extensions.Logging;
-using OnTime.Application.Services;
+
 using OnTime.Application.Domain;
 using OnTime.Application.Domain.Results;
+using OnTime.Application.Services;
 
 namespace OnTime.Application.Features.Auth.Commands;
 

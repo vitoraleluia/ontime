@@ -1,4 +1,5 @@
 using System;
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -6,8 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 
 using OnTime.Application.Domain;
 using OnTime.Application.Services;
-using OnTime.Identity.Domain.Settings;
 using OnTime.Identity.Data;
+using OnTime.Identity.Domain.Settings;
 using OnTime.Identity.Entities;
 using OnTime.Identity.Services;
 
@@ -19,7 +20,7 @@ public static class ServiceCollectionExtensions
     {
         var connectionString = configuration.GetConnectionString("DefaultConnection") ??
                                throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-        
+
         services.AddDbContext<ApplicationDbContext>(options =>
             options.UseNpgsql(connectionString));
 
