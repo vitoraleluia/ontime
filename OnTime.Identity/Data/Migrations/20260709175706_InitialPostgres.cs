@@ -6,7 +6,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace OnTime.Infrastructure.Data.Migrations;
+namespace OnTime.Identity.Data.Migrations;
 
 /// <inheritdoc />
 public partial class InitialPostgres : Migration

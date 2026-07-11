@@ -1,8 +1,9 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using OnTime.Domain.Entities;
 
-namespace OnTime.Infrastructure.Data;
+using OnTime.Identity.Entities;
+
+namespace OnTime.Identity.Data;
 
 public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 {

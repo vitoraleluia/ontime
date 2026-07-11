@@ -1,28 +1,25 @@
-using System.Security.Claims;
+using System;
+using System.Threading.Tasks;
 
-using Microsoft.AspNetCore.Identity;
+using MediatR;
+
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 
 using OnTime.Site.Constants;
-using OnTime.Domain.Entities;
 using OnTime.Site.ViewModels;
+using OnTime.Application.Features.Auth.Commands;
+using OnTime.Application.Domain;
 
 namespace OnTime.Site.Controllers;
 
 public class AuthController : Controller
 {
-    private readonly UserManager<ApplicationUser> userManager;
-    private readonly SignInManager<ApplicationUser> signInManager;
-    private readonly IEmailSender<ApplicationUser> emailSender;
+    private readonly IMediator mediator;
 
-    public AuthController(
-        UserManager<ApplicationUser> userManager,
-        SignInManager<ApplicationUser> signInManager,
-        IEmailSender<ApplicationUser> emailSender)
+    public AuthController(IMediator mediator)
     {
-        this.userManager = userManager;
-        this.signInManager = signInManager;
-        this.emailSender = emailSender;
+        this.mediator = mediator;
     }
 
     [HttpGet]
@@ -35,47 +32,20 @@ public class AuthController : Controller
         if (!ModelState.IsValid)
             return PartialView(ViewNames.RegistrationForm, model);
 
-        if (model.Password != model.PasswordConfirmation)
+        var command = new RegisterCommand(
+            model.Email,
+            model.Password,
+            model.PasswordConfirmation,
+            model.FirstName,
+            model.LastName,
+            model.PhoneNumber);
+
+        var result = await this.mediator.Send(command);
+        if (result.IsFailure)
         {
-            ModelState.AddModelError(nameof(model.PasswordConfirmation), "As passwords não coincidem.");
+            ModelState.AddModelError(string.Empty, result.Error!.Message);
             return PartialView(ViewNames.RegistrationForm, model);
         }
-
-        var existingUser = await this.userManager.FindByEmailAsync(model.Email);
-        if (existingUser != null)
-        {
-            ModelState.AddModelError(nameof(model.Email), "Este e-mail já está em uso.");
-            return PartialView(ViewNames.RegistrationForm, model);
-        }
-
-        var user = new ApplicationUser
-        {
-            UserName = model.Email,
-            Email = model.Email,
-            FirstName = model.FirstName,
-            LastName = model.LastName,
-            PhoneNumber = model.PhoneNumber
-        };
-        var identityResult = await this.userManager.CreateAsync(user, model.Password);
-        if (!identityResult.Succeeded)
-        {
-            foreach (var error in identityResult.Errors)
-            {
-                ModelState.AddModelError(string.Empty, error.Description);
-            }
-
-            return PartialView(ViewNames.RegistrationForm, model);
-        }
-
-        // Generate confirmation token and link
-        var code = await this.userManager.GenerateEmailConfirmationTokenAsync(user);
-        var callbackUrl = Url.Action(
-            nameof(ConfirmEmail),
-            "Auth",
-            new { userId = user.Id, code },
-            protocol: HttpContext.Request.Scheme);
-
-        await this.emailSender.SendConfirmationLinkAsync(user, model.Email, callbackUrl!);
 
         return PartialView(ViewNames.RegisterSuccess, model.Email);
     }
@@ -90,27 +60,27 @@ public class AuthController : Controller
         if (!ModelState.IsValid)
             return PartialView(ViewNames.LoginForm, model);
 
-        var signInResult = await this.signInManager.PasswordSignInAsync(
-            model.Email,
-            model.Password,
-            true,
-            false);
-
-        if (!signInResult.Succeeded)
+        var result = await this.mediator.Send(new LoginCommand(model.Email, model.Password));
+        if (result.IsFailure)
         {
-            if (signInResult.IsLockedOut)
+            ModelState.AddModelError(string.Empty, result.Error!.Message);
+            return PartialView(ViewNames.LoginForm, model);
+        }
+
+        var status = result.Value;
+        if (status != LoginStatus.Success)
+        {
+            switch (status)
             {
-                ModelState.AddModelError(string.Empty, "A sua conta está bloqueada.");
-            }
-            else if (signInResult.IsNotAllowed)
-            {
-                ModelState.AddModelError(string.Empty, "A sua conta ainda não foi confirmada. Verifique o seu e-mail ou clique no link abaixo para reenviar.");
-                model.IsResendConfirmationVisible = true;
-                model.UnconfirmedEmail = model.Email;
-            }
-            else
-            {
-                ModelState.AddModelError(string.Empty, "E-mail ou palavra-passe incorretos.");
+                case LoginStatus.LockedOut:
+                    ModelState.AddModelError(string.Empty, "A sua conta está bloqueada.");
+                    break;
+                case LoginStatus.NotAllowed:
+                    ModelState.AddModelError(string.Empty,
+                        "A sua conta ainda não foi confirmada. Verifique o seu e-mail ou clique no link abaixo para reenviar.");
+                    model.IsResendConfirmationVisible = true;
+                    model.UnconfirmedEmail = model.Email;
+                    break;
             }
 
             return PartialView(ViewNames.LoginForm, model);
@@ -125,7 +95,7 @@ public class AuthController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Logout(string? returnUrl = null)
     {
-        await this.signInManager.SignOutAsync();
+        await this.mediator.Send(new LogoutCommand());
         return string.IsNullOrWhiteSpace(returnUrl)
             ? Redirect("/")
             : LocalRedirect(returnUrl);
@@ -135,81 +105,24 @@ public class AuthController : Controller
     public IActionResult GoogleLogin(string? returnUrl = null)
     {
         var redirectUrl = Url.Action(nameof(GoogleCallback), "Auth", new { returnUrl });
-        var properties =
-            this.signInManager.ConfigureExternalAuthenticationProperties(ExternalProviderNames.Google, redirectUrl);
+        var properties = new AuthenticationProperties
+        {
+            RedirectUri = redirectUrl, 
+            Items = { ["LoginProvider"] = ExternalProviderNames.Google }
+        };
         return Challenge(properties, ExternalProviderNames.Google);
     }
 
     [HttpGet]
     public async Task<IActionResult> GoogleCallback(string? returnUrl = null, string? remoteError = null)
     {
-        returnUrl ??= Url.Content("~/");
-        if (remoteError != null)
+        var result = await this.mediator.Send(new GoogleCallbackCommand(returnUrl, remoteError));
+        if (result.IsSuccess)
         {
-            ModelState.AddModelError(string.Empty, $"Erro do Google: {remoteError}");
-            return View(ViewNames.Login, new LoginViewModel { PageTitle = "Entrar - On Time" });
+            return LocalRedirect(result.Value!);
         }
 
-        var info = await this.signInManager.GetExternalLoginInfoAsync();
-        if (info == null)
-        {
-            ModelState.AddModelError(string.Empty, "Erro ao carregar informações do login externo.");
-            return View(ViewNames.Login, new LoginViewModel { PageTitle = "Entrar - On Time" });
-        }
-
-        var result = await this.signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey,
-            isPersistent: false, bypassTwoFactor: true);
-        if (result.Succeeded)
-        {
-            return LocalRedirect(returnUrl);
-        }
-
-        if (result.IsLockedOut)
-        {
-            ModelState.AddModelError(string.Empty, "A sua conta está bloqueada.");
-            return View(ViewNames.Login, new LoginViewModel { PageTitle = "Entrar - On Time" });
-        }
-
-        // If the user does not have an account, create it automatically.
-        var email = info.Principal.FindFirstValue(ClaimTypes.Email);
-        var name = info.Principal.FindFirstValue(ClaimTypes.Name);
-
-        if (email != null)
-        {
-            var user = await this.userManager.FindByEmailAsync(email);
-            if (user == null)
-            {
-                var names = name?.Split(' ', 2) ?? [ExternalProviderNames.Google, "User"];
-                user = new ApplicationUser
-                {
-                    UserName = email,
-                    Email = email,
-                    FirstName = names[0],
-                    LastName = names.Length > 1 ? names[1] : string.Empty,
-                    EmailConfirmed = true
-                };
-                var createResult = await this.userManager.CreateAsync(user);
-                if (!createResult.Succeeded)
-                {
-                    foreach (var error in createResult.Errors)
-                    {
-                        ModelState.AddModelError(string.Empty, error.Description);
-                    }
-
-                    return View(ViewNames.Login, new LoginViewModel { PageTitle = "Entrar - On Time" });
-                }
-            }
-
-            var loginResult = await this.userManager.AddLoginAsync(user, info);
-            if (loginResult.Succeeded ||
-                this.userManager.GetLoginsAsync(user).Result.Any(l => l.LoginProvider == info.LoginProvider))
-            {
-                await this.signInManager.SignInAsync(user, isPersistent: false, info.LoginProvider);
-                return LocalRedirect(returnUrl);
-            }
-        }
-
-        ModelState.AddModelError(string.Empty, "Não foi possível associar a sua conta do Google.");
+        ModelState.AddModelError(string.Empty, result.Error!.Message);
         return View(ViewNames.Login, new LoginViewModel { PageTitle = "Entrar - On Time" });
     }
 
@@ -221,30 +134,22 @@ public class AuthController : Controller
             return RedirectToAction(nameof(Login));
         }
 
-        var user = await this.userManager.FindByIdAsync(userId);
-        if (user == null)
+        var result = await this.mediator.Send(new ConfirmEmailCommand(userId, code));
+        if (result.IsSuccess)
         {
-            return NotFound($"Não foi possível carregar o utilizador com o ID '{userId}'.");
+            var model = new ConfirmEmailViewModel
+            {
+                PageTitle = "Confirmar E-mail - On Time", IsSucceeded = true, Email = result.Value!
+            };
+            return View(model);
         }
 
-        var result = await this.userManager.ConfirmEmailAsync(user, code);
-        var success = result.Succeeded;
-        if (success)
-        {
-            await this.userManager.ResetAccessFailedCountAsync(user);
-        }
-
-        var model = new ConfirmEmailViewModel
-        {
-            PageTitle = "Confirmar E-mail - On Time",
-            IsSucceeded = success,
-            Email = user.Email ?? string.Empty
-        };
-        return View(model);
+        return NotFound(result.Error!.Message);
     }
 
     [HttpGet]
-    public IActionResult ForgotPassword() => View(new ForgotPasswordViewModel { PageTitle = "Recuperar Palavra-passe - On Time" });
+    public IActionResult ForgotPassword() =>
+        View(new ForgotPasswordViewModel { PageTitle = "Recuperar Palavra-passe - On Time" });
 
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -253,33 +158,18 @@ public class AuthController : Controller
         if (!ModelState.IsValid)
             return PartialView(ViewNames.ForgotPasswordForm, model);
 
-        var user = await this.userManager.FindByEmailAsync(model.Email);
-        if (user == null || !(await this.userManager.IsEmailConfirmedAsync(user)))
-        {
-            return PartialView(ViewNames.ForgotPasswordFailed);
-        }
+        var result = await this.mediator.Send(new ForgotPasswordCommand(model.Email));
 
-        if (await this.userManager.IsLockedOutAsync(user))
+        if (result.IsFailure)
         {
-            ModelState.AddModelError(string.Empty, "A sua conta está bloqueada devido a excesso de tentativas. Por favor, tente mais tarde.");
+            if (result.Error!.Code == "ForgotPasswordFailed")
+            {
+                return PartialView(ViewNames.ForgotPasswordFailed);
+            }
+
+            ModelState.AddModelError(string.Empty, result.Error.Message);
             return PartialView(ViewNames.ForgotPasswordForm, model);
         }
-
-        await this.userManager.AccessFailedAsync(user);
-        if (await this.userManager.IsLockedOutAsync(user))
-        {
-            ModelState.AddModelError(string.Empty, "A sua conta foi bloqueada devido a excesso de tentativas. Por favor, tente mais tarde.");
-            return PartialView(ViewNames.ForgotPasswordForm, model);
-        }
-
-        var code = await this.userManager.GeneratePasswordResetTokenAsync(user);
-        var callbackUrl = Url.Action(
-            nameof(ResetPassword),
-            "Auth",
-            new { code },
-            protocol: HttpContext.Request.Scheme);
-
-        await this.emailSender.SendPasswordResetLinkAsync(user, model.Email, callbackUrl!);
 
         return PartialView(ViewNames.ForgotPasswordSuccess);
     }
@@ -289,11 +179,7 @@ public class AuthController : Controller
     {
         return code == null
             ? BadRequest("É necessário um código para repor a palavra-passe.")
-            : View(new ResetPasswordViewModel
-            {
-                PageTitle = "Repor Palavra-passe - On Time",
-                Code = code
-            });
+            : View(new ResetPasswordViewModel { PageTitle = "Repor Palavra-passe - On Time", Code = code });
     }
 
     [HttpPost]
@@ -303,23 +189,13 @@ public class AuthController : Controller
         if (!ModelState.IsValid)
             return PartialView(ViewNames.ResetPasswordForm, model);
 
-        var user = await this.userManager.FindByEmailAsync(model.Email);
-        if (user == null)
+        var result = await this.mediator.Send(new ResetPasswordCommand(model.Email, model.Code, model.Password));
+        if (result.IsSuccess)
         {
             return PartialView(ViewNames.ResetPasswordSuccess);
         }
 
-        var result = await this.userManager.ResetPasswordAsync(user, model.Code, model.Password);
-        if (result.Succeeded)
-        {
-            await this.userManager.ResetAccessFailedCountAsync(user);
-            return PartialView(ViewNames.ResetPasswordSuccess);
-        }
-
-        foreach (var error in result.Errors)
-        {
-            ModelState.AddModelError(string.Empty, error.Description);
-        }
+        ModelState.AddModelError(string.Empty, result.Error!.Message);
         return PartialView(ViewNames.ResetPasswordForm, model);
     }
 
@@ -332,39 +208,18 @@ public class AuthController : Controller
             return BadRequest("E-mail inválido.");
         }
 
-        var user = await this.userManager.FindByEmailAsync(email);
-        if (user == null)
+        var result = await this.mediator.Send(new ResendEmailConfirmationCommand(email));
+
+        if (result.IsSuccess)
         {
-            return BadRequest("Utilizador não registado.");
+            return PartialView(ViewNames.ResendEmailConfirmationSuccess);
         }
 
-        if (await this.userManager.IsLockedOutAsync(user))
-        {
-            ModelState.AddModelError(string.Empty, "A sua conta está bloqueada devido a excesso de tentativas. Por favor, tente mais tarde.");
-            return PartialView(ViewNames.ResendEmailConfirmationError);
-        }
-
-        if (!(await this.userManager.IsEmailConfirmedAsync(user)))
-        {
-            await this.userManager.AccessFailedAsync(user);
-            if (await this.userManager.IsLockedOutAsync(user))
-            {
-                ModelState.AddModelError(string.Empty, "A sua conta foi bloqueada devido a excesso de tentativas. Por favor, tente mais tarde.");
-                return PartialView(ViewNames.ResendEmailConfirmationError);
-            }
-
-            var code = await this.userManager.GenerateEmailConfirmationTokenAsync(user);
-            var callbackUrl = Url.Action(
-                nameof(ConfirmEmail),
-                "Auth",
-                new { userId = user.Id, code },
-                protocol: HttpContext.Request.Scheme);
-            await this.emailSender.SendConfirmationLinkAsync(user, email, callbackUrl!);
-        }
-
-        return PartialView(ViewNames.ResendEmailConfirmationSuccess);
+        ModelState.AddModelError(string.Empty, result.Error!.Message);
+        return PartialView(ViewNames.ResendEmailConfirmationError);
     }
 
     [HttpGet]
-    public IActionResult AccessDenied() => View(ViewNames.AccessDenied, new BaseViewModel { PageTitle = "Acesso Recusado - On Time" });
+    public IActionResult AccessDenied() =>
+        View(ViewNames.AccessDenied, new BaseViewModel { PageTitle = "Acesso Recusado - On Time" });
 }

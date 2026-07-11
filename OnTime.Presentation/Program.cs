@@ -1,98 +1,23 @@
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-
 using OnTime.Application.DependencyInjection;
 using OnTime.Infrastructure.DependencyInjection;
-using OnTime.Domain.Entities;
-using OnTime.Infrastructure.Data;
-using OnTime.Site.Models;
+using OnTime.Identity.DependencyInjection;
 using OnTime.Site.Services;
-using OnTime.Application.Common.Models;
-using OnTime.Application.Common.Interfaces;
+using OnTime.Application.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
-                       throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(connectionString));
+// Add Database & Identity services from the Identity project
+builder.Services.AddIdentityServices(builder.Configuration);
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-// Register options
-builder.Services.Configure<AuthenticationSettings>(
-    builder.Configuration.GetSection(nameof(AuthenticationSettings)));
-builder.Services.Configure<EmailSettings>(
-    builder.Configuration.GetSection(nameof(EmailSettings)));
-
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
-    {
-        options.SignIn.RequireConfirmedAccount = true;
-        options.Lockout.AllowedForNewUsers = true;
-        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
-        options.Lockout.MaxFailedAccessAttempts = 5;
-    })
-    .AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddDefaultTokenProviders();
-
 builder.Services.AddTransient<IServerSideRenderer, ServerSideRenderer>();
+builder.Services.AddScoped<ICallbackUrlGenerator, CallbackUrlGenerator>();
 
-builder.Services.AddAuthentication()
-    .AddGoogle(options =>
-    {
-        var authSettings = builder.Configuration.GetSection(nameof(AuthenticationSettings))
-            .Get<AuthenticationSettings>();
-        var settings = authSettings?.Google;
-        options.ClientId = !string.IsNullOrWhiteSpace(settings?.ClientId) ? settings.ClientId : "placeholder-id";
-        options.ClientSecret = !string.IsNullOrWhiteSpace(settings?.ClientSecret)
-            ? settings.ClientSecret
-            : "placeholder-secret";
-    });
-
-builder.Services.ConfigureApplicationCookie(options =>
-{
-    options.LoginPath = "/Auth/Login";
-    options.LogoutPath = "/Auth/Logout";
-    options.AccessDeniedPath = "/Auth/AccessDenied";
-});
-
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllersWithViews();
-
-builder.Services.Configure<IdentityOptions>(options =>
-{
-    // Password settings.
-    options.Password.RequireDigit = true;
-    options.Password.RequireLowercase = true;
-    options.Password.RequireNonAlphanumeric = true;
-    options.Password.RequireUppercase = true;
-    options.Password.RequiredLength = 6;
-    options.Password.RequiredUniqueChars = 1;
-
-    // Lockout settings.
-    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
-    options.Lockout.MaxFailedAccessAttempts = 5;
-    options.Lockout.AllowedForNewUsers = true;
-
-    // User settings.
-    options.User.AllowedUserNameCharacters =
-        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-    options.User.RequireUniqueEmail = false;
-});
-
-builder.Services.ConfigureApplicationCookie(options =>
-{
-    // Cookie settings
-    options.Cookie.HttpOnly = true;
-    options.ExpireTimeSpan = TimeSpan.FromDays(7);
-
-    options.LoginPath = "/Auth/Login";
-    options.AccessDeniedPath = "/Auth/AccessDenied";
-    options.SlidingExpiration = true;
-});
 
 builder.Services.AddInfrastructureServices();
 builder.Services.AddApplicationServices();
-
 
 var app = builder.Build();
 

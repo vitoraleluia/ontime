@@ -1,7 +1,8 @@
 using System.ComponentModel.DataAnnotations;
+
 using Microsoft.AspNetCore.Identity;
 
-namespace OnTime.Domain.Entities;
+namespace OnTime.Identity.Entities;
 
 public class ApplicationUser : IdentityUser
 {

@@ -4,11 +4,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-using OnTime.Application.Common.Interfaces;
-using OnTime.Application.Common.Models;
-using OnTime.Domain.Entities;
+using OnTime.Application.Services;
+using OnTime.Identity.Domain.Settings;
+using OnTime.Identity.Entities;
 
-namespace OnTime.Infrastructure.Services.Emails;
+namespace OnTime.Identity.Services;
 
 public class EmailSender : IEmailSender<ApplicationUser>
 {

@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Routing;
 
-using OnTime.Application.Common.Interfaces;
+using OnTime.Application.Services;
 
 namespace OnTime.Site.Services;
 

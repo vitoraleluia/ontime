@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace OnTime.Application.Common.Interfaces;
+namespace OnTime.Application.Services;
 
 public interface IServerSideRenderer
 {

@@ -1,4 +1,4 @@
-namespace OnTime.Site.Models;
+namespace OnTime.Identity.Domain.Settings;
 
 public class AuthenticationSettings
 {

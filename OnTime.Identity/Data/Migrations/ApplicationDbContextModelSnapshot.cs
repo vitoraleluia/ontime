@@ -2,21 +2,18 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using OnTime.Infrastructure.Data;
+using OnTime.Identity.Data;
 
 #nullable disable
 
-namespace OnTime.Infrastructure.Data.Migrations
+namespace OnTime.Identity.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260709175706_InitialPostgres")]
-    partial class InitialPostgres
+    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -157,7 +154,7 @@ namespace OnTime.Infrastructure.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("OnTime.Presentation.Models.ApplicationUser", b =>
+            modelBuilder.Entity("OnTime.Identity.Models.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -242,7 +239,7 @@ namespace OnTime.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("OnTime.Presentation.Models.ApplicationUser", null)
+                    b.HasOne("OnTime.Identity.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -251,7 +248,7 @@ namespace OnTime.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("OnTime.Presentation.Models.ApplicationUser", null)
+                    b.HasOne("OnTime.Identity.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -266,7 +263,7 @@ namespace OnTime.Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("OnTime.Presentation.Models.ApplicationUser", null)
+                    b.HasOne("OnTime.Identity.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -275,7 +272,7 @@ namespace OnTime.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("OnTime.Presentation.Models.ApplicationUser", null)
+                    b.HasOne("OnTime.Identity.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
