@@ -7,12 +7,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Routing;
 
-namespace OnTime.Site.Services;
+using OnTime.Application.Common.Interfaces;
 
-public interface IServerSideRenderer
-{
-    Task<string> RenderView<TModel>(string viewName, TModel model);
-}
+namespace OnTime.Site.Services;
 
 public class ServerSideRenderer : IServerSideRenderer
 {

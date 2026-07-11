@@ -14,8 +14,4 @@
     <PackageReference Include="MediatR" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Features\" />
-  </ItemGroup>
-
 </Project>

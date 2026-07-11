@@ -3,9 +3,12 @@ using Microsoft.EntityFrameworkCore;
 
 using OnTime.Application.DependencyInjection;
 using OnTime.Infrastructure.DependencyInjection;
-using OnTime.Site.Data;
+using OnTime.Domain.Entities;
+using OnTime.Infrastructure.Data;
 using OnTime.Site.Models;
 using OnTime.Site.Services;
+using OnTime.Application.Common.Models;
+using OnTime.Application.Common.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,7 +35,6 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
-builder.Services.AddTransient<IEmailSender<ApplicationUser>, EmailSender>();
 builder.Services.AddTransient<IServerSideRenderer, ServerSideRenderer>();
 
 builder.Services.AddAuthentication()

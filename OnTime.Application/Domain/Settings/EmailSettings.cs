@@ -1,4 +1,4 @@
-namespace OnTime.Site.Models;
+namespace OnTime.Application.Common.Models;
 
 public class EmailSettings
 {

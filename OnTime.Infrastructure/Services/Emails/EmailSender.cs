@@ -1,11 +1,14 @@
 using System.Net.Mail;
 
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-using OnTime.Site.Models;
+using OnTime.Application.Common.Interfaces;
+using OnTime.Application.Common.Models;
+using OnTime.Domain.Entities;
 
-namespace OnTime.Site.Services;
+namespace OnTime.Infrastructure.Services.Emails;
 
 public class EmailSender : IEmailSender<ApplicationUser>
 {

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 using Microsoft.EntityFrameworkCore.Migrations;
 
@@ -6,7 +6,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace OnTime.Site.Data.Migrations;
+namespace OnTime.Infrastructure.Data.Migrations;
 
 /// <inheritdoc />
 public partial class InitialPostgres : Migration

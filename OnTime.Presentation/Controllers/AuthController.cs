@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 using OnTime.Site.Constants;
-using OnTime.Site.Models;
+using OnTime.Domain.Entities;
 using OnTime.Site.ViewModels;
 
 namespace OnTime.Site.Controllers;
