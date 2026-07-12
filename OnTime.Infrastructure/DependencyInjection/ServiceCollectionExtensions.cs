@@ -2,7 +2,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
+using OnTime.Application.Domain.Settings;
+using OnTime.Application.Features.Images.Messages;
+using OnTime.Application.Services;
+using OnTime.Bus;
 using OnTime.Infrastructure.Data;
+using OnTime.Infrastructure.Services;
 
 namespace OnTime.Infrastructure.DependencyInjection;
 
@@ -15,6 +20,16 @@ public static class ServiceCollectionExtensions
 
         services.AddDbContext<OnTimeDbContext>(options =>
             options.UseNpgsql(connectionString));
+
+        services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<OnTimeDbContext>());
+        services.AddScoped<IFileService, FileService>();
+        services.AddScoped<IImageProcessor, ImageProcessor>();
+
+        // Bus
+        services.AddChannelBus<OptimizeImageMessage>();
+
+        services.Configure<ImageStorageSettings>(configuration.GetSection(nameof(ImageStorageSettings)));
+        services.Configure<ImageSizeSettings>(configuration.GetSection(nameof(ImageSizeSettings)));
 
         return services;
     }

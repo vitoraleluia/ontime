@@ -492,3 +492,6 @@ fabric.properties
 
 # Ignore sqlite DB
 app.db*
+
+# Ignore images files
+images/

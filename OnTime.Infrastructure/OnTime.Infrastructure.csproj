@@ -8,11 +8,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\OnTime.Application\OnTime.Application.csproj" />
+    <ProjectReference Include="..\OnTime.Bus\OnTime.Bus.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <PackageReference Include="Magick.NET-Q8-AnyCPU" />
   </ItemGroup>
 
   <ItemGroup>
