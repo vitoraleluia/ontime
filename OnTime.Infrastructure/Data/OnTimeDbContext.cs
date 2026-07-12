@@ -1,12 +1,13 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
+using OnTime.Application.Services;
 using OnTime.Domain.Common;
 using OnTime.Domain.Entities;
 
 namespace OnTime.Infrastructure.Data;
 
-public class OnTimeDbContext : DbContext
+public class OnTimeDbContext : DbContext, IApplicationDbContext
 {
     private readonly IHttpContextAccessor httpContextAccessor;
 
@@ -25,6 +26,7 @@ public class OnTimeDbContext : DbContext
     public DbSet<ShopInvite> ShopInvites { get; set; }
     public DbSet<Appointment> Appointments { get; set; }
     public DbSet<NotificationQueue> NotificationQueue { get; set; }
+    public DbSet<Image> Images { get; set; }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
