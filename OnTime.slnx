@@ -1,5 +1,6 @@
 <Solution>
   <Project Path="OnTime.Application/OnTime.Application.csproj" />
+  <Project Path="OnTime.Bus/OnTime.Bus.csproj" />
   <Project Path="OnTime.Domain/OnTime.Domain.csproj" />
   <Project Path="OnTime.Infrastructure/OnTime.Infrastructure.csproj" />
   <Project Path="OnTime.Identity/OnTime.Identity.csproj" />

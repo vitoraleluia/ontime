@@ -3,8 +3,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 using OnTime.Application.Domain.Settings;
+using OnTime.Application.Features.Images.Messages;
 using OnTime.Application.Services;
-using OnTime.Infrastructure.BackgroundServices;
+using OnTime.Bus;
 using OnTime.Infrastructure.Data;
 using OnTime.Infrastructure.Services;
 
@@ -22,9 +23,10 @@ public static class ServiceCollectionExtensions
 
         services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<OnTimeDbContext>());
         services.AddScoped<IFileService, FileService>();
-        services.AddSingleton<IImageProcessingQueue, ImageProcessingQueue>();
         services.AddScoped<IImageProcessor, ImageProcessor>();
-        services.AddHostedService<ImageProcessingWorker>();
+
+        // Bus
+        services.AddChannelBus<OptimizeImageMessage>();
 
         services.Configure<ImageStorageSettings>(configuration.GetSection(nameof(ImageStorageSettings)));
         services.Configure<ImageSizeSettings>(configuration.GetSection(nameof(ImageSizeSettings)));

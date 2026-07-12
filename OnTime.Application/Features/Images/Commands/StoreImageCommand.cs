@@ -10,6 +10,9 @@ using OnTime.Application.Domain.Settings;
 using OnTime.Application.Services;
 using OnTime.Domain.Entities;
 
+using OnTime.Application.Features.Images.Messages;
+using OnTime.Bus;
+
 namespace OnTime.Application.Features.Images.Commands;
 
 public record StoreImageCommand(
@@ -22,19 +25,19 @@ public class StoreImageCommandHandler : BaseHandler<StoreImageCommand, Result<Gu
 {
     private readonly IApplicationDbContext dbContext;
     private readonly IFileService fileService;
-    private readonly IImageProcessingQueue queue;
+    private readonly IBusProducer<OptimizeImageMessage> producer;
     private readonly ImageStorageSettings storageSettings;
 
     public StoreImageCommandHandler(
         IApplicationDbContext dbContext,
         IFileService fileService,
-        IImageProcessingQueue queue,
+        IBusProducer<OptimizeImageMessage> producer,
         IOptions<ImageStorageSettings> storageSettings,
         ILogger<StoreImageCommandHandler> logger) : base(logger)
     {
         this.dbContext = dbContext;
         this.fileService = fileService;
-        this.queue = queue;
+        this.producer = producer;
         this.storageSettings = storageSettings.Value;
     }
 
@@ -68,8 +71,7 @@ public class StoreImageCommandHandler : BaseHandler<StoreImageCommand, Result<Gu
         this.dbContext.Images.Add(image);
         await this.dbContext.SaveChangesAsync(cancellationToken);
 
-        // Enqueue background processing job
-        await this.queue.QueueBackgroundWorkItemAsync(imageId);
+        await this.producer.Publish(new OptimizeImageMessage(imageId), cancellationToken);
 
         return Result<Guid>.Success(imageId);
     }
