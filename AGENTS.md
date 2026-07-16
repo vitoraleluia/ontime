@@ -1,0 +1,62 @@
+# Agent & Developer Guide (AGENTS.md)
+
+## 📁 Directory Structure
+```text
+ontime/
+├── backend/                       # Backend Solution Folder (.NET 10)
+│   ├── OnTime.slnx                # XML-based dotnet solution file
+│   ├── Directory.Build.props      # Central build configurations
+│   ├── Directory.Packages.props   # Centrally managed package versions
+│   ├── OnTime.Domain/             # Pure Domain Layer (Entities, Common, Enums)
+│   ├── OnTime.Application/        # Application Core (CQRS, MediatR, interfaces)
+│   ├── OnTime.Infrastructure/     # Infrastructure (EF Core AppDbContext, files, bus implementation)
+│   ├── OnTime.Bus/                # Channel-based lightweight event broker wrapper
+│   └── OnTime.Api/                # Web API (Controllers, Swagger, DI, Program)
+├── frontend/                      # Frontend Application Folder (React, Vite, TypeScript)
+│   ├── src/
+│   │   ├── assets/                # Static assets, variable fonts
+│   │   ├── components/            # UI components (Shadcn UI under components/ui)
+│   │   ├── lib/                   # Utility helpers (utils.ts)
+│   │   ├── routes/                # TanStack Router file-based pages
+│   │   ├── generated/             # Auto-generated API client types (apiClient.ts)
+│   │   ├── App.tsx                # Main App Router component
+│   │   ├── router.ts              # TanStack router setup
+│   │   └── main.tsx               # App mount point
+│   ├── vite.config.ts             # Vite build configuration
+│   └── tsconfig.json              # TypeScript compilation setup
+├── infra/                         # DevOps and Local Infrastructure
+│   ├── compose.yaml               # Docker Compose (Postgres, Keycloak, Mailpit, CDN)
+│   └── nginx.conf                 # CDN reverse proxy configuration
+└── AGENTS.md                      # This file
+```
+
+---
+
+## 🖥️ Backend Guidelines & Commands
+
+### Code Style
+- **Pattern**: Clean Architecture, CQRS with MediatR, and Result pattern.
+- **Controllers**: All API controllers must inherit from `BaseApiController`.
+- **Handlers**: Must inherit from `BaseHandler<TRequest, TResponse>` and implement `HandleSafe`.
+- **Instance Scope**: Always use `this.` explicitly for instance variables.
+- **Packages**: Managed centrally in `backend/Directory.Packages.props`.
+- **Options Pattern**: Prefer the Options pattern via `appsettings.json` to host configuration. End the classes with the `Settings` suffix instead of `-Options` (e.g., `AuthenticationSettings`, not `AuthenticationOptions`).
+- **Constants**: Avoid hardcoded strings; always prefer placing them in static classes organized by concern.
+
+### CLI Commands (from root)
+- **Build**: `dotnet build OnTime.slnx`
+- **Format**: `dotnet format OnTime.slnx`
+- **Add Migration**: `dotnet ef migrations add <Name> --project backend/OnTime.Infrastructure --startup-project backend/OnTime.Api --context AppDbContext`
+- **Apply Migrations**: `dotnet ef database update --project backend/OnTime.Infrastructure --startup-project backend/OnTime.Api --context AppDbContext`
+
+---
+
+## 🎨 Frontend Guidelines & Commands
+
+### Code Style
+- **Stack**: React 19, TypeScript, Tailwind CSS v4, TanStack Router.
+- **API Calls**: Uses `openapi-fetch` and `openapi-react-query` based on generated client.
+
+### CLI Commands (from `frontend/`)
+- **Generate API Client**: `npm run generate-client`
+- **Lint**: `npm run lint` (runs `oxlint`)

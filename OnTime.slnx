@@ -1,8 +1,9 @@
 <Solution>
-  <Project Path="OnTime.Application/OnTime.Application.csproj" />
-  <Project Path="OnTime.Bus/OnTime.Bus.csproj" />
-  <Project Path="OnTime.Domain/OnTime.Domain.csproj" />
-  <Project Path="OnTime.Infrastructure/OnTime.Infrastructure.csproj" />
-  <Project Path="OnTime.Identity/OnTime.Identity.csproj" />
-  <Project Path="OnTime.Presentation\OnTime.Presentation.csproj" />
+    <Folder Name="/backend/">
+        <Project Path="backend/OnTime.Application/OnTime.Application.csproj" />
+        <Project Path="backend/OnTime.Bus/OnTime.Bus.csproj" />
+        <Project Path="backend/OnTime.Domain/OnTime.Domain.csproj" />
+        <Project Path="backend/OnTime.Infrastructure/OnTime.Infrastructure.csproj" />
+        <Project Path="backend\OnTime.Api\OnTime.Api.csproj" />
+    </Folder>
 </Solution>

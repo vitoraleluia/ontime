@@ -1,0 +1,330 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\VitorAleluia\\Documents\\code\\ontime\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{F84D1C76-F20C-ACDA-6491-28C757477370}|OnTime.API\\OnTime.API.csproj|c:\\users\\vitoraleluia\\documents\\code\\ontime\\ontime.api\\.gitignore||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{F84D1C76-F20C-ACDA-6491-28C757477370}|OnTime.API\\OnTime.API.csproj|solutionrelative:ontime.api\\.gitignore||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F84D1C76-F20C-ACDA-6491-28C757477370}|OnTime.API\\OnTime.API.csproj|c:\\users\\vitoraleluia\\documents\\code\\ontime\\ontime.api\\migrations\\20250926214641_createrelations.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F84D1C76-F20C-ACDA-6491-28C757477370}|OnTime.API\\OnTime.API.csproj|solutionrelative:ontime.api\\migrations\\20250926214641_createrelations.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F84D1C76-F20C-ACDA-6491-28C757477370}|OnTime.API\\OnTime.API.csproj|c:\\users\\vitoraleluia\\documents\\code\\ontime\\ontime.api\\migrations\\appdbcontextmodelsnapshot.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F84D1C76-F20C-ACDA-6491-28C757477370}|OnTime.API\\OnTime.API.csproj|solutionrelative:ontime.api\\migrations\\appdbcontextmodelsnapshot.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F84D1C76-F20C-ACDA-6491-28C757477370}|OnTime.API\\OnTime.API.csproj|c:\\users\\vitoraleluia\\documents\\code\\ontime\\ontime.api\\database\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F84D1C76-F20C-ACDA-6491-28C757477370}|OnTime.API\\OnTime.API.csproj|solutionrelative:ontime.api\\database\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F84D1C76-F20C-ACDA-6491-28C757477370}|OnTime.API\\OnTime.API.csproj|c:\\users\\vitoraleluia\\documents\\code\\ontime\\ontime.api\\database\\appointmententityconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F84D1C76-F20C-ACDA-6491-28C757477370}|OnTime.API\\OnTime.API.csproj|solutionrelative:ontime.api\\database\\appointmententityconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F84D1C76-F20C-ACDA-6491-28C757477370}|OnTime.API\\OnTime.API.csproj|c:\\users\\vitoraleluia\\documents\\code\\ontime\\ontime.api\\database\\userentityconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F84D1C76-F20C-ACDA-6491-28C757477370}|OnTime.API\\OnTime.API.csproj|solutionrelative:ontime.api\\database\\userentityconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F84D1C76-F20C-ACDA-6491-28C757477370}|OnTime.API\\OnTime.API.csproj|c:\\users\\vitoraleluia\\documents\\code\\ontime\\ontime.api\\database\\sessionentityconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F84D1C76-F20C-ACDA-6491-28C757477370}|OnTime.API\\OnTime.API.csproj|solutionrelative:ontime.api\\database\\sessionentityconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F84D1C76-F20C-ACDA-6491-28C757477370}|OnTime.API\\OnTime.API.csproj|c:\\users\\vitoraleluia\\documents\\code\\ontime\\ontime.api\\database\\organizationentityconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F84D1C76-F20C-ACDA-6491-28C757477370}|OnTime.API\\OnTime.API.csproj|solutionrelative:ontime.api\\database\\organizationentityconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F84D1C76-F20C-ACDA-6491-28C757477370}|OnTime.API\\OnTime.API.csproj|c:\\users\\vitoraleluia\\documents\\code\\ontime\\ontime.api\\models\\domain\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F84D1C76-F20C-ACDA-6491-28C757477370}|OnTime.API\\OnTime.API.csproj|solutionrelative:ontime.api\\models\\domain\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F84D1C76-F20C-ACDA-6491-28C757477370}|OnTime.API\\OnTime.API.csproj|c:\\users\\vitoraleluia\\documents\\code\\ontime\\ontime.api\\models\\domain\\session.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F84D1C76-F20C-ACDA-6491-28C757477370}|OnTime.API\\OnTime.API.csproj|solutionrelative:ontime.api\\models\\domain\\session.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F84D1C76-F20C-ACDA-6491-28C757477370}|OnTime.API\\OnTime.API.csproj|c:\\users\\vitoraleluia\\documents\\code\\ontime\\ontime.api\\models\\domain\\organization.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F84D1C76-F20C-ACDA-6491-28C757477370}|OnTime.API\\OnTime.API.csproj|solutionrelative:ontime.api\\models\\domain\\organization.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F84D1C76-F20C-ACDA-6491-28C757477370}|OnTime.API\\OnTime.API.csproj|c:\\users\\vitoraleluia\\documents\\code\\ontime\\ontime.api\\models\\domain\\appointment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F84D1C76-F20C-ACDA-6491-28C757477370}|OnTime.API\\OnTime.API.csproj|solutionrelative:ontime.api\\models\\domain\\appointment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F84D1C76-F20C-ACDA-6491-28C757477370}|OnTime.API\\OnTime.API.csproj|c:\\users\\vitoraleluia\\documents\\code\\ontime\\ontime.api\\models\\domain\\baseentity.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F84D1C76-F20C-ACDA-6491-28C757477370}|OnTime.API\\OnTime.API.csproj|solutionrelative:ontime.api\\models\\domain\\baseentity.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F84D1C76-F20C-ACDA-6491-28C757477370}|OnTime.API\\OnTime.API.csproj|c:\\users\\vitoraleluia\\documents\\code\\ontime\\ontime.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F84D1C76-F20C-ACDA-6491-28C757477370}|OnTime.API\\OnTime.API.csproj|solutionrelative:ontime.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F84D1C76-F20C-ACDA-6491-28C757477370}|OnTime.API\\OnTime.API.csproj|c:\\users\\vitoraleluia\\documents\\code\\ontime\\ontime.api\\controllers\\appointmentscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F84D1C76-F20C-ACDA-6491-28C757477370}|OnTime.API\\OnTime.API.csproj|solutionrelative:ontime.api\\controllers\\appointmentscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F84D1C76-F20C-ACDA-6491-28C757477370}|OnTime.API\\OnTime.API.csproj|c:\\users\\vitoraleluia\\documents\\code\\ontime\\ontime.api\\services\\appointments\\appointmentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F84D1C76-F20C-ACDA-6491-28C757477370}|OnTime.API\\OnTime.API.csproj|solutionrelative:ontime.api\\services\\appointments\\appointmentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F84D1C76-F20C-ACDA-6491-28C757477370}|OnTime.API\\OnTime.API.csproj|c:\\users\\vitoraleluia\\documents\\code\\ontime\\ontime.api\\services\\sessions\\sessionservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F84D1C76-F20C-ACDA-6491-28C757477370}|OnTime.API\\OnTime.API.csproj|solutionrelative:ontime.api\\services\\sessions\\sessionservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F84D1C76-F20C-ACDA-6491-28C757477370}|OnTime.API\\OnTime.API.csproj|c:\\users\\vitoraleluia\\documents\\code\\ontime\\ontime.api\\extensions\\appointmentextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F84D1C76-F20C-ACDA-6491-28C757477370}|OnTime.API\\OnTime.API.csproj|solutionrelative:ontime.api\\extensions\\appointmentextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F84D1C76-F20C-ACDA-6491-28C757477370}|OnTime.API\\OnTime.API.csproj|c:\\users\\vitoraleluia\\documents\\code\\ontime\\ontime.api\\extensions\\sessionextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F84D1C76-F20C-ACDA-6491-28C757477370}|OnTime.API\\OnTime.API.csproj|solutionrelative:ontime.api\\extensions\\sessionextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": ".gitignore",
+              "DocumentMoniker": "C:\\Users\\VitorAleluia\\Documents\\code\\ontime\\OnTime.API\\.gitignore",
+              "RelativeDocumentMoniker": "OnTime.API\\.gitignore",
+              "ToolTip": "C:\\Users\\VitorAleluia\\Documents\\code\\ontime\\OnTime.API\\.gitignore",
+              "RelativeToolTip": "OnTime.API\\.gitignore",
+              "ViewState": "AgIAAB4AAAAAAAAAAAAAACYAAAAEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2025-09-26T21:57:05.733Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "20250926214641_CreateRelations.cs",
+              "DocumentMoniker": "C:\\Users\\VitorAleluia\\Documents\\code\\ontime\\OnTime.API\\Migrations\\20250926214641_CreateRelations.cs",
+              "RelativeDocumentMoniker": "OnTime.API\\Migrations\\20250926214641_CreateRelations.cs",
+              "ToolTip": "C:\\Users\\VitorAleluia\\Documents\\code\\ontime\\OnTime.API\\Migrations\\20250926214641_CreateRelations.cs",
+              "RelativeToolTip": "OnTime.API\\Migrations\\20250926214641_CreateRelations.cs",
+              "ViewState": "AgIAADABAAAAAAAAAAA0wDIAAAAqAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-26T21:46:56.537Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "AppDbContextModelSnapshot.cs",
+              "DocumentMoniker": "C:\\Users\\VitorAleluia\\Documents\\code\\ontime\\OnTime.API\\Migrations\\AppDbContextModelSnapshot.cs",
+              "RelativeDocumentMoniker": "OnTime.API\\Migrations\\AppDbContextModelSnapshot.cs",
+              "ToolTip": "C:\\Users\\VitorAleluia\\Documents\\code\\ontime\\OnTime.API\\Migrations\\AppDbContextModelSnapshot.cs",
+              "RelativeToolTip": "OnTime.API\\Migrations\\AppDbContextModelSnapshot.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-26T21:46:54.002Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "AppDbContext.cs",
+              "DocumentMoniker": "C:\\Users\\VitorAleluia\\Documents\\code\\ontime\\OnTime.API\\Database\\AppDbContext.cs",
+              "RelativeDocumentMoniker": "OnTime.API\\Database\\AppDbContext.cs",
+              "ToolTip": "C:\\Users\\VitorAleluia\\Documents\\code\\ontime\\OnTime.API\\Database\\AppDbContext.cs",
+              "RelativeToolTip": "OnTime.API\\Database\\AppDbContext.cs",
+              "ViewState": "AgIAAA0AAAAAAAAAAAAIwBUAAAAmAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-26T21:46:20.085Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "BaseEntity.cs",
+              "DocumentMoniker": "C:\\Users\\VitorAleluia\\Documents\\code\\ontime\\OnTime.API\\Models\\Domain\\BaseEntity.cs",
+              "RelativeDocumentMoniker": "OnTime.API\\Models\\Domain\\BaseEntity.cs",
+              "ToolTip": "C:\\Users\\VitorAleluia\\Documents\\code\\ontime\\OnTime.API\\Models\\Domain\\BaseEntity.cs",
+              "RelativeToolTip": "OnTime.API\\Models\\Domain\\BaseEntity.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-26T21:42:02.321Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "User.cs",
+              "DocumentMoniker": "C:\\Users\\VitorAleluia\\Documents\\code\\ontime\\OnTime.API\\Models\\Domain\\User.cs",
+              "RelativeDocumentMoniker": "OnTime.API\\Models\\Domain\\User.cs",
+              "ToolTip": "C:\\Users\\VitorAleluia\\Documents\\code\\ontime\\OnTime.API\\Models\\Domain\\User.cs",
+              "RelativeToolTip": "OnTime.API\\Models\\Domain\\User.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-26T21:39:18.358Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "Session.cs",
+              "DocumentMoniker": "C:\\Users\\VitorAleluia\\Documents\\code\\ontime\\OnTime.API\\Models\\Domain\\Session.cs",
+              "RelativeDocumentMoniker": "OnTime.API\\Models\\Domain\\Session.cs",
+              "ToolTip": "C:\\Users\\VitorAleluia\\Documents\\code\\ontime\\OnTime.API\\Models\\Domain\\Session.cs",
+              "RelativeToolTip": "OnTime.API\\Models\\Domain\\Session.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAqwAIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-26T21:38:58.887Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\VitorAleluia\\Documents\\code\\ontime\\OnTime.API\\Program.cs",
+              "RelativeDocumentMoniker": "OnTime.API\\Program.cs",
+              "ToolTip": "C:\\Users\\VitorAleluia\\Documents\\code\\ontime\\OnTime.API\\Program.cs",
+              "RelativeToolTip": "OnTime.API\\Program.cs",
+              "ViewState": "AgIAAA8AAAAAAAAAAAAjwCYAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-26T21:23:37.479Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "AppointmentExtensions.cs",
+              "DocumentMoniker": "C:\\Users\\VitorAleluia\\Documents\\code\\ontime\\OnTime.API\\Extensions\\AppointmentExtensions.cs",
+              "RelativeDocumentMoniker": "OnTime.API\\Extensions\\AppointmentExtensions.cs",
+              "ToolTip": "C:\\Users\\VitorAleluia\\Documents\\code\\ontime\\OnTime.API\\Extensions\\AppointmentExtensions.cs",
+              "RelativeToolTip": "OnTime.API\\Extensions\\AppointmentExtensions.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-26T21:16:49.941Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "SessionExtensions.cs",
+              "DocumentMoniker": "C:\\Users\\VitorAleluia\\Documents\\code\\ontime\\OnTime.API\\Extensions\\SessionExtensions.cs",
+              "RelativeDocumentMoniker": "OnTime.API\\Extensions\\SessionExtensions.cs",
+              "ToolTip": "C:\\Users\\VitorAleluia\\Documents\\code\\ontime\\OnTime.API\\Extensions\\SessionExtensions.cs",
+              "RelativeToolTip": "OnTime.API\\Extensions\\SessionExtensions.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-26T21:16:27.975Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "UserEntityConfiguration.cs",
+              "DocumentMoniker": "C:\\Users\\VitorAleluia\\Documents\\code\\ontime\\OnTime.API\\Database\\UserEntityConfiguration.cs",
+              "RelativeDocumentMoniker": "OnTime.API\\Database\\UserEntityConfiguration.cs",
+              "ToolTip": "C:\\Users\\VitorAleluia\\Documents\\code\\ontime\\OnTime.API\\Database\\UserEntityConfiguration.cs",
+              "RelativeToolTip": "OnTime.API\\Database\\UserEntityConfiguration.cs",
+              "ViewState": "AgIAABYAAAAAAAAAAAAqwBcAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-26T21:11:35.627Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "Appointment.cs",
+              "DocumentMoniker": "C:\\Users\\VitorAleluia\\Documents\\code\\ontime\\OnTime.API\\Models\\Domain\\Appointment.cs",
+              "RelativeDocumentMoniker": "OnTime.API\\Models\\Domain\\Appointment.cs",
+              "ToolTip": "C:\\Users\\VitorAleluia\\Documents\\code\\ontime\\OnTime.API\\Models\\Domain\\Appointment.cs",
+              "RelativeToolTip": "OnTime.API\\Models\\Domain\\Appointment.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-26T21:10:19.526Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "AppointmentEntityConfiguration.cs",
+              "DocumentMoniker": "C:\\Users\\VitorAleluia\\Documents\\code\\ontime\\OnTime.API\\Database\\AppointmentEntityConfiguration.cs",
+              "RelativeDocumentMoniker": "OnTime.API\\Database\\AppointmentEntityConfiguration.cs",
+              "ToolTip": "C:\\Users\\VitorAleluia\\Documents\\code\\ontime\\OnTime.API\\Database\\AppointmentEntityConfiguration.cs",
+              "RelativeToolTip": "OnTime.API\\Database\\AppointmentEntityConfiguration.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABsAAAAeAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-25T21:43:12.106Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "Organization.cs",
+              "DocumentMoniker": "C:\\Users\\VitorAleluia\\Documents\\code\\ontime\\OnTime.API\\Models\\Domain\\Organization.cs",
+              "RelativeDocumentMoniker": "OnTime.API\\Models\\Domain\\Organization.cs",
+              "ToolTip": "C:\\Users\\VitorAleluia\\Documents\\code\\ontime\\OnTime.API\\Models\\Domain\\Organization.cs",
+              "RelativeToolTip": "OnTime.API\\Models\\Domain\\Organization.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-25T21:42:40.873Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "OrganizationEntityConfiguration.cs",
+              "DocumentMoniker": "C:\\Users\\VitorAleluia\\Documents\\code\\ontime\\OnTime.API\\Database\\OrganizationEntityConfiguration.cs",
+              "RelativeDocumentMoniker": "OnTime.API\\Database\\OrganizationEntityConfiguration.cs",
+              "ToolTip": "C:\\Users\\VitorAleluia\\Documents\\code\\ontime\\OnTime.API\\Database\\OrganizationEntityConfiguration.cs",
+              "RelativeToolTip": "OnTime.API\\Database\\OrganizationEntityConfiguration.cs",
+              "ViewState": "AgIAAAsAAAAAAAAAAAAwwB0AAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-25T21:36:18.39Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "SessionEntityConfiguration.cs",
+              "DocumentMoniker": "C:\\Users\\VitorAleluia\\Documents\\code\\ontime\\OnTime.API\\Database\\SessionEntityConfiguration.cs",
+              "RelativeDocumentMoniker": "OnTime.API\\Database\\SessionEntityConfiguration.cs",
+              "ToolTip": "C:\\Users\\VitorAleluia\\Documents\\code\\ontime\\OnTime.API\\Database\\SessionEntityConfiguration.cs",
+              "RelativeToolTip": "OnTime.API\\Database\\SessionEntityConfiguration.cs",
+              "ViewState": "AgIAAA0AAAAAAAAAAAAwwCAAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-25T21:14:30.661Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "SessionService.cs",
+              "DocumentMoniker": "C:\\Users\\VitorAleluia\\Documents\\code\\ontime\\OnTime.API\\Services\\Sessions\\SessionService.cs",
+              "RelativeDocumentMoniker": "OnTime.API\\Services\\Sessions\\SessionService.cs",
+              "ToolTip": "C:\\Users\\VitorAleluia\\Documents\\code\\ontime\\OnTime.API\\Services\\Sessions\\SessionService.cs",
+              "RelativeToolTip": "OnTime.API\\Services\\Sessions\\SessionService.cs",
+              "ViewState": "AgIAABEAAAAAAAAAAAAAACAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-20T19:09:39.466Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "AppointmentsController.cs",
+              "DocumentMoniker": "C:\\Users\\VitorAleluia\\Documents\\code\\ontime\\OnTime.API\\Controllers\\AppointmentsController.cs",
+              "RelativeDocumentMoniker": "OnTime.API\\Controllers\\AppointmentsController.cs",
+              "ToolTip": "C:\\Users\\VitorAleluia\\Documents\\code\\ontime\\OnTime.API\\Controllers\\AppointmentsController.cs",
+              "RelativeToolTip": "OnTime.API\\Controllers\\AppointmentsController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAmAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-20T18:39:21.198Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "AppointmentService.cs",
+              "DocumentMoniker": "C:\\Users\\VitorAleluia\\Documents\\code\\ontime\\OnTime.API\\Services\\Appointments\\AppointmentService.cs",
+              "RelativeDocumentMoniker": "OnTime.API\\Services\\Appointments\\AppointmentService.cs",
+              "ToolTip": "C:\\Users\\VitorAleluia\\Documents\\code\\ontime\\OnTime.API\\Services\\Appointments\\AppointmentService.cs",
+              "RelativeToolTip": "OnTime.API\\Services\\Appointments\\AppointmentService.cs",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAUwBMAAAAVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-20T18:23:16.219Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
