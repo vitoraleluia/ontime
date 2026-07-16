@@ -42,6 +42,7 @@ ontime/
 - **Packages**: Managed centrally in `backend/Directory.Packages.props`.
 - **Options Pattern**: Prefer the Options pattern via `appsettings.json` to host configuration. End the classes with the `Settings` suffix instead of `-Options` (e.g., `AuthenticationSettings`, not `AuthenticationOptions`).
 - **Constants**: Avoid hardcoded strings; always prefer placing them in static classes organized by concern.
+- **Build & Quality**: Fix any errors and warnings reported when running build or format commands.
 
 ### CLI Commands (from root)
 - **Build**: `dotnet build OnTime.slnx`
@@ -56,6 +57,10 @@ ontime/
 ### Code Style
 - **Stack**: React 19, TypeScript, Tailwind CSS v4, TanStack Router.
 - **API Calls**: Uses `openapi-fetch` and `openapi-react-query` based on generated client.
+- **Constants**: Avoid hardcoded magic strings; place them in dedicated files/classes (e.g. `src/domain/constants/localStoreKeys.ts`).
+- **Async/Await**: Prefer `async/await` over `.then()` chains to improve readability.
+- **Code Nesting**: Keep code structure flat; try to avoid nesting callback functions or logic deeply.
+- **Build & Quality**: Fix any errors and warnings reported when running build or linting commands.
 
 ### CLI Commands (from `frontend/`)
 - **Generate API Client**: `npm run generate-client`

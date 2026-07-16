@@ -1,0 +1,1 @@
+import{t as e}from"./index-D90MGn-7.js";var t=e();function n(){return(0,t.jsxs)(`div`,{className:`p-4`,children:[(0,t.jsx)(`h1`,{className:`text-2xl font-bold`,children:`Welcome to OnTime`}),(0,t.jsx)(`p`,{className:`mt-2 text-muted-foreground`,children:`Your project is now routed correctly!`})]})}export{n as component};
