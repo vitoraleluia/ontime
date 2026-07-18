@@ -2,8 +2,11 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+
 using ImageMagick;
+
 using Microsoft.Extensions.Options;
+
 using OnTime.Application.Domain.Settings;
 using OnTime.Application.Services;
 using OnTime.Domain.Entities;
@@ -31,7 +34,7 @@ public class ImageProcessor : IImageProcessor
         }
 
         var yearMonth = DateTime.UtcNow.ToString("yyyy-MM");
-        
+
         var processedPath = Path.IsPathRooted(this.storageSettings.ProcessedFolder)
             ? this.storageSettings.ProcessedFolder
             : Path.Combine(Directory.GetCurrentDirectory(), this.storageSettings.ProcessedFolder);

@@ -1,0 +1,25 @@
+@host = http://localhost:3000
+@token = YOUR_BEARER_TOKEN_HERE
+
+### Get Current Profile (JIT syncs if not exists)
+GET {{host}}/api/Account
+Authorization: Bearer {{token}}
+Accept: application/json
+
+### Update Profile Details
+PUT {{host}}/api/Account
+Authorization: Bearer {{token}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "phoneNumber": "912345678",
+  "profilePictureId": null
+}
+
+### Upgrade to Professional Role
+POST {{host}}/api/Account/assign-professional
+Authorization: Bearer {{token}}
+Accept: application/json

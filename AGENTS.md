@@ -5,6 +5,7 @@
 ontime/
 ├── backend/                       # Backend Solution Folder (.NET 10)
 │   ├── OnTime.slnx                # XML-based dotnet solution file
+│   ├── HttpRequests/              # Local HTTP endpoint requests (.http files)
 │   ├── Directory.Build.props      # Central build configurations
 │   ├── Directory.Packages.props   # Centrally managed package versions
 │   ├── OnTime.Domain/             # Pure Domain Layer (Entities, Common, Enums)
@@ -42,6 +43,9 @@ ontime/
 - **Packages**: Managed centrally in `backend/Directory.Packages.props`.
 - **Options Pattern**: Prefer the Options pattern via `appsettings.json` to host configuration. End the classes with the `Settings` suffix instead of `-Options` (e.g., `AuthenticationSettings`, not `AuthenticationOptions`).
 - **Constants**: Avoid hardcoded strings; always prefer placing them in static classes organized by concern.
+- **Guard Clauses**: Write clean code with guard clauses, keeping it short and concise (Frontend and backend).
+- **HTTP Request Files**: When changing the API project, create or update a `.http` file inside `backend/HttpRequests/` (1 per controller) with sample requests. Use variables for host and authentication token.
+- **CDN / Media URLs**: Never store dynamic absolute URLs (such as CDN image paths) in the database. Construct them dynamically from configuration values via extensions or helper services.
 - **Build & Quality**: Fix any errors and warnings reported when running build or format commands.
 
 ### CLI Commands (from root)
@@ -59,7 +63,7 @@ ontime/
 - **API Calls**: Uses `openapi-fetch` and `openapi-react-query` based on generated client.
 - **Constants**: Avoid hardcoded magic strings; place them in dedicated files/classes (e.g. `src/domain/constants/localStoreKeys.ts`).
 - **Async/Await**: Prefer `async/await` over `.then()` chains to improve readability.
-- **Code Nesting**: Keep code structure flat; try to avoid nesting callback functions or logic deeply.
+- **Code Nesting**: Keep code structure flat; try to avoid nesting callback functions or logic deeply. Use guard clauses for early exits to prevent deep nesting.
 - **Build & Quality**: Fix any errors and warnings reported when running build or linting commands.
 
 ### CLI Commands (from `frontend/`)

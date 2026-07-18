@@ -5,10 +5,10 @@ using Microsoft.Extensions.Options;
 
 using OnTime.Application.Domain.Results;
 using OnTime.Application.Domain.Settings;
-using OnTime.Application.Services;
-using OnTime.Domain.Entities;
 using OnTime.Application.Features.Images.Messages;
+using OnTime.Application.Services;
 using OnTime.Bus;
+using OnTime.Domain.Entities;
 
 namespace OnTime.Application.Features.Images.Commands;
 

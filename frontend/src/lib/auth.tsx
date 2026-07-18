@@ -9,7 +9,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 const keycloakInstance = new Keycloak({
   url: "http://localhost:5000",
   realm: "OnTime",
-  clientId: "ontime-api",
+  clientId: "ontime-api"
 })
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -43,6 +43,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const initOptions: any = {
         checkLoginIframe: false,
         pkceMethod: "S256",
+        scope: "openid profile email",
       }
 
       if (storedTokens) {
@@ -122,14 +123,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const redirectUri = returnUrl
       ? window.location.origin + returnUrl
       : window.location.href
-    await keycloakInstance.login({ redirectUri })
+    await keycloakInstance.login({ redirectUri, scope: "openid profile email" })
   }
 
   const register = async (returnUrl?: string) => {
     const redirectUri = returnUrl
       ? window.location.origin + returnUrl
       : window.location.href
-    await keycloakInstance.register({ redirectUri })
+    await keycloakInstance.register({ redirectUri, scope: "openid profile email" })
   }
 
   const logout = () => {

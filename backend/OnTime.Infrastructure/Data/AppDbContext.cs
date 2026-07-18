@@ -27,6 +27,7 @@ public class AppDbContext : DbContext, IAppDbContext
     public DbSet<Appointment> Appointments { get; set; }
     public DbSet<NotificationQueue> NotificationQueue { get; set; }
     public DbSet<Image> Images { get; set; }
+    public DbSet<UserProfile> UserProfiles { get; set; }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {

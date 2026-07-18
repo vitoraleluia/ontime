@@ -7,5 +7,6 @@ namespace OnTime.Application.Services;
 public interface IAppDbContext
 {
     DbSet<Image> Images { get; set; }
+    DbSet<UserProfile> UserProfiles { get; set; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

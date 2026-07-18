@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Channels;
+
 using Microsoft.Extensions.DependencyInjection;
 
 namespace OnTime.Bus;
@@ -22,10 +23,10 @@ public static class ServiceCollectionExtensions
         // 3. Scan assemblies for any class inheriting from BusConsumer<TMessage> and register it as HostedService
         var consumerType = AppDomain.CurrentDomain.GetAssemblies()
             .SelectMany(a => a.GetTypes())
-            .FirstOrDefault(t => !t.IsAbstract && 
-                                 t.BaseType != null && 
-                                 t.BaseType.IsGenericType && 
-                                 t.BaseType.GetGenericTypeDefinition() == typeof(BusConsumer<>) && 
+            .FirstOrDefault(t => !t.IsAbstract &&
+                                 t.BaseType != null &&
+                                 t.BaseType.IsGenericType &&
+                                 t.BaseType.GetGenericTypeDefinition() == typeof(BusConsumer<>) &&
                                  t.BaseType.GetGenericArguments()[0] == typeof(TMessage));
 
         if (consumerType != null)

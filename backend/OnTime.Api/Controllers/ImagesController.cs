@@ -1,18 +1,19 @@
 using MediatR;
 
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 using OnTime.Application.Features.Images.Commands;
 using OnTime.Domain.Entities;
 using OnTime.Site.Images;
 
-using Microsoft.AspNetCore.Authorization;
-
 namespace OnTime.Api.Controllers;
 
 public record UploadImageResponse(Guid Id);
 
 [Authorize]
+[Produces("application/json")]
 public class ImagesController : BaseApiController
 {
     public ImagesController(ILogger<BaseApiController> logger, IMediator mediator) : base(logger, mediator)
@@ -20,7 +21,10 @@ public class ImagesController : BaseApiController
     }
 
     [HttpPost]
-    public async Task<IActionResult> Upload(IFormFile file,
+    [ProducesResponseType(typeof(UploadImageResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult<UploadImageResponse>> Upload(IFormFile file,
         [FromQuery]
         ImageFormat format = ImageFormat.Square)
     {
@@ -43,6 +47,6 @@ public class ImagesController : BaseApiController
             return BadRequest(result.Error?.Message);
         }
 
-        return Accepted(new UploadImageResponse(result.Value));
+        return Ok(new UploadImageResponse(result.Value));
     }
 }

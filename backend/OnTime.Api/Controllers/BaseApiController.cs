@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace OnTime.Site.Images;
 
 [ApiController]
+[Produces("application/json")]
 [Route("api/[controller]")]
 public abstract class BaseApiController : ControllerBase
 {

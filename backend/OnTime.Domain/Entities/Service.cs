@@ -30,7 +30,7 @@ public class Service : AuditableEntity
 
     // Appointments navigation (many-to-many relationship mapping)
     public List<Appointment> Appointments { get; } = [];
-    
+
     public int ShopProfessionalsId { get; set; }
     public ShopProfessional ShopProfessional { get; set; } = null!;
 }

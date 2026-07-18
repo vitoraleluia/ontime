@@ -15,6 +15,9 @@ builder.Services.AddApiServices(builder.Configuration);
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddApplicationServices();
 
+// Register AppSettings for static configuration access
+builder.Services.AddSingleton(new OnTime.Application.Common.AppSettings(builder.Configuration));
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

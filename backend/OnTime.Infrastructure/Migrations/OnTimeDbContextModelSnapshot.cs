@@ -498,6 +498,58 @@ namespace OnTime.Infrastructure.Migrations
                     b.ToTable("ShopProfessionals");
                 });
 
+            modelBuilder.Entity("OnTime.Domain.Entities.UserProfile", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<Guid?>("ProfilePictureId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Role")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProfilePictureId");
+
+                    b.ToTable("UserProfiles");
+                });
+
             modelBuilder.Entity("AppointmentService", b =>
                 {
                     b.HasOne("OnTime.Domain.Entities.Appointment", null)
@@ -588,6 +640,15 @@ namespace OnTime.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Shop");
+                });
+
+            modelBuilder.Entity("OnTime.Domain.Entities.UserProfile", b =>
+                {
+                    b.HasOne("OnTime.Domain.Entities.Image", "ProfilePicture")
+                        .WithMany()
+                        .HasForeignKey("ProfilePictureId");
+
+                    b.Navigation("ProfilePicture");
                 });
 
             modelBuilder.Entity("OnTime.Domain.Entities.Shop", b =>
