@@ -27,8 +27,8 @@ services:
     ports:
       - "8080:80"
     volumes:
-      - ../infra//nginx.conf:/etc/nginx/nginx.conf:ro
-      - ../infra/optimized:/usr/share/nginx/html/images:ro
+      - ../infra/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ../backend/images/optimized:/usr/share/nginx/html/images:ro
     
   keycloak:
     image: quay.io/keycloak/keycloak:26.7.0

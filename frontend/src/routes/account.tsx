@@ -3,6 +3,9 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useAuth } from '@/lib/auth'
 import { $api } from '@/lib/api'
 import { Button } from '@/components/ui/button'
+import { useMutation } from '@tanstack/react-query'
+import { LocalStoreKeys } from '@/domain/constants/localStoreKeys'
+import type { StoredTokens } from '@/domain/auth'
 import { 
   User, 
   Phone, 
@@ -73,7 +76,31 @@ function AccountPage() {
     }
   })
 
-  const uploadPhotoMutation = $api.useMutation('post', '/api/Images', {
+  const uploadPhotoMutation = useMutation({
+    mutationFn: async (file: File) => {
+      const tokensStr = localStorage.getItem(LocalStoreKeys.AuthTokens)
+      if (!tokensStr) throw new Error('Sessão expirada. Inicie sessão novamente.')
+      const tokens = JSON.parse(tokensStr) as StoredTokens
+
+      const formData = new FormData()
+      formData.append('file', file)
+
+      const response = await fetch('/api/Images?format=Square', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${tokens.token}`
+        },
+        body: formData
+      })
+
+      if (!response.ok) {
+        const errText = await response.text()
+        throw new Error(errText || 'Falha ao enviar imagem.')
+      }
+
+      const result: { id: string } = await response.json()
+      return result
+    },
     onSuccess: (data) => {
       if (data && data.id) {
         setProfilePictureId(data.id)
@@ -112,20 +139,7 @@ function AccountPage() {
     const localUrl = URL.createObjectURL(file)
     setTempPictureUrl(localUrl)
 
-    const formData = new FormData()
-    formData.append('file', file)
-
-    uploadPhotoMutation.mutate({
-      params: {
-        query: {
-          format: 0
-        }
-      },
-      body: {
-        // @ts-expect-error - Swagger schema maps binary format as string
-        file: file
-      }
-    })
+    uploadPhotoMutation.mutate(file)
   }
 
   const handleSaveProfile = (e: React.FormEvent<HTMLFormElement>) => {
