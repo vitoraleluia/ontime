@@ -6,6 +6,9 @@ import { Button } from '@/components/ui/button'
 import { useMutation } from '@tanstack/react-query'
 import { LocalStoreKeys } from '@/domain/constants/localStoreKeys'
 import type { StoredTokens } from '@/domain/auth'
+import type { components } from '@/generated/apiClient'
+
+type UserProfileResponse = components['schemas']['UserProfileResponse']
 import { 
   User, 
   Phone, 
@@ -197,7 +200,7 @@ function AccountPage() {
         <AlertCircle className="h-12 w-12 text-muted-foreground" />
         <h2 className="text-xl font-bold">Acesso Restrito</h2>
         <p className="text-muted-foreground max-w-md text-sm">
-          Por favor, inicie sessão com a sua conta Keycloak para aceder às configurações do seu perfil.
+          Por favor, inicie sessão para aceder às configurações do seu perfil.
         </p>
         <Button onClick={() => login('/account')} className="mt-2 font-semibold">
           Iniciar Sessão
@@ -242,250 +245,325 @@ function AccountPage() {
       <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
         
         {/* Left Column: Photo upload */}
-        <div className="flex flex-col items-center">
-          <div className="w-full rounded-xl border border-border bg-card p-6 shadow-xs text-center">
-            <h3 className="text-sm font-semibold text-foreground mb-4">Foto de Perfil</h3>
-            
-            <div className="relative mx-auto h-32 w-32 group">
-              {displayPictureUrl ? (
-                <img 
-                  src={displayPictureUrl} 
-                  alt="Avatar" 
-                  className="h-32 w-32 rounded-full object-cover border border-border shadow-xs" 
-                />
-              ) : (
-                <div className="flex h-32 w-32 items-center justify-center rounded-full bg-primary/10 text-primary border border-primary/20 text-3xl font-bold font-heading shadow-xs">
-                  {initials || <User className="h-12 w-12" />}
-                </div>
-              )}
-              
-              {/* Overlay camera trigger */}
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={isUploading || isSaving}
-                className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer disabled:opacity-0 disabled:pointer-events-none"
-              >
-                <Camera className="h-6 w-6" />
-              </button>
-
-              {/* Uploading Spinner */}
-              {isUploading && (
-                <div className="absolute inset-0 flex items-center justify-center rounded-full bg-background/80 text-primary">
-                  <Loader2 className="h-8 w-8 animate-spin" />
-                </div>
-              )}
-            </div>
-
-            <input 
-              type="file" 
-              ref={fileInputRef} 
-              onChange={handlePhotoUpload} 
-              accept="image/*" 
-              className="hidden" 
-            />
-
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={isUploading || isSaving}
-              className="mt-6 w-full cursor-pointer"
-            >
-              {isUploading ? 'A enviar...' : 'Alterar Foto'}
-            </Button>
-            <p className="mt-2 text-xs text-muted-foreground">
-              Formatos recomendados: JPG, PNG ou WEBP. Imagens quadradas funcionam melhor.
-            </p>
-          </div>
-
-          {/* Account Role Badge */}
-          <div className="mt-4 w-full rounded-xl border border-border bg-card px-6 py-4 shadow-xs flex items-center justify-between">
-            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Tipo de Conta</span>
-            <div className="flex items-center gap-1.5">
-              {profile.role === 1 ? (
-                <span className="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary">
-                  <Briefcase className="mr-1 h-3.5 w-3.5" />
-                  Profissional
-                </span>
-              ) : (
-                <span className="inline-flex items-center rounded-full bg-secondary px-2.5 py-0.5 text-xs font-semibold text-secondary-foreground">
-                  <User className="mr-1 h-3.5 w-3.5" />
-                  Cliente
-                </span>
-              )}
-            </div>
-          </div>
-        </div>
+        <ProfilePhotoSection
+          profile={profile}
+          displayPictureUrl={displayPictureUrl}
+          initials={initials}
+          isUploading={isUploading}
+          isSaving={isSaving}
+          fileInputRef={fileInputRef}
+          onPhotoUpload={handlePhotoUpload}
+          onTriggerUpload={() => fileInputRef.current?.click()}
+        />
 
         {/* Right Column: Personal details form & professional account upgrade */}
         <div className="md:col-span-2 space-y-6">
-          
-          {/* Details Form Card */}
-          <div className="rounded-xl border border-border bg-card p-6 shadow-xs">
-            <h3 className="text-lg font-bold text-foreground border-b border-border pb-3 mb-5">
-              Dados Pessoais
-            </h3>
+          <PersonalDetailsForm
+            profile={profile}
+            isSaving={isSaving}
+            isUploading={isUploading}
+            onSubmit={handleSaveProfile}
+          />
 
-            <form onSubmit={handleSaveProfile} className="space-y-4">
-              
-              {/* Email (Read-only) */}
-              <div>
-                <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">
-                  Endereço de Email
-                </label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <input
-                    type="email"
-                    value={profile.email || ''}
-                    disabled
-                    className="w-full rounded-lg border border-border bg-muted/50 py-2 pl-10 pr-4 text-sm text-muted-foreground focus:outline-none cursor-not-allowed"
-                  />
-                </div>
-                <p className="mt-1.5 text-xs text-muted-foreground">
-                  O email é gerido pela sua conta de autenticação Keycloak e não pode ser editado.
-                </p>
-              </div>
-
-              {/* First Name & Last Name */}
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div>
-                  <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">
-                    Nome
-                  </label>
-                  <input
-                    type="text"
-                    name="firstName"
-                    defaultValue={profile.firstName || ''}
-                    placeholder="Introduza o seu nome"
-                    required
-                    disabled={isSaving}
-                    className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-50"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">
-                    Apelido
-                  </label>
-                  <input
-                    type="text"
-                    name="lastName"
-                    defaultValue={profile.lastName || ''}
-                    placeholder="Introduza o seu apelido"
-                    required
-                    disabled={isSaving}
-                    className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-50"
-                  />
-                </div>
-              </div>
-
-              {/* Phone Number */}
-              <div>
-                <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">
-                  Número de Telemóvel
-                </label>
-                <div className="relative">
-                  <Phone className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <input
-                    type="tel"
-                    name="phoneNumber"
-                    defaultValue={profile.phoneNumber || ''}
-                    placeholder="Ex: 912345678"
-                    disabled={isSaving}
-                    className="w-full rounded-lg border border-border bg-background py-2 pl-10 pr-4 text-sm placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-50"
-                  />
-                </div>
-              </div>
-
-              {/* Submit */}
-              <div className="pt-2 flex justify-end">
-                <Button 
-                  type="submit" 
-                  disabled={isSaving || isUploading}
-                  className="cursor-pointer font-semibold shadow-xs"
-                >
-                  {isSaving ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      A guardar...
-                    </>
-                  ) : (
-                    'Guardar Alterações'
-                  )}
-                </Button>
-              </div>
-
-            </form>
-          </div>
-
-          {/* Professional Account Upgrade Section */}
-          <div className="rounded-xl border border-border bg-card p-6 shadow-xs">
-            <h3 className="text-lg font-bold text-foreground border-b border-border pb-3 mb-5">
-              Conta Profissional
-            </h3>
-
-            {profile.role === 1 ? (
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-primary/5 rounded-lg border border-primary/10 p-5">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-                  <CheckCircle className="h-6 w-6" />
-                </div>
-                <div>
-                  <h4 className="text-sm font-semibold text-foreground">A sua conta profissional está ativa</h4>
-                  <p className="mt-1 text-xs text-muted-foreground max-w-lg">
-                    Agora já pode ser associado a salões ou lojas, gerir o seu horário de trabalho e organizar as suas marcações de serviços no OnTime.
-                  </p>
-                </div>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                <p className="text-sm text-muted-foreground">
-                  Quer prestar serviços na nossa plataforma? Ao atualizar para uma conta profissional, poderá gerir a sua própria agenda, receber marcações de clientes e definir os seus serviços.
-                </p>
-                
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 text-xs text-muted-foreground pb-2">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-primary shrink-0" />
-                    <span>Criação e Gestão de Serviços</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-primary shrink-0" />
-                    <span>Controlo de Agenda e Horários</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-primary shrink-0" />
-                    <span>Gestão de Calendário e Férias</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-primary shrink-0" />
-                    <span>Reserva online direta por clientes</span>
-                  </div>
-                </div>
-
-                <div className="pt-2 border-t border-border flex justify-end">
-                  <Button
-                    type="button"
-                    onClick={handleUpgradeAccount}
-                    disabled={isUpgrading}
-                    className="cursor-pointer font-semibold shadow-xs bg-primary hover:bg-primary/90 text-primary-foreground"
-                  >
-                    {isUpgrading ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        A ativar...
-                      </>
-                    ) : (
-                      'Ativar Conta Profissional'
-                    )}
-                  </Button>
-                </div>
-              </div>
-            )}
-          </div>
-
+          <ProfessionalAccountSection
+            profile={profile}
+            isUpgrading={isUpgrading}
+            onUpgrade={handleUpgradeAccount}
+          />
         </div>
 
       </div>
     </div>
   )
 }
+
+interface ProfilePhotoSectionProps {
+  profile: UserProfileResponse
+  displayPictureUrl: string | null
+  initials: string
+  isUploading: boolean
+  isSaving: boolean
+  fileInputRef: React.RefObject<HTMLInputElement | null>
+  onPhotoUpload: (e: React.ChangeEvent<HTMLInputElement>) => void
+  onTriggerUpload: () => void
+}
+
+function ProfilePhotoSection({
+  profile,
+  displayPictureUrl,
+  initials,
+  isUploading,
+  isSaving,
+  fileInputRef,
+  onPhotoUpload,
+  onTriggerUpload
+}: ProfilePhotoSectionProps) {
+  return (
+    <div className="flex flex-col items-center">
+      <div className="w-full rounded-xl border border-border bg-card p-6 shadow-xs text-center">
+        <h3 className="text-sm font-semibold text-foreground mb-4">Foto de Perfil</h3>
+        
+        <div className="relative mx-auto h-32 w-32 group">
+          {displayPictureUrl ? (
+            <img 
+              src={displayPictureUrl} 
+              alt="Avatar" 
+              className="h-32 w-32 rounded-full object-cover border border-border shadow-xs" 
+            />
+          ) : (
+            <div className="flex h-32 w-32 items-center justify-center rounded-full bg-primary/10 text-primary border border-primary/20 text-3xl font-bold font-heading shadow-xs">
+              {initials || <User className="h-12 w-12" />}
+            </div>
+          )}
+          
+          {/* Overlay camera trigger */}
+          <button
+            type="button"
+            onClick={onTriggerUpload}
+            disabled={isUploading || isSaving}
+            className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer disabled:opacity-0 disabled:pointer-events-none"
+          >
+            <Camera className="h-6 w-6" />
+          </button>
+
+          {/* Uploading Spinner */}
+          {isUploading && (
+            <div className="absolute inset-0 flex items-center justify-center rounded-full bg-background/80 text-primary">
+              <Loader2 className="h-8 w-8 animate-spin" />
+            </div>
+          )}
+        </div>
+
+        <input 
+          type="file" 
+          ref={fileInputRef} 
+          onChange={onPhotoUpload} 
+          accept="image/*" 
+          className="hidden" 
+        />
+
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={onTriggerUpload}
+          disabled={isUploading || isSaving}
+          className="mt-6 w-full cursor-pointer"
+        >
+          {isUploading ? 'A enviar...' : 'Alterar Foto'}
+        </Button>
+        <p className="mt-2 text-xs text-muted-foreground">
+          Formatos recomendados: JPG, PNG ou WEBP. Imagens quadradas funcionam melhor.
+        </p>
+      </div>
+
+      {/* Account Role Badge */}
+      <div className="mt-4 w-full rounded-xl border border-border bg-card px-6 py-4 shadow-xs flex items-center justify-between">
+        <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Tipo de Conta</span>
+        <div className="flex items-center gap-1.5">
+          {profile.role === 1 ? (
+            <span className="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary">
+              <Briefcase className="mr-1 h-3.5 w-3.5" />
+              Profissional
+            </span>
+          ) : (
+            <span className="inline-flex items-center rounded-full bg-secondary px-2.5 py-0.5 text-xs font-semibold text-secondary-foreground">
+              <User className="mr-1 h-3.5 w-3.5" />
+              Cliente
+            </span>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+interface PersonalDetailsFormProps {
+  profile: UserProfileResponse
+  isSaving: boolean
+  isUploading: boolean
+  onSubmit: (e: React.FormEvent<HTMLFormElement>) => void
+}
+
+function PersonalDetailsForm({
+  profile,
+  isSaving,
+  isUploading,
+  onSubmit
+}: PersonalDetailsFormProps) {
+  return (
+    <div className="rounded-xl border border-border bg-card p-6 shadow-xs">
+      <h3 className="text-lg font-bold text-foreground border-b border-border pb-3 mb-5">
+        Dados Pessoais
+      </h3>
+
+      <form onSubmit={onSubmit} className="space-y-4">
+        
+        {/* Email (Read-only) */}
+        <div>
+          <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">
+            Endereço de Email
+          </label>
+          <div className="relative">
+            <Mail className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+            <input
+              type="email"
+              value={profile.email || ''}
+              disabled
+              className="w-full rounded-lg border border-border bg-muted/50 py-2 pl-10 pr-4 text-sm text-muted-foreground focus:outline-none cursor-not-allowed"
+            />
+          </div>
+          <p className="mt-1.5 text-xs text-muted-foreground">
+            O email é gerido pela sua conta de autenticação Keycloak e não pode ser editado.
+          </p>
+        </div>
+
+        {/* First Name & Last Name */}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">
+              Nome
+            </label>
+            <input
+              type="text"
+              name="firstName"
+              defaultValue={profile.firstName || ''}
+              placeholder="Introduza o seu nome"
+              required
+              disabled={isSaving}
+              className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-50"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">
+              Apelido
+            </label>
+            <input
+              type="text"
+              name="lastName"
+              defaultValue={profile.lastName || ''}
+              placeholder="Introduza o seu apelido"
+              required
+              disabled={isSaving}
+              className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-50"
+            />
+          </div>
+        </div>
+
+        {/* Phone Number */}
+        <div>
+          <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">
+            Número de Telemóvel
+          </label>
+          <div className="relative">
+            <Phone className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+            <input
+              type="tel"
+              name="phoneNumber"
+              defaultValue={profile.phoneNumber || ''}
+              placeholder="Ex: 912345678"
+              disabled={isSaving}
+              className="w-full rounded-lg border border-border bg-background py-2 pl-10 pr-4 text-sm placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-50"
+            />
+          </div>
+        </div>
+
+        {/* Submit */}
+        <div className="pt-2 flex justify-end">
+          <Button 
+            type="submit" 
+            disabled={isSaving || isUploading}
+            className="cursor-pointer font-semibold shadow-xs"
+          >
+            {isSaving ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                A guardar...
+              </>
+            ) : (
+              'Guardar Alterações'
+            )}
+          </Button>
+        </div>
+
+      </form>
+    </div>
+  )
+}
+
+interface ProfessionalAccountSectionProps {
+  profile: UserProfileResponse
+  isUpgrading: boolean
+  onUpgrade: () => void
+}
+
+function ProfessionalAccountSection({
+  profile,
+  isUpgrading,
+  onUpgrade
+}: ProfessionalAccountSectionProps) {
+  return (
+    <div className="rounded-xl border border-border bg-card p-6 shadow-xs">
+      <h3 className="text-lg font-bold text-foreground border-b border-border pb-3 mb-5">
+        Conta Profissional
+      </h3>
+
+      {profile.role === 1 ? (
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-primary/5 rounded-lg border border-primary/10 p-5">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+            <CheckCircle className="h-6 w-6" />
+          </div>
+          <div>
+            <h4 className="text-sm font-semibold text-foreground">A sua conta profissional está ativa</h4>
+            <p className="mt-1 text-xs text-muted-foreground max-w-lg">
+              Agora já pode ser associado a salões ou lojas, gerir o seu horário de trabalho e organizar as suas marcações de serviços no OnTime.
+            </p>
+          </div>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          <p className="text-sm text-muted-foreground">
+            Quer prestar serviços na nossa plataforma? Ao atualizar para uma conta profissional, poderá gerir a sua própria agenda, receber marcações de clientes e definir os seus serviços.
+          </p>
+          
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 text-xs text-muted-foreground pb-2">
+            <div className="flex items-center gap-2">
+              <CheckCircle className="h-4 w-4 text-primary shrink-0" />
+              <span>Criação e Gestão de Serviços</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <CheckCircle className="h-4 w-4 text-primary shrink-0" />
+              <span>Controlo de Agenda e Horários</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <CheckCircle className="h-4 w-4 text-primary shrink-0" />
+              <span>Gestão de Calendário e Férias</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <CheckCircle className="h-4 w-4 text-primary shrink-0" />
+              <span>Reserva online direta por clientes</span>
+            </div>
+          </div>
+
+          <div className="pt-2 border-t border-border flex justify-end">
+            <Button
+              type="button"
+              onClick={onUpgrade}
+              disabled={isUpgrading}
+              className="cursor-pointer font-semibold shadow-xs bg-primary hover:bg-primary/90 text-primary-foreground"
+            >
+              {isUpgrading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  A ativar...
+                </>
+              ) : (
+                'Ativar Conta Profissional'
+              )}
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+

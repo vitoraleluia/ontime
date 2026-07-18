@@ -64,6 +64,42 @@ ontime/
 - **Constants**: Avoid hardcoded magic strings; place them in dedicated files/classes (e.g. `src/domain/constants/localStoreKeys.ts`).
 - **Async/Await**: Prefer `async/await` over `.then()` chains to improve readability.
 - **Code Nesting**: Keep code structure flat; try to avoid nesting callback functions or logic deeply. Use guard clauses for early exits to prevent deep nesting.
+- **Component File Length**: Prefer short components. Keep component sizes small and focused. Extract nested/long sections of code into separate local components in the same file. A separate file with the component inside is only needed when the component will be re-used by another file.
+
+  **❌ Bad (Long Component with inline sections):**
+  ```tsx
+  function Dashboard() {
+    return (
+      <div>
+        <header>...</header>
+        <main>
+          {/* 100 lines of complex chart and tables */}
+          <div className="grid">...</div>
+        </main>
+        <footer>...</footer>
+      </div>
+    )
+  }
+  ```
+
+  **✔️ Good (Short Component extracting local components):**
+  ```tsx
+  function Dashboard() {
+    return (
+      <div>
+        <DashboardHeader />
+        <DashboardContent />
+        <DashboardFooter />
+      </div>
+    )
+  }
+
+  function DashboardHeader() { ... }
+  function DashboardContent() { ... }
+  function DashboardFooter() { ... }
+  ```
+
+- **Nested Ternaries / TSX Conditions**: Avoid nested ternary conditions inside TSX return statements (e.g. `{isLoading ? (...) : isAuthenticated ? (...) : (...)}`). Instead, extract the conditions to a local sub-component using early returns (`if (isLoading) { return ... }`).
 - **Build & Quality**: Fix any errors and warnings reported when running build or linting commands.
 
 ### CLI Commands (from `frontend/`)
