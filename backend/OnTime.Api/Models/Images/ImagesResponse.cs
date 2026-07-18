@@ -1,4 +1,4 @@
-namespace OnTime.Site.Images;
+namespace OnTime.Api.Models.Images;
 
 public class ImagesResponse
 {

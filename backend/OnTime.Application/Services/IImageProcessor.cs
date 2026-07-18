@@ -1,7 +1,3 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-
 using OnTime.Domain.Entities;
 
 namespace OnTime.Application.Services;

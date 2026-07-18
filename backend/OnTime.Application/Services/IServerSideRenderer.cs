@@ -1,5 +1,3 @@
-using System.Threading.Tasks;
-
 namespace OnTime.Application.Services;
 
 public interface IServerSideRenderer

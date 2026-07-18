@@ -2,7 +2,7 @@ using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
 
-namespace OnTime.Site.Images;
+namespace OnTime.Api.Controllers;
 
 [ApiController]
 [Produces("application/json")]

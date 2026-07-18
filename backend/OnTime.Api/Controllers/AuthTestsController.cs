@@ -3,8 +3,6 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-using OnTime.Site.Images;
-
 namespace OnTime.Api.Controllers;
 
 public class AuthTestsController : BaseApiController

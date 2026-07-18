@@ -1,13 +1,10 @@
 using MediatR;
 
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 using OnTime.Application.Features.Images.Commands;
 using OnTime.Domain.Entities;
-using OnTime.Site.Images;
-
 namespace OnTime.Api.Controllers;
 
 public record UploadImageResponse(Guid Id);

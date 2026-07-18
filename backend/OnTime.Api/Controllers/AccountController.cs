@@ -1,7 +1,6 @@
 using MediatR;
 
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 using OnTime.Api.Models.Account;
@@ -9,8 +8,6 @@ using OnTime.Application.Common.Constants;
 using OnTime.Application.Features.UserProfile.Commands;
 using OnTime.Application.Features.UserProfile.Queries;
 using OnTime.Application.Features.UserProfile.Responses;
-using OnTime.Site.Images;
-
 namespace OnTime.Api.Controllers;
 
 [Authorize]

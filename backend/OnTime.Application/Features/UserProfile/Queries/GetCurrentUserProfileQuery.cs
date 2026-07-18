@@ -7,7 +7,6 @@ using OnTime.Application.Common.Extensions;
 using OnTime.Application.Domain.Results;
 using OnTime.Application.Features.UserProfile.Responses;
 using OnTime.Application.Services;
-using OnTime.Domain.Entities;
 using OnTime.Domain.Enums;
 
 namespace OnTime.Application.Features.UserProfile.Queries;
