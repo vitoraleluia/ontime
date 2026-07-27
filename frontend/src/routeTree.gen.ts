@@ -9,9 +9,16 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as CreateShopRouteImport } from './routes/create-shop'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ShopsSlugRouteImport } from './routes/shops/$slug'
 
+const CreateShopRoute = CreateShopRouteImport.update({
+  id: '/create-shop',
+  path: '/create-shop',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AccountRoute = AccountRouteImport.update({
   id: '/account',
   path: '/account',
@@ -22,35 +29,55 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ShopsSlugRoute = ShopsSlugRouteImport.update({
+  id: '/shops/$slug',
+  path: '/shops/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
+  '/create-shop': typeof CreateShopRoute
+  '/shops/$slug': typeof ShopsSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
+  '/create-shop': typeof CreateShopRoute
+  '/shops/$slug': typeof ShopsSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
+  '/create-shop': typeof CreateShopRoute
+  '/shops/$slug': typeof ShopsSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/account'
+  fullPaths: '/' | '/account' | '/create-shop' | '/shops/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/account'
-  id: '__root__' | '/' | '/account'
+  to: '/' | '/account' | '/create-shop' | '/shops/$slug'
+  id: '__root__' | '/' | '/account' | '/create-shop' | '/shops/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AccountRoute: typeof AccountRoute
+  CreateShopRoute: typeof CreateShopRoute
+  ShopsSlugRoute: typeof ShopsSlugRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/create-shop': {
+      id: '/create-shop'
+      path: '/create-shop'
+      fullPath: '/create-shop'
+      preLoaderRoute: typeof CreateShopRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/account': {
       id: '/account'
       path: '/account'
@@ -65,12 +92,21 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/shops/$slug': {
+      id: '/shops/$slug'
+      path: '/shops/$slug'
+      fullPath: '/shops/$slug'
+      preLoaderRoute: typeof ShopsSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountRoute: AccountRoute,
+  CreateShopRoute: CreateShopRoute,
+  ShopsSlugRoute: ShopsSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

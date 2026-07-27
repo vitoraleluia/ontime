@@ -1,0 +1,28 @@
+@host = http://localhost:3000
+@token = YOUR_BEARER_TOKEN_HERE
+
+### Check Slug Availability
+GET {{host}}/api/Shops/check-slug?slug=barbearia-martinez
+Accept: application/json
+
+### Get Shop by Slug
+GET {{host}}/api/Shops/barbearia-martinez
+Accept: application/json
+
+### Create Shop (Professional Only)
+POST {{host}}/api/Shops
+Authorization: Bearer {{token}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "name": "Barbearia Martinéz",
+  "slug": "barbearia-martinez",
+  "description": "Cortes clássicos e modernos, barba tradicional com toalha quente.",
+  "address": "Rua Augusta 123, Lisboa",
+  "phoneNumber": "912345678",
+  "slotDurationMinutes": 30,
+  "allowCancellation": true,
+  "cancellationDeadlineHours": 24,
+  "imageId": null
+}

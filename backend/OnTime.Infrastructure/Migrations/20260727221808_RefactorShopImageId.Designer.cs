@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using OnTime.Infrastructure.Data;
@@ -11,9 +12,11 @@ using OnTime.Infrastructure.Data;
 namespace OnTime.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class OnTimeDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260727221808_RefactorShopImageId")]
+    partial class RefactorShopImageId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

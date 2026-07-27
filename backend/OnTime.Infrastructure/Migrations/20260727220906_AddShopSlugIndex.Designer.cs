@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using OnTime.Infrastructure.Data;
@@ -11,9 +12,11 @@ using OnTime.Infrastructure.Data;
 namespace OnTime.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class OnTimeDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260727220906_AddShopSlugIndex")]
+    partial class AddShopSlugIndex
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -372,8 +375,9 @@ namespace OnTime.Infrastructure.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
-                    b.Property<Guid?>("ImageId")
-                        .HasColumnType("uuid");
+                    b.Property<string>("ImagePath")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -405,8 +409,6 @@ namespace OnTime.Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ImageId");
 
                     b.HasIndex("Slug")
                         .IsUnique();
@@ -622,15 +624,6 @@ namespace OnTime.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("ShopProfessional");
-                });
-
-            modelBuilder.Entity("OnTime.Domain.Entities.Shop", b =>
-                {
-                    b.HasOne("OnTime.Domain.Entities.Image", "Image")
-                        .WithMany()
-                        .HasForeignKey("ImageId");
-
-                    b.Navigation("Image");
                 });
 
             modelBuilder.Entity("OnTime.Domain.Entities.ShopInvite", b =>

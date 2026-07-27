@@ -1,9 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 
+using Microsoft.EntityFrameworkCore;
+
 using OnTime.Domain.Common;
 
 namespace OnTime.Domain.Entities;
 
+[Index(nameof(Slug), IsUnique = true)]
 public class Shop : AuditableEntity
 {
     public int Id { get; set; }
@@ -20,7 +23,7 @@ public class Shop : AuditableEntity
     public string Description { get; set; } = string.Empty;
 
     [Required]
-    [MaxLength(100)]
+    [MaxLength(50)]
     [RegularExpression(@"^[a-z0-9-]+$", ErrorMessage = "O slug deve conter apenas letras minúsculas, números e hífens.")]
     public string Slug { get; set; } = string.Empty;
 
@@ -38,8 +41,8 @@ public class Shop : AuditableEntity
     [Range(0, 168, ErrorMessage = "O limite de cancelamento deve ser entre 0 e 168 horas.")]
     public int CancellationDeadlineHours { get; set; } = 24;
 
-    [MaxLength(200)]
-    public string? ImagePath { get; set; }
+    public Guid? ImageId { get; set; }
+    public Image? Image { get; set; }
 
     // Navigation properties
     public List<ShopProfessional> ShopProfessionals { get; } = [];

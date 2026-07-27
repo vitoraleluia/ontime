@@ -1,6 +1,6 @@
 import { Fragment } from 'react'
 import { Outlet, createRootRoute } from '@tanstack/react-router'
-import { Navbar } from '@/components/Navbar'
+import { Navbar } from '@/components/custom/Navbar'
 
 export const Route = createRootRoute({
   component: RootComponent,

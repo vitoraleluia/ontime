@@ -11,7 +11,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import {CalendarRange, Menu, X, LogOut, User, Loader2} from 'lucide-react'
+import {CalendarRange, Menu, X, LogOut, User, Loader2, Store} from 'lucide-react'
 
 export function Navbar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -114,6 +114,12 @@ function DesktopAuthSection() {
                             <Link to="/account" className="cursor-pointer flex w-full items-center px-2 py-1.5">
                                 <User className="mr-2 h-4 w-4"/>
                                 <span>Editar Perfil</span>
+                            </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="p-0">
+                            <Link to="/create-shop" className="cursor-pointer flex w-full items-center px-2 py-1.5">
+                                <Store className="mr-2 h-4 w-4 text-primary"/>
+                                <span>Criar Loja</span>
                             </Link>
                         </DropdownMenuItem>
                         <DropdownMenuSeparator/>
