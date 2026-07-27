@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using OnTime.Api.Models.Account;
-using OnTime.Application.Common.Constants;
+using OnTime.Application.Domain.Constants;
 using OnTime.Application.Features.UserProfile.Commands;
 using OnTime.Application.Features.UserProfile.Queries;
 using OnTime.Application.Features.UserProfile.Responses;

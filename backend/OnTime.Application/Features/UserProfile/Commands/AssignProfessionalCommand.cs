@@ -2,9 +2,8 @@ using MediatR;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-
-using OnTime.Application.Common.Extensions;
 using OnTime.Application.Domain.Results;
+using OnTime.Application.Extensions;
 using OnTime.Application.Features.UserProfile.Responses;
 using OnTime.Application.Services;
 using OnTime.Domain.Enums;

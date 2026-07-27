@@ -1,6 +1,7 @@
+using OnTime.Application.Domain.Settings;
 using OnTime.Domain.Entities;
 
-namespace OnTime.Application.Common.Extensions;
+namespace OnTime.Application.Extensions;
 
 public static class ImageExtensions
 {

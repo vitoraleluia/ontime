@@ -1,4 +1,4 @@
-namespace OnTime.Application.Common.Constants;
+namespace OnTime.Application.Domain.Constants;
 
 public static class ClaimNames
 {

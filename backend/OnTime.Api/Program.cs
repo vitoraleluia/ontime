@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 
 using OnTime.Api.DependencyInjection;
 using OnTime.Application.DependencyInjection;
+using OnTime.Application.Domain.Settings;
 using OnTime.Infrastructure.DependencyInjection;
 
 
@@ -16,7 +17,7 @@ builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddApplicationServices();
 
 // Register AppSettings for static configuration access
-builder.Services.AddSingleton(new OnTime.Application.Common.AppSettings(builder.Configuration));
+builder.Services.AddSingleton(new AppSettings(builder.Configuration));
 
 var app = builder.Build();
 

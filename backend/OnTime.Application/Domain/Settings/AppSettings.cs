@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Configuration;
 
-namespace OnTime.Application.Common;
+namespace OnTime.Application.Domain.Settings;
 
 public class AppSettings
 {
