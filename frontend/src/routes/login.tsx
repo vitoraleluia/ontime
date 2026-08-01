@@ -50,6 +50,10 @@ function LoginPage() {
     if (result.success) {
       navigate({ to: returnUrl })
     } else {
+      if (result.error && (result.error.toLowerCase().includes('não foi confirmado') || result.error.toLowerCase().includes('verifique a sua caixa'))) {
+        navigate({ to: '/confirm-email-pending', search: { email: email.trim() } })
+        return
+      }
       setError(result.error ?? 'Falha ao iniciar sessão.')
     }
   }

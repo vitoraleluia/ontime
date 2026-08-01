@@ -12,6 +12,8 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as CreateShopRouteImport } from './routes/create-shop'
+import { Route as ConfirmEmailPendingRouteImport } from './routes/confirm-email-pending'
+import { Route as ConfirmEmailRouteImport } from './routes/confirm-email'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ShopsSlugRouteImport } from './routes/shops/$slug'
@@ -29,6 +31,16 @@ const LoginRoute = LoginRouteImport.update({
 const CreateShopRoute = CreateShopRouteImport.update({
   id: '/create-shop',
   path: '/create-shop',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConfirmEmailPendingRoute = ConfirmEmailPendingRouteImport.update({
+  id: '/confirm-email-pending',
+  path: '/confirm-email-pending',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConfirmEmailRoute = ConfirmEmailRouteImport.update({
+  id: '/confirm-email',
+  path: '/confirm-email',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AccountRoute = AccountRouteImport.update({
@@ -50,6 +62,8 @@ const ShopsSlugRoute = ShopsSlugRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
+  '/confirm-email': typeof ConfirmEmailRoute
+  '/confirm-email-pending': typeof ConfirmEmailPendingRoute
   '/create-shop': typeof CreateShopRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
@@ -58,6 +72,8 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
+  '/confirm-email': typeof ConfirmEmailRoute
+  '/confirm-email-pending': typeof ConfirmEmailPendingRoute
   '/create-shop': typeof CreateShopRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
@@ -67,6 +83,8 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
+  '/confirm-email': typeof ConfirmEmailRoute
+  '/confirm-email-pending': typeof ConfirmEmailPendingRoute
   '/create-shop': typeof CreateShopRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
@@ -75,14 +93,30 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/account' | '/create-shop' | '/login' | '/register' | '/shops/$slug'
+    | '/'
+    | '/account'
+    | '/confirm-email'
+    | '/confirm-email-pending'
+    | '/create-shop'
+    | '/login'
+    | '/register'
+    | '/shops/$slug'
   fileRoutesByTo: FileRoutesByTo
   to:
-    '/' | '/account' | '/create-shop' | '/login' | '/register' | '/shops/$slug'
+    | '/'
+    | '/account'
+    | '/confirm-email'
+    | '/confirm-email-pending'
+    | '/create-shop'
+    | '/login'
+    | '/register'
+    | '/shops/$slug'
   id:
     | '__root__'
     | '/'
     | '/account'
+    | '/confirm-email'
+    | '/confirm-email-pending'
     | '/create-shop'
     | '/login'
     | '/register'
@@ -92,6 +126,8 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AccountRoute: typeof AccountRoute
+  ConfirmEmailRoute: typeof ConfirmEmailRoute
+  ConfirmEmailPendingRoute: typeof ConfirmEmailPendingRoute
   CreateShopRoute: typeof CreateShopRoute
   LoginRoute: typeof LoginRoute
   RegisterRoute: typeof RegisterRoute
@@ -121,6 +157,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CreateShopRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/confirm-email-pending': {
+      id: '/confirm-email-pending'
+      path: '/confirm-email-pending'
+      fullPath: '/confirm-email-pending'
+      preLoaderRoute: typeof ConfirmEmailPendingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/confirm-email': {
+      id: '/confirm-email'
+      path: '/confirm-email'
+      fullPath: '/confirm-email'
+      preLoaderRoute: typeof ConfirmEmailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/account': {
       id: '/account'
       path: '/account'
@@ -148,6 +198,8 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountRoute: AccountRoute,
+  ConfirmEmailRoute: ConfirmEmailRoute,
+  ConfirmEmailPendingRoute: ConfirmEmailPendingRoute,
   CreateShopRoute: CreateShopRoute,
   LoginRoute: LoginRoute,
   RegisterRoute: RegisterRoute,

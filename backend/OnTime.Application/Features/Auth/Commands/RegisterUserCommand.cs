@@ -1,5 +1,7 @@
 using System.Text.RegularExpressions;
 
+using Hangfire;
+
 using MediatR;
 
 using Microsoft.Extensions.Logging;
@@ -22,14 +24,17 @@ public class RegisterUserCommandHandler : BaseHandler<RegisterUserCommand, Resul
     private static readonly Regex PtPhoneRegex = new(@"^(\+351)?9\d{8}$", RegexOptions.Compiled);
     private readonly IIdentityService identityService;
     private readonly IAppDbContext dbContext;
+    private readonly IBackgroundJobClient backgroundJobClient;
 
     public RegisterUserCommandHandler(
         IIdentityService identityService,
         IAppDbContext dbContext,
+        IBackgroundJobClient backgroundJobClient,
         ILogger<RegisterUserCommandHandler> logger) : base(logger)
     {
         this.identityService = identityService;
         this.dbContext = dbContext;
+        this.backgroundJobClient = backgroundJobClient;
     }
 
     protected override async Task<Result<string>> HandleSafe(RegisterUserCommand request, CancellationToken cancellationToken)
@@ -67,6 +72,14 @@ public class RegisterUserCommandHandler : BaseHandler<RegisterUserCommand, Resul
 
         this.dbContext.UserProfiles.Add(profile);
         await this.dbContext.SaveChangesAsync(cancellationToken);
+
+        // Generate email confirmation token and enqueue Hangfire job
+        var tokenResult = await this.identityService.GenerateEmailConfirmationToken(request.Email, cancellationToken);
+        if (tokenResult.IsSuccess && !string.IsNullOrEmpty(tokenResult.Token))
+        {
+            this.backgroundJobClient.Enqueue<IEmailSender>(sender =>
+                sender.SendConfirmationEmail(request.Email, identityResult.UserId!, tokenResult.Token, CancellationToken.None));
+        }
 
         return Result<string>.Success(profile.Id);
     }

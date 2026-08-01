@@ -68,7 +68,7 @@ function RegisterPage() {
     setIsLoading(false)
 
     if (result.success) {
-      navigate({ to: returnUrl })
+      navigate({ to: '/confirm-email-pending', search: { email: email.trim() } })
     } else {
       setError(result.error ?? 'Falha ao criar conta.')
     }

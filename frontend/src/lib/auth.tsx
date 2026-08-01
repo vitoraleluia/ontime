@@ -73,8 +73,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       })
 
       if (response.ok) {
-        // Automatically log in after registration
-        return await loginWithCredentials(email, password)
+        return { success: true }
       }
 
       let errorMsg = 'Erro ao criar conta. Verifique os dados fornecidos.'

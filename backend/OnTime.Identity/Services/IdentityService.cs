@@ -58,7 +58,7 @@ public class IdentityService : IIdentityService
 
     public async Task<ApplicationIdentityResult> RegisterUser(string email, string password, CancellationToken cancellationToken = default)
     {
-        var user = new ApplicationUser { UserName = email, Email = email, EmailConfirmed = true };
+        var user = new ApplicationUser { UserName = email, Email = email, EmailConfirmed = false };
         var result = await this.userManager.CreateAsync(user, password);
 
         if (!result.Succeeded)
@@ -75,6 +75,11 @@ public class IdentityService : IIdentityService
         if (user == null)
         {
             return ApplicationIdentityResult.Failure("Credenciais inválidas. Verifique o email e a palavra-passe.");
+        }
+
+        if (!user.EmailConfirmed)
+        {
+            return ApplicationIdentityResult.UnconfirmedEmail("O seu endereço de email ainda não foi confirmado. Por favor, verifique a sua caixa de entrada.", userId: user.Id);
         }
 
         var result = await this.signInManager.PasswordSignInAsync(user, password, isPersistent: true, lockoutOnFailure: lockoutOnFailure);

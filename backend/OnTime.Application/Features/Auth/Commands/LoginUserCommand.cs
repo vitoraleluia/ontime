@@ -36,6 +36,11 @@ public class LoginUserCommandHandler : BaseHandler<LoginUserCommand, Result>
             return Result.Failure(new Error("Auth.LockedOut", $"Conta bloqueada temporariamente. Tente novamente após {lockoutMinutes} minutos."));
         }
 
+        if (result.RequiresEmailConfirmation)
+        {
+            return Result.Failure(new Error("Auth.UnconfirmedEmail", result.ErrorMessage ?? "O seu endereço de email ainda não foi confirmado. Por favor, verifique a sua caixa de entrada."));
+        }
+
         if (result.IsFailure)
         {
             return Result.Failure(new Error("Auth.InvalidCredentials", result.ErrorMessage ?? "Credenciais inválidas. Verifique o email e a palavra-passe."));

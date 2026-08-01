@@ -25,21 +25,15 @@ public class AuthController : BaseApiController
 {
     private readonly SignInManager<ApplicationUser> signInManager;
     private readonly UserManager<ApplicationUser> userManager;
-    private readonly IIdentityService identityService;
-    private readonly AuthenticationSettings authenticationSettings;
 
     public AuthController(
         ILogger<BaseApiController> logger,
         IMediator mediator,
         SignInManager<ApplicationUser> signInManager,
-        UserManager<ApplicationUser> userManager,
-        IIdentityService identityService,
-        IOptions<AuthenticationSettings> authenticationOptions) : base(logger, mediator)
+        UserManager<ApplicationUser> userManager) : base(logger, mediator)
     {
         this.signInManager = signInManager;
         this.userManager = userManager;
-        this.identityService = identityService;
-        this.authenticationSettings = authenticationOptions.Value;
     }
 
     [HttpPost("register")]
@@ -47,7 +41,8 @@ public class AuthController : BaseApiController
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Register([FromBody] RegisterRequest request)
     {
-        var command = new RegisterUserCommand(request.Email, request.Password, request.FirstName, request.LastName, request.PhoneNumber);
+        var command = new RegisterUserCommand(request.Email, request.Password, request.FirstName, request.LastName,
+            request.PhoneNumber);
         var result = await this.Mediator.Send(command);
 
         if (result.IsFailure)
@@ -151,7 +146,9 @@ public class AuthController : BaseApiController
     public IActionResult GoogleLogin([FromQuery] string? returnUrl)
     {
         var redirectUrl = Url.Action(nameof(GoogleCallback), "Auth", new { returnUrl });
-        var properties = this.signInManager.ConfigureExternalAuthenticationProperties(GoogleDefaults.AuthenticationScheme, redirectUrl);
+        var properties =
+            this.signInManager.ConfigureExternalAuthenticationProperties(GoogleDefaults.AuthenticationScheme,
+                redirectUrl);
         return Challenge(properties, GoogleDefaults.AuthenticationScheme);
     }
 
@@ -164,7 +161,8 @@ public class AuthController : BaseApiController
             return Redirect("/login?error=GoogleAuthFailed".BuildFrontendUrl());
         }
 
-        var result = await this.signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: true, bypassTwoFactor: true);
+        var result = await this.signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey,
+            isPersistent: true, bypassTwoFactor: true);
         if (!result.Succeeded)
         {
             var email = info.Principal.FindFirstValue(ClaimTypes.Email);

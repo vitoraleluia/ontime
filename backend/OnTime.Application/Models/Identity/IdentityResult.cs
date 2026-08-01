@@ -6,6 +6,7 @@ public class IdentityResult
     public bool IsFailure => !this.IsSuccess;
     public bool IsLockedOut { get; init; }
     public bool RequiresTwoFactor { get; init; }
+    public bool RequiresEmailConfirmation { get; init; }
     public string? UserId { get; init; }
     public string? Token { get; init; }
     public string? ErrorMessage { get; init; }
@@ -30,4 +31,7 @@ public class IdentityResult
 
     public static IdentityResult LockedOut(string error) =>
         new() { IsSuccess = false, IsLockedOut = true, ErrorMessage = error, Errors = [error] };
+
+    public static IdentityResult UnconfirmedEmail(string error, string? userId = null) =>
+        new() { IsSuccess = false, RequiresEmailConfirmation = true, UserId = userId, ErrorMessage = error, Errors = [error] };
 }
