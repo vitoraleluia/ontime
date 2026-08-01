@@ -9,8 +9,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
-using OnTime.Api.Domain.Settings;
+using OnTime.Domain.Settings;
 using OnTime.Api.Extensions;
+using OnTime.Api.Models.Auth;
+using OnTime.Application.Features.Auth.Commands;
 using OnTime.Application.Services;
 using OnTime.Domain.Enums;
 using OnTime.Identity.Constants;
@@ -40,13 +42,116 @@ public class AuthController : BaseApiController
         this.authenticationSettings = authenticationOptions.Value;
     }
 
+    [HttpPost("register")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Register([FromBody] RegisterRequest request)
+    {
+        var command = new RegisterUserCommand(request.Email, request.Password, request.FirstName, request.LastName, request.PhoneNumber);
+        var result = await this.Mediator.Send(command);
+
+        if (result.IsFailure)
+        {
+            return BadRequest(result.Error?.Message);
+        }
+
+        return Ok();
+    }
+
+    [HttpPost("login")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Login([FromBody] LoginRequest request)
+    {
+        var command = new LoginUserCommand(request.Email, request.Password);
+        var result = await this.Mediator.Send(command);
+
+        if (result.IsFailure)
+        {
+            return BadRequest(result.Error?.Message);
+        }
+
+        return Ok();
+    }
+
+    [HttpPost("logout")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> Logout()
+    {
+        var command = new LogoutUserCommand();
+        await this.Mediator.Send(command);
+        return Ok();
+    }
+
+    [HttpPost("forgot-password")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
+    {
+        var command = new ForgotPasswordCommand(request.Email);
+        var result = await this.Mediator.Send(command);
+
+        if (result.IsFailure)
+        {
+            return BadRequest(result.Error?.Message);
+        }
+
+        return Ok();
+    }
+
+    [HttpPost("reset-password")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
+    {
+        var command = new ResetPasswordCommand(request.Email, request.Token, request.NewPassword);
+        var result = await this.Mediator.Send(command);
+
+        if (result.IsFailure)
+        {
+            return BadRequest(result.Error?.Message);
+        }
+
+        return Ok();
+    }
+
+    [HttpPost("confirm-email")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ConfirmEmail([FromBody] ConfirmEmailRequest request)
+    {
+        var command = new ConfirmEmailCommand(request.UserId, request.Token);
+        var result = await this.Mediator.Send(command);
+
+        if (result.IsFailure)
+        {
+            return BadRequest(result.Error?.Message);
+        }
+
+        return Ok();
+    }
+
+    [HttpPost("resend-confirmation-email")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ResendConfirmationEmail([FromBody] ResendConfirmationEmailRequest request)
+    {
+        var command = new ResendConfirmationEmailCommand(request.Email);
+        var result = await this.Mediator.Send(command);
+
+        if (result.IsFailure)
+        {
+            return BadRequest(result.Error?.Message);
+        }
+
+        return Ok();
+    }
+
     [HttpGet("login/google")]
     public IActionResult GoogleLogin([FromQuery] string? returnUrl)
     {
         var redirectUrl = Url.Action(nameof(GoogleCallback), "Auth", new { returnUrl });
-        var properties =
-            this.signInManager.ConfigureExternalAuthenticationProperties(GoogleDefaults.AuthenticationScheme,
-                redirectUrl);
+        var properties = this.signInManager.ConfigureExternalAuthenticationProperties(GoogleDefaults.AuthenticationScheme, redirectUrl);
         return Challenge(properties, GoogleDefaults.AuthenticationScheme);
     }
 
@@ -59,8 +164,7 @@ public class AuthController : BaseApiController
             return Redirect("/login?error=GoogleAuthFailed".BuildFrontendUrl());
         }
 
-        var result = await this.signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey,
-            isPersistent: true, bypassTwoFactor: true);
+        var result = await this.signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: true, bypassTwoFactor: true);
         if (!result.Succeeded)
         {
             var email = info.Principal.FindFirstValue(ClaimTypes.Email);
@@ -83,24 +187,5 @@ public class AuthController : BaseApiController
         await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
         return Redirect(returnUrl.BuildFrontendUrl());
-    }
-
-    [Authorize]
-    [HttpPost("assign-professional")]
-    public async Task<IActionResult> AssignProfessionalRole()
-    {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (string.IsNullOrEmpty(userId))
-        {
-            return Unauthorized();
-        }
-
-        var assigned = await this.identityService.AssignRoleAsync(userId, UserRole.Professional);
-        if (!assigned)
-        {
-            return BadRequest("Utilizador não encontrado ou falha ao atribuir o papel.");
-        }
-
-        return Ok();
     }
 }

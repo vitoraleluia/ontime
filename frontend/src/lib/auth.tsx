@@ -32,9 +32,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const loginWithCredentials = async (email: string, password: string) => {
     try {
       const { response, error } = await api.POST('/api/auth/login', {
-        params: {
-          query: { useCookies: true },
-        },
         body: { email, password },
       })
 
@@ -46,20 +43,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       let errorMsg = 'Credenciais inválidas. Verifique o email e a palavra-passe.'
       if (error) {
         const errData = error as any
-        if (errData?.detail) errorMsg = errData.detail
+        if (typeof errData === 'string') errorMsg = errData
+        else if (errData?.detail) errorMsg = errData.detail
         else if (errData?.title) errorMsg = errData.title
       }
 
       return { success: false, error: errorMsg }
     } catch (err: any) {
-      return { success: false, error: err?.message || 'Erro ao comunicar com o servidor.' }
+      return { success: false, error: err?.message ?? 'Erro ao comunicar com o servidor.' }
     }
   }
 
-  const registerWithCredentials = async (email: string, password: string) => {
+  const registerWithCredentials = async (
+    email: string,
+    password: string,
+    firstName: string,
+    lastName: string,
+    phoneNumber?: string
+  ) => {
     try {
       const { response, error } = await api.POST('/api/auth/register', {
-        body: { email, password },
+        body: {
+          email,
+          password,
+          firstName,
+          lastName,
+          phoneNumber: phoneNumber ?? undefined,
+        },
       })
 
       if (response.ok) {
@@ -70,7 +80,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       let errorMsg = 'Erro ao criar conta. Verifique os dados fornecidos.'
       if (error) {
         const errData = error as any
-        if (errData?.errors) {
+        if (typeof errData === 'string') {
+          errorMsg = errData
+        } else if (errData?.errors) {
           const messages = Object.values(errData.errors).flat()
           if (messages.length > 0) errorMsg = messages.join(' ')
         } else if (errData?.detail) {
@@ -80,7 +92,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       return { success: false, error: errorMsg }
     } catch (err: any) {
-      return { success: false, error: err?.message || 'Erro ao comunicar com o servidor.' }
+      return { success: false, error: err?.message ?? 'Erro ao comunicar com o servidor.' }
     }
   }
 
@@ -93,13 +105,83 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = async () => {
     try {
-      await api.POST('/api/auth/logout', {
-        body: {} as Record<string, never>,
-      })
+      await api.POST('/api/auth/logout', {})
     } catch {
       // Ignore network errors on logout
     } finally {
       setState({ isAuthenticated: false, isLoading: false })
+    }
+  }
+
+  const forgotPassword = async (email: string) => {
+    try {
+      const { response, error } = await api.POST('/api/auth/forgot-password', {
+        body: { email },
+      })
+
+      if (response.ok) {
+        return { success: true }
+      }
+
+      const errData = error as any
+      const errorMsg = typeof errData === 'string' ? errData : errData?.detail || 'Erro ao processar pedido.'
+      return { success: false, error: errorMsg }
+    } catch (err: any) {
+      return { success: false, error: err?.message ?? 'Erro ao comunicar com o servidor.' }
+    }
+  }
+
+  const resetPassword = async (email: string, token: string, newPassword: string) => {
+    try {
+      const { response, error } = await api.POST('/api/auth/reset-password', {
+        body: { email, token, newPassword },
+      })
+
+      if (response.ok) {
+        return { success: true }
+      }
+
+      const errData = error as any
+      const errorMsg = typeof errData === 'string' ? errData : errData?.detail || 'Erro ao redefinir palavra-passe.'
+      return { success: false, error: errorMsg }
+    } catch (err: any) {
+      return { success: false, error: err?.message ?? 'Erro ao comunicar com o servidor.' }
+    }
+  }
+
+  const confirmEmail = async (userId: string, token: string) => {
+    try {
+      const { response, error } = await api.POST('/api/auth/confirm-email', {
+        body: { userId, token },
+      })
+
+      if (response.ok) {
+        return { success: true }
+      }
+
+      const errData = error as any
+      const errorMsg = typeof errData === 'string' ? errData : errData?.detail ?? 'Erro ao confirmar email.'
+      return { success: false, error: errorMsg }
+    } catch (err: any) {
+      return { success: false, error: err?.message ?? 'Erro ao comunicar com o servidor.' }
+    }
+  }
+
+  const resendConfirmationEmail = async (email: string) => {
+    try {
+      const { response, error } = await api.POST('/api/auth/resend-confirmation-email', {
+        body: { email },
+      })
+
+      if (response.ok) {
+        return { success: true }
+      }
+
+      const errData = error as any
+      const errorMsg = typeof errData === 'string' ? errData : errData?.detail ?? 'Erro ao reenviar confirmação de email.'
+      return { success: false, error: errorMsg }
+    } catch (err: any) {
+      return { success: false, error: err?.message ?? 'Erro ao comunicar com o servidor.' }
     }
   }
 
@@ -112,6 +194,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         loginWithGoogle,
         logout,
         refetchAuth: checkAuth,
+        forgotPassword,
+        resetPassword,
+        confirmEmail,
+        resendConfirmationEmail,
       }}
     >
       {children}

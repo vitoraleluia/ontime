@@ -67,7 +67,7 @@ function PublicShopPage() {
         {shop.imageUrl ? (
           <img
             src={shop.imageUrl}
-            alt={shop.name}
+            alt={shop.name || ''}
             className="h-full w-full object-cover"
           />
         ) : (

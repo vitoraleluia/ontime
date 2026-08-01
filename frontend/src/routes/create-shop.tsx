@@ -21,7 +21,7 @@ export const Route = createFileRoute('/create-shop')({
   component: CreateShopPage,
 })
 
-function SlugStatusIcon({ isChecking, checkResult }: { isChecking: boolean; checkResult?: { isAvailable: boolean } | null }) {
+function SlugStatusIcon({ isChecking, checkResult }: { isChecking: boolean; checkResult?: { isAvailable?: boolean } | null }) {
   if (isChecking) {
     return <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
   }

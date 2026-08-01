@@ -74,7 +74,7 @@ public class AccountController : BaseApiController
         }
 
         var response = result.Value!;
-        response.IsProfessional = await this.identityService.IsInRoleAsync(userId, UserRole.Professional);
+        response.IsProfessional = await this.identityService.IsInRole(userId, UserRole.Professional);
         return Ok(response);
     }
 
@@ -101,7 +101,7 @@ public class AccountController : BaseApiController
         }
 
         var response = result.Value!;
-        response.IsProfessional = await this.identityService.IsInRoleAsync(userId, UserRole.Professional);
+        response.IsProfessional = await this.identityService.IsInRole(userId, UserRole.Professional);
         return Ok(response);
     }
 
@@ -118,7 +118,7 @@ public class AccountController : BaseApiController
             return Unauthorized("ID de utilizador ausente no token.");
         }
 
-        var assigned = await this.identityService.AssignRoleAsync(userId, UserRole.Professional);
+        var assigned = await this.identityService.AssignRole(userId, UserRole.Professional);
         if (!assigned)
         {
             return BadRequest("Falha ao atribuir o papel profissional.");

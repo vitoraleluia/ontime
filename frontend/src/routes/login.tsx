@@ -10,7 +10,7 @@ export const Route = createFileRoute('/login')({
 
 function LoginPage() {
   const search = useSearch({ from: '/login' }) as { returnUrl?: string; error?: string }
-  const returnUrl = search?.returnUrl || '/'
+  const returnUrl = search?.returnUrl ?? '/'
   const queryError = search?.error
 
   const { loginWithCredentials, loginWithGoogle, isAuthenticated } = useAuth()
@@ -50,7 +50,7 @@ function LoginPage() {
     if (result.success) {
       navigate({ to: returnUrl })
     } else {
-      setError(result.error || 'Falha ao iniciar sessão.')
+      setError(result.error ?? 'Falha ao iniciar sessão.')
     }
   }
 

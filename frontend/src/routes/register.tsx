@@ -2,19 +2,24 @@ import { useState } from 'react'
 import { createFileRoute, useNavigate, useSearch, Link } from '@tanstack/react-router'
 import { useAuth } from '@/lib/auth'
 import { Button } from '@/components/ui/button'
-import { CalendarRange, Mail, Lock, Loader2, AlertCircle } from 'lucide-react'
+import { CalendarRange, Mail, Lock, User, Phone, Loader2, AlertCircle } from 'lucide-react'
 
 export const Route = createFileRoute('/register')({
   component: RegisterPage,
 })
 
+const PT_PHONE_REGEX = /^(\+351)?9\d{8}$/
+
 function RegisterPage() {
   const search = useSearch({ from: '/register' }) as { returnUrl?: string }
-  const returnUrl = search?.returnUrl || '/'
+  const returnUrl = search?.returnUrl ?? '/'
 
   const { registerWithCredentials, loginWithGoogle, isAuthenticated } = useAuth()
   const navigate = useNavigate()
 
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
+  const [phoneNumber, setPhoneNumber] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -29,8 +34,14 @@ function RegisterPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!email || !password || !confirmPassword) {
-      setError('Por favor, preencha todos os campos.')
+
+    if (!firstName.trim() || !lastName.trim() || !email || !password || !confirmPassword) {
+      setError('Por favor, preencha todos os campos obrigatórios.')
+      return
+    }
+
+    if (phoneNumber.trim() && !PT_PHONE_REGEX.test(phoneNumber.trim())) {
+      setError('O número de telemóvel deve ser um número português válido (ex: 927431783).')
       return
     }
 
@@ -47,13 +58,19 @@ function RegisterPage() {
     setError(null)
     setIsLoading(true)
 
-    const result = await registerWithCredentials(email, password)
+    const result = await registerWithCredentials(
+      email.trim(),
+      password,
+      firstName.trim(),
+      lastName.trim(),
+      phoneNumber.trim() || undefined
+    )
     setIsLoading(false)
 
     if (result.success) {
       navigate({ to: returnUrl })
     } else {
-      setError(result.error || 'Falha ao criar conta.')
+      setError(result.error ?? 'Falha ao criar conta.')
     }
   }
 
@@ -125,9 +142,64 @@ function RegisterPage() {
 
             {/* Registration Form */}
             <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+                    Primeiro Nome *
+                  </label>
+                  <div className="relative">
+                    <User className="absolute left-3.5 top-3 h-4 w-4 text-muted-foreground" />
+                    <input
+                      type="text"
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      placeholder="João"
+                      required
+                      disabled={isLoading}
+                      className="w-full rounded-xl border border-border bg-background py-2.5 pl-10 pr-4 text-sm placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-50"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+                    Apelido *
+                  </label>
+                  <div className="relative">
+                    <User className="absolute left-3.5 top-3 h-4 w-4 text-muted-foreground" />
+                    <input
+                      type="text"
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      placeholder="Silva"
+                      required
+                      disabled={isLoading}
+                      className="w-full rounded-xl border border-border bg-background py-2.5 pl-10 pr-4 text-sm placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-50"
+                    />
+                  </div>
+                </div>
+              </div>
+
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
-                  Endereço de Email
+                  Telemóvel <span className="text-muted-foreground font-normal">(Opcional)</span>
+                </label>
+                <div className="relative">
+                  <Phone className="absolute left-3.5 top-3 h-4 w-4 text-muted-foreground" />
+                  <input
+                    type="tel"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    placeholder="927431783"
+                    disabled={isLoading}
+                    className="w-full rounded-xl border border-border bg-background py-2.5 pl-10 pr-4 text-sm placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-50"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+                  Endereço de Email *
                 </label>
                 <div className="relative">
                   <Mail className="absolute left-3.5 top-3 h-4 w-4 text-muted-foreground" />
@@ -145,7 +217,7 @@ function RegisterPage() {
 
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
-                  Palavra-passe
+                  Palavra-passe *
                 </label>
                 <div className="relative">
                   <Lock className="absolute left-3.5 top-3 h-4 w-4 text-muted-foreground" />
@@ -163,7 +235,7 @@ function RegisterPage() {
 
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
-                  Confirmar Palavra-passe
+                  Confirmar Palavra-passe *
                 </label>
                 <div className="relative">
                   <Lock className="absolute left-3.5 top-3 h-4 w-4 text-muted-foreground" />

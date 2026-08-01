@@ -74,9 +74,6 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Map Identity API endpoints under /api/auth
-app.MapGroup("/api/auth").MapIdentityApi<ApplicationUser>();
-
 app.MapControllers();
 
 app.Run();
