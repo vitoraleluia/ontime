@@ -68,8 +68,7 @@ public class UpdateUserProfileCommandHandler : BaseHandler<UpdateUserProfileComm
             LastName = updatedProfile.LastName,
             Email = updatedProfile.Email,
             PhoneNumber = updatedProfile.PhoneNumber,
-            ProfilePictureUrl = updatedProfile.ProfilePicture.BuildImageUrl(),
-            Role = updatedProfile.Role
+            ProfilePictureUrl = updatedProfile.ProfilePicture.BuildImageUrl()
         };
 
         return Result<UserProfileResponse>.Success(response);

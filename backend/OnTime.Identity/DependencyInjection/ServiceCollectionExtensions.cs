@@ -4,8 +4,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
+using OnTime.Application.Services;
 using OnTime.Identity.Data;
 using OnTime.Identity.Entities;
+using OnTime.Identity.Services;
 
 namespace OnTime.Identity.DependencyInjection;
 
@@ -27,10 +29,19 @@ public static class ServiceCollectionExtensions
         {
             options.Cookie.Name = "OnTimeUserIdentity";
             options.Cookie.HttpOnly = true;
-            options.Cookie.SameSite = SameSiteMode.Strict;
+            options.Cookie.SameSite = SameSiteMode.Lax;
             options.ExpireTimeSpan = TimeSpan.FromDays(1);
             options.SlidingExpiration = true;
         });
+
+        services.ConfigureExternalCookie(options =>
+        {
+            options.Cookie.Name = "OnTimeExternalIdentity";
+            options.Cookie.HttpOnly = true;
+            options.Cookie.SameSite = SameSiteMode.Lax;
+        });
+
+        services.AddScoped<IIdentityService, IdentityService>();
 
         return services;
     }

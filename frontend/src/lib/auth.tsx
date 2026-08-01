@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import type { ReactNode } from 'react'
 import type { AuthState, AuthContextType } from '@/domain/auth'
+import { api } from '@/lib/api'
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
@@ -12,11 +13,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const checkAuth = useCallback(async () => {
     try {
-      const response = await fetch('/api/Account', {
-        method: 'GET',
-        headers: { Accept: 'application/json' },
-        credentials: 'include',
-      })
+      const { response } = await api.GET('/api/Account')
 
       if (response.ok) {
         setState({ isAuthenticated: true, isLoading: false })
@@ -34,11 +31,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const loginWithCredentials = async (email: string, password: string) => {
     try {
-      const response = await fetch('/api/auth/login?useCookies=true', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ email, password }),
+      const { response, error } = await api.POST('/api/auth/login', {
+        params: {
+          query: { useCookies: true },
+        },
+        body: { email, password },
       })
 
       if (response.ok) {
@@ -47,12 +44,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       let errorMsg = 'Credenciais inválidas. Verifique o email e a palavra-passe.'
-      try {
-        const errorData = await response.json()
-        if (errorData?.detail) errorMsg = errorData.detail
-        else if (errorData?.title) errorMsg = errorData.title
-      } catch {
-        // use default errorMsg
+      if (error) {
+        const errData = error as any
+        if (errData?.detail) errorMsg = errData.detail
+        else if (errData?.title) errorMsg = errData.title
       }
 
       return { success: false, error: errorMsg }
@@ -63,11 +58,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const registerWithCredentials = async (email: string, password: string) => {
     try {
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ email, password }),
+      const { response, error } = await api.POST('/api/auth/register', {
+        body: { email, password },
       })
 
       if (response.ok) {
@@ -76,16 +68,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       let errorMsg = 'Erro ao criar conta. Verifique os dados fornecidos.'
-      try {
-        const errorData = await response.json()
-        if (errorData?.errors) {
-          const messages = Object.values(errorData.errors).flat()
+      if (error) {
+        const errData = error as any
+        if (errData?.errors) {
+          const messages = Object.values(errData.errors).flat()
           if (messages.length > 0) errorMsg = messages.join(' ')
-        } else if (errorData?.detail) {
-          errorMsg = errorData.detail
+        } else if (errData?.detail) {
+          errorMsg = errData.detail
         }
-      } catch {
-        // use default errorMsg
       }
 
       return { success: false, error: errorMsg }
@@ -103,9 +93,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = async () => {
     try {
-      await fetch('/api/auth/logout', {
-        method: 'POST',
-        credentials: 'include',
+      await api.POST('/api/auth/logout', {
+        body: {} as Record<string, never>,
       })
     } catch {
       // Ignore network errors on logout

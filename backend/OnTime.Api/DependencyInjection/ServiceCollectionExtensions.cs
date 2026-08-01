@@ -1,6 +1,8 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
 
 using OnTime.Api.Domain.Settings;
+using OnTime.Api.Extensions;
 
 namespace OnTime.Api.DependencyInjection;
 
@@ -12,7 +14,10 @@ public static class ServiceCollectionExtensions
         services.AddControllers();
         services.AddAuthorization();
 
-        var authenticationSettings = configuration.GetRequiredSection("Authentication").Get<AuthenticationSettings>();
+        services.Configure<AuthenticationSettings>(configuration.GetSection(nameof(AuthenticationSettings)));
+
+        var authenticationSettings = configuration.GetRequiredSection(nameof(AuthenticationSettings))
+            .Get<AuthenticationSettings>();
         if (!string.IsNullOrEmpty(authenticationSettings?.Google.ClientId) &&
             !string.IsNullOrEmpty(authenticationSettings?.Google.ClientSecret))
         {
@@ -21,6 +26,7 @@ public static class ServiceCollectionExtensions
                 {
                     options.ClientId = authenticationSettings.Google.ClientId;
                     options.ClientSecret = authenticationSettings.Google.ClientSecret;
+                    options.SignInScheme = IdentityConstants.ExternalScheme;
                 });
         }
 
@@ -29,6 +35,9 @@ public static class ServiceCollectionExtensions
         {
             options.SwaggerDoc("v1", new OpenApiInfo { Title = "OnTime API", Version = "v1" });
         });
+
+
+        StringExtensions.Configure(authenticationSettings?.ClientUrl);
 
         return services;
     }

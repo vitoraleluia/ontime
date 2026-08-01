@@ -7,7 +7,12 @@ using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
+using OnTime.Api.Domain.Settings;
+using OnTime.Api.Extensions;
+using OnTime.Application.Services;
+using OnTime.Domain.Enums;
 using OnTime.Identity.Constants;
 using OnTime.Identity.Entities;
 
@@ -18,22 +23,30 @@ public class AuthController : BaseApiController
 {
     private readonly SignInManager<ApplicationUser> signInManager;
     private readonly UserManager<ApplicationUser> userManager;
+    private readonly IIdentityService identityService;
+    private readonly AuthenticationSettings authenticationSettings;
 
     public AuthController(
         ILogger<BaseApiController> logger,
         IMediator mediator,
         SignInManager<ApplicationUser> signInManager,
-        UserManager<ApplicationUser> userManager) : base(logger, mediator)
+        UserManager<ApplicationUser> userManager,
+        IIdentityService identityService,
+        IOptions<AuthenticationSettings> authenticationOptions) : base(logger, mediator)
     {
         this.signInManager = signInManager;
         this.userManager = userManager;
+        this.identityService = identityService;
+        this.authenticationSettings = authenticationOptions.Value;
     }
 
     [HttpGet("login/google")]
     public IActionResult GoogleLogin([FromQuery] string? returnUrl)
     {
         var redirectUrl = Url.Action(nameof(GoogleCallback), "Auth", new { returnUrl });
-        var properties = this.signInManager.ConfigureExternalAuthenticationProperties(GoogleDefaults.AuthenticationScheme, redirectUrl);
+        var properties =
+            this.signInManager.ConfigureExternalAuthenticationProperties(GoogleDefaults.AuthenticationScheme,
+                redirectUrl);
         return Challenge(properties, GoogleDefaults.AuthenticationScheme);
     }
 
@@ -43,16 +56,17 @@ public class AuthController : BaseApiController
         var info = await this.signInManager.GetExternalLoginInfoAsync();
         if (info == null)
         {
-            return Redirect("/login?error=GoogleAuthFailed");
+            return Redirect("/login?error=GoogleAuthFailed".BuildFrontendUrl());
         }
 
-        var result = await this.signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: true);
+        var result = await this.signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey,
+            isPersistent: true, bypassTwoFactor: true);
         if (!result.Succeeded)
         {
             var email = info.Principal.FindFirstValue(ClaimTypes.Email);
             if (string.IsNullOrEmpty(email))
             {
-                return Redirect("/login?error=EmailMissing");
+                return Redirect("/login?error=EmailMissing".BuildFrontendUrl());
             }
 
             var user = await this.userManager.FindByEmailAsync(email);
@@ -66,7 +80,9 @@ public class AuthController : BaseApiController
             await this.signInManager.SignInAsync(user, isPersistent: true);
         }
 
-        return Redirect(returnUrl ?? "/");
+        await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+
+        return Redirect(returnUrl.BuildFrontendUrl());
     }
 
     [Authorize]
@@ -79,15 +95,10 @@ public class AuthController : BaseApiController
             return Unauthorized();
         }
 
-        var user = await this.userManager.FindByIdAsync(userId);
-        if (user == null)
+        var assigned = await this.identityService.AssignRoleAsync(userId, UserRole.Professional);
+        if (!assigned)
         {
-            return NotFound("Utilizador não encontrado.");
-        }
-
-        if (!await this.userManager.IsInRoleAsync(user, IdentityRoles.Professional))
-        {
-            await this.userManager.AddToRoleAsync(user, IdentityRoles.Professional);
+            return BadRequest("Utilizador não encontrado ou falha ao atribuir o papel.");
         }
 
         return Ok();

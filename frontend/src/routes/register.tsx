@@ -66,13 +66,12 @@ function RegisterPage() {
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-md shadow-primary/20">
               <CalendarRange className="h-6 w-6" />
             </div>
-            <span className="font-heading text-2xl">OnTime</span>
           </Link>
           <h2 className="mt-6 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
             Criar Conta
           </h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            Registe-se no OnTime e comece a agendar os seus serviços facilmente.
+            Registe-se e comece a agendar os seus serviços facilmente.
           </p>
         </div>
 

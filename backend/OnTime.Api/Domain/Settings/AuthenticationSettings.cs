@@ -2,6 +2,7 @@ namespace OnTime.Api.Domain.Settings;
 
 public class AuthenticationSettings
 {
+    public string ClientUrl { get; set; } = string.Empty;
     public GoogleSettings Google { get; set; } = new();
 }
 

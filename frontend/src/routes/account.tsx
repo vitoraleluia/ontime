@@ -3,7 +3,6 @@ import { createFileRoute, useNavigate, Link } from '@tanstack/react-router'
 import { useAuth } from '@/lib/auth'
 import { $api } from '@/lib/api'
 import { Button } from '@/components/ui/button'
-import { useMutation } from '@tanstack/react-query'
 import type { components } from '@/generated/apiClient'
 
 type UserProfileResponse = components['schemas']['UserProfileResponse']
@@ -78,25 +77,7 @@ function AccountPage() {
     }
   })
 
-  const uploadPhotoMutation = useMutation({
-    mutationFn: async (file: File) => {
-      const formData = new FormData()
-      formData.append('file', file)
-
-      const response = await fetch('/api/Images?format=Square', {
-        method: 'POST',
-        credentials: 'include',
-        body: formData
-      })
-
-      if (!response.ok) {
-        const errText = await response.text()
-        throw new Error(errText || 'Falha ao enviar imagem.')
-      }
-
-      const result: { id: string } = await response.json()
-      return result
-    },
+  const uploadPhotoMutation = $api.useMutation('post', '/api/Images', {
     onSuccess: (data) => {
       if (data && data.id) {
         setProfilePictureId(data.id)
@@ -135,7 +116,10 @@ function AccountPage() {
     const localUrl = URL.createObjectURL(file)
     setTempPictureUrl(localUrl)
 
-    uploadPhotoMutation.mutate(file)
+    uploadPhotoMutation.mutate({
+      params: { query: { format: 0 } },
+      body: { file: file as any }
+    })
   }
 
   const handleSaveProfile = (e: React.FormEvent<HTMLFormElement>) => {
@@ -164,7 +148,7 @@ function AccountPage() {
   }
 
   const handleUpgradeAccount = () => {
-    if (profile?.role === 1) return
+    if (profile?.isProfessional) return
 
     setErrorMsg(null)
     setSuccessMsg(null)
@@ -355,7 +339,7 @@ function ProfilePhotoSection({
       <div className="mt-4 w-full rounded-xl border border-border bg-card px-6 py-4 shadow-xs flex items-center justify-between">
         <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Tipo de Conta</span>
         <div className="flex items-center gap-1.5">
-          {profile.role === 1 ? (
+          {profile.isProfessional ? (
             <span className="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary">
               <Briefcase className="mr-1 h-3.5 w-3.5" />
               Profissional
@@ -502,7 +486,7 @@ function ProfessionalAccountSection({
         Conta Profissional
       </h3>
 
-      {profile.role === 1 ? (
+      {profile.isProfessional ? (
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-primary/5 rounded-lg border border-primary/10 p-5">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
             <CheckCircle className="h-6 w-6" />

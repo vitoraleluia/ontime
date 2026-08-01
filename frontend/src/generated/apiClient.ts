@@ -118,22 +118,106 @@ export interface paths {
                         "application/json": components["schemas"]["UserProfileResponse"];
                     };
                 };
-                /** @description Unauthorized */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ProblemDetails"];
+            };
+        };
+    };
+    "/api/auth/login": {
+        parameters: {
+            query?: {
+                useCookies?: boolean;
+                useSessionCookies?: boolean;
+            };
+        };
+        post: {
+            parameters: {
+                query?: {
+                    useCookies?: boolean;
+                    useSessionCookies?: boolean;
+                };
+            };
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        email?: string;
+                        password?: string;
+                        twoFactorCode?: string;
+                        twoFactorRecoveryCode?: string;
                     };
                 };
             };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: { [name: string]: unknown };
+                    content: { "application/json": unknown };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: { [name: string]: unknown };
+                    content: { "application/json": components["schemas"]["ProblemDetails"] };
+                };
+            };
         };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    };
+    "/api/auth/register": {
+        parameters: {
+            query?: never;
+        };
+        post: {
+            parameters: { query?: never };
+            requestBody?: {
+                content: {
+                    "application/json": {
+                        email?: string;
+                        password?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: { [name: string]: unknown };
+                    content: { "application/json": unknown };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: { [name: string]: unknown };
+                    content: { "application/json": components["schemas"]["ValidationProblemDetails"] };
+                };
+            };
+        };
+    };
+    "/api/auth/logout": {
+        parameters: { query?: never };
+        post: {
+            parameters: { query?: never };
+            requestBody?: {
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: { [name: string]: unknown };
+                    content?: never;
+                };
+            };
+        };
+    };
+    "/api/auth/assign-professional": {
+        parameters: { query?: never };
+        post: {
+            parameters: { query?: never };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: { [name: string]: unknown };
+                    content?: never;
+                };
+            };
+        };
     };
     "/no-login": {
         parameters: {
@@ -460,13 +544,8 @@ export interface components {
             email?: string | null;
             phoneNumber?: string | null;
             profilePictureUrl?: string | null;
-            role?: components["schemas"]["UserRole"];
+            isProfessional?: boolean;
         };
-        /**
-         * Format: int32
-         * @enum {integer}
-         */
-        UserRole: 0 | 1;
         ValidationProblemDetails: {
             type?: string | null;
             title?: string | null;

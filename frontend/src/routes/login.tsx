@@ -63,7 +63,6 @@ function LoginPage() {
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-md shadow-primary/20">
               <CalendarRange className="h-6 w-6" />
             </div>
-            <span className="font-heading text-2xl">OnTime</span>
           </Link>
           <h2 className="mt-6 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
             Iniciar Sessão
@@ -178,7 +177,7 @@ function LoginPage() {
             <div className="pt-4 text-center text-xs text-muted-foreground">
               Ainda não tem conta?{' '}
               <Link to="/register" search={{ returnUrl }} className="font-semibold text-primary hover:underline">
-                Registe-se gratuitamente
+                Registe-se
               </Link>
             </div>
           </div>

@@ -3,7 +3,6 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useAuth } from '@/lib/auth'
 import { $api } from '@/lib/api'
 import { Button } from '@/components/ui/button'
-import { useMutation } from '@tanstack/react-query'
 import {
   Store,
   Building2,
@@ -68,7 +67,7 @@ function CreateShopPage() {
     )
   }
 
-  const isProfessional = profile?.role === 1 // UserRole.Professional = 1
+  const isProfessional = profile?.isProfessional
 
   if (!isProfessional) {
     return <ClientUpgradePrompt refetchProfile={refetch} />
@@ -84,7 +83,7 @@ function ClientUpgradePrompt({ refetchProfile }: { refetchProfile: () => void })
     onSuccess: () => {
       refetchProfile()
     },
-    onError: (err) => {
+    onError: (err: any) => {
       setErrorMsg(err?.detail || err?.title || 'Falha ao atualizar conta para profissional.')
     }
   })
@@ -189,29 +188,14 @@ function ShopCreationForm({ navigate }: { navigate: ReturnType<typeof useNavigat
     }
   )
 
-  const uploadPhotoMutation = useMutation({
-    mutationFn: async (file: File) => {
-      const formData = new FormData()
-      formData.append('file', file)
-
-      const response = await fetch('/api/Images?format=Landscape', {
-        method: 'POST',
-        credentials: 'include',
-        body: formData
-      })
-
-      if (!response.ok) {
-        throw new Error('Falha no upload da imagem da loja.')
+  const uploadPhotoMutation = $api.useMutation('post', '/api/Images', {
+    onSuccess: (data: any) => {
+      if (data?.id) {
+        setImageId(data.id)
       }
-
-      return await response.json()
-    },
-    onSuccess: (data: { id: string }) => {
-      setImageId(data.id)
     }
   })
 
-  // Create shop mutation
   const createShopMutation = $api.useMutation('post', '/api/Shops', {
     onSuccess: (shop) => {
       if (shop?.slug) {
@@ -220,7 +204,7 @@ function ShopCreationForm({ navigate }: { navigate: ReturnType<typeof useNavigat
         navigate({ to: '/' })
       }
     },
-    onError: (err) => {
+    onError: (err: any) => {
       let msg = 'Falha ao criar o estabelecimento.'
       if (err) {
         if (typeof err === 'string') {
@@ -238,25 +222,26 @@ function ShopCreationForm({ navigate }: { navigate: ReturnType<typeof useNavigat
     }
   })
 
-  const isSlugValid = !debouncedSlug || slugCheck?.isAvailable === true
+  const isFormValid = !debouncedSlug || slugCheck?.isAvailable === true
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setErrorMsg(null)
 
-    if (!name.trim()) {
+    const nameValue = name.trim()
+    if (!nameValue) {
       setErrorMsg('Por favor introduza o nome do estabelecimento.')
       return
     }
 
-    if (!isSlugValid) {
+    if (!isFormValid) {
       setErrorMsg('Por favor defina um slug único e disponível.')
       return
     }
 
     createShopMutation.mutate({
       body: {
-        name: name.trim(),
+        name: nameValue,
         slug: slug.trim() || undefined,
         description: descriptionRef.current?.value.trim() || '',
         address: addressRef.current?.value.trim() || undefined,
@@ -273,7 +258,10 @@ function ShopCreationForm({ navigate }: { navigate: ReturnType<typeof useNavigat
     const file = e.target.files?.[0]
     if (file) {
       setImagePreviewUrl(URL.createObjectURL(file))
-      uploadPhotoMutation.mutate(file)
+      uploadPhotoMutation.mutate({
+        params: { query: { format: 1 } },
+        body: { file: file as any }
+      })
     }
   }
 

@@ -47,11 +47,11 @@ public class CreateShopCommandHandler : BaseHandler<CreateShopCommand, Result<Sh
         var profile = await this.dbContext.UserProfiles
             .FirstOrDefaultAsync(u => u.Id == request.OwnerId, cancellationToken);
 
-        if (profile == null || profile.Role != UserRole.Professional)
+        if (profile == null)
         {
             return Result<ShopResponse>.Failure(new Error(
-                "Forbidden",
-                "Apenas contas com perfil profissional podem criar estabelecimentos."));
+                "NotFound",
+                "Perfil de utilizador não encontrado."));
         }
 
         var rawSlug = string.IsNullOrWhiteSpace(request.Slug) ? request.Name : request.Slug;

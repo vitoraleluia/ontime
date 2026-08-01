@@ -77,9 +77,6 @@ app.UseAuthorization();
 // Map Identity API endpoints under /api/auth
 app.MapGroup("/api/auth").MapIdentityApi<ApplicationUser>();
 
-app.MapStaticAssets();
-app.MapFallbackToFile("index.html");
-
 app.MapControllers();
 
 app.Run();
