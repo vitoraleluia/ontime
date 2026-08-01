@@ -6,7 +6,6 @@ using OnTime.Application.Domain.Results;
 using OnTime.Application.Extensions;
 using OnTime.Application.Features.UserProfile.Responses;
 using OnTime.Application.Services;
-using OnTime.Domain.Enums;
 
 namespace OnTime.Application.Features.UserProfile.Commands;
 

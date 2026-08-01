@@ -1,0 +1,29 @@
+@host = http://localhost:3000
+
+### Register New User (Identity API)
+POST {{host}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "Password123!"
+}
+
+### Login User (Cookie Authentication)
+POST {{host}}/api/auth/login?useCookies=true
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "Password123!"
+}
+
+### Assign Professional Role (Auth Controller)
+POST {{host}}/api/auth/assign-professional
+Accept: application/json
+
+### Google Login Challenge
+GET {{host}}/api/auth/login/google
+
+### Logout User
+POST {{host}}/api/auth/logout

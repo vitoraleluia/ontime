@@ -9,11 +9,23 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as RegisterRouteImport } from './routes/register'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as CreateShopRouteImport } from './routes/create-shop'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ShopsSlugRouteImport } from './routes/shops/$slug'
 
+const RegisterRoute = RegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CreateShopRoute = CreateShopRouteImport.update({
   id: '/create-shop',
   path: '/create-shop',
@@ -39,12 +51,16 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/create-shop': typeof CreateShopRoute
+  '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
   '/shops/$slug': typeof ShopsSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/create-shop': typeof CreateShopRoute
+  '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
   '/shops/$slug': typeof ShopsSlugRoute
 }
 export interface FileRoutesById {
@@ -52,25 +68,52 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/create-shop': typeof CreateShopRoute
+  '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
   '/shops/$slug': typeof ShopsSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/account' | '/create-shop' | '/shops/$slug'
+  fullPaths:
+    '/' | '/account' | '/create-shop' | '/login' | '/register' | '/shops/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/account' | '/create-shop' | '/shops/$slug'
-  id: '__root__' | '/' | '/account' | '/create-shop' | '/shops/$slug'
+  to:
+    '/' | '/account' | '/create-shop' | '/login' | '/register' | '/shops/$slug'
+  id:
+    | '__root__'
+    | '/'
+    | '/account'
+    | '/create-shop'
+    | '/login'
+    | '/register'
+    | '/shops/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AccountRoute: typeof AccountRoute
   CreateShopRoute: typeof CreateShopRoute
+  LoginRoute: typeof LoginRoute
+  RegisterRoute: typeof RegisterRoute
   ShopsSlugRoute: typeof ShopsSlugRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/create-shop': {
       id: '/create-shop'
       path: '/create-shop'
@@ -106,6 +149,8 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountRoute: AccountRoute,
   CreateShopRoute: CreateShopRoute,
+  LoginRoute: LoginRoute,
+  RegisterRoute: RegisterRoute,
   ShopsSlugRoute: ShopsSlugRoute,
 }
 export const routeTree = rootRouteImport

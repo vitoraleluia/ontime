@@ -1,7 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
 using OnTime.Domain.Common;
-using OnTime.Domain.Enums;
 
 namespace OnTime.Domain.Entities;
 
@@ -9,7 +8,7 @@ public class UserProfile : AuditableEntity
 {
     [Key]
     [MaxLength(450)]
-    public string Id { get; set; } = string.Empty; // Maps to Keycloak sub claim
+    public string Id { get; set; } = string.Empty;
 
     [Required]
     [MaxLength(100)]
@@ -30,7 +29,4 @@ public class UserProfile : AuditableEntity
 
     public Guid? ProfilePictureId { get; set; }
     public Image? ProfilePicture { get; set; }
-
-    [Required]
-    public UserRole Role { get; set; } = UserRole.Client;
 }

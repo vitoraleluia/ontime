@@ -1,152 +1,128 @@
-import { createContext, useContext, useState, useEffect, useRef } from 'react'
+import { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import type { ReactNode } from 'react'
-import Keycloak from 'keycloak-js'
-import type { StoredTokens, AuthState, AuthContextType } from '@/domain/auth'
-import { LocalStoreKeys } from '@/domain/constants/localStoreKeys'
+import type { AuthState, AuthContextType } from '@/domain/auth'
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
-
-const keycloakInstance = new Keycloak({
-  url: "http://localhost:5000",
-  realm: "OnTime",
-  clientId: "ontime-api"
-})
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<AuthState>({
     isAuthenticated: false,
     isLoading: true,
-    token: null,
   })
-  
-  const isInitialized = useRef(false)
 
-  useEffect(() => {
-    if (isInitialized.current) return
-    isInitialized.current = true
+  const checkAuth = useCallback(async () => {
+    try {
+      const response = await fetch('/api/Account', {
+        method: 'GET',
+        headers: { Accept: 'application/json' },
+        credentials: 'include',
+      })
 
-    let intervalId: any = null
-
-    const initAuth = async () => {
-      // Retrieve stored tokens if they exist
-      const storedTokensStr = localStorage.getItem(LocalStoreKeys.AuthTokens)
-      let storedTokens: StoredTokens | null = null
-      try {
-        if (storedTokensStr) {
-          storedTokens = JSON.parse(storedTokensStr)
-        }
-      } catch (e) {
-        console.warn("Failed to parse stored auth tokens", e)
-        localStorage.removeItem(LocalStoreKeys.AuthTokens)
+      if (response.ok) {
+        setState({ isAuthenticated: true, isLoading: false })
+      } else {
+        setState({ isAuthenticated: false, isLoading: false })
       }
-
-      const initOptions: any = {
-        checkLoginIframe: false,
-        pkceMethod: "S256",
-        scope: "openid profile email",
-      }
-
-      if (storedTokens) {
-        initOptions.token = storedTokens.token
-        initOptions.refreshToken = storedTokens.refreshToken
-        if (storedTokens.idToken) {
-          initOptions.idToken = storedTokens.idToken
-        }
-      }
-
-      try {
-        const authenticated = await keycloakInstance.init(initOptions)
-        
-        if (authenticated) {
-          localStorage.setItem(
-            LocalStoreKeys.AuthTokens,
-            JSON.stringify({
-              token: keycloakInstance.token,
-              refreshToken: keycloakInstance.refreshToken,
-              idToken: keycloakInstance.idToken,
-            })
-          )
-        } else {
-          localStorage.removeItem(LocalStoreKeys.AuthTokens)
-        }
-
-        setState({
-          isAuthenticated: authenticated,
-          token: keycloakInstance.token || null,
-          isLoading: false,
-        })
-
-        // Set up periodic token refresh (check every 30s, refresh if expiring within 30s)
-        intervalId = setInterval(async () => {
-          try {
-            const refreshed = await keycloakInstance.updateToken(30)
-            if (refreshed) {
-              localStorage.setItem(
-                LocalStoreKeys.AuthTokens,
-                JSON.stringify({
-                  token: keycloakInstance.token,
-                  refreshToken: keycloakInstance.refreshToken,
-                  idToken: keycloakInstance.idToken,
-                })
-              )
-              setState(prev => ({
-                ...prev,
-                token: keycloakInstance.token || null,
-              }))
-            }
-          } catch (err) {
-            console.error("Failed to refresh token", err)
-            logout()
-          }
-        }, 30000)
-      } catch (err) {
-        console.error("Keycloak initialization failed", err)
-        localStorage.removeItem(LocalStoreKeys.AuthTokens)
-        setState({
-          isAuthenticated: false,
-          token: null,
-          isLoading: false,
-        })
-      }
-    }
-
-    initAuth()
-
-    return () => {
-      if (intervalId) {
-        clearInterval(intervalId)
-      }
+    } catch {
+      setState({ isAuthenticated: false, isLoading: false })
     }
   }, [])
 
-  const login = async (returnUrl?: string) => {
-    const redirectUri = returnUrl
-      ? window.location.origin + returnUrl
-      : window.location.href
-    await keycloakInstance.login({ redirectUri, scope: "openid profile email" })
+  useEffect(() => {
+    checkAuth()
+  }, [checkAuth])
+
+  const loginWithCredentials = async (email: string, password: string) => {
+    try {
+      const response = await fetch('/api/auth/login?useCookies=true', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ email, password }),
+      })
+
+      if (response.ok) {
+        await checkAuth()
+        return { success: true }
+      }
+
+      let errorMsg = 'Credenciais inválidas. Verifique o email e a palavra-passe.'
+      try {
+        const errorData = await response.json()
+        if (errorData?.detail) errorMsg = errorData.detail
+        else if (errorData?.title) errorMsg = errorData.title
+      } catch {
+        // use default errorMsg
+      }
+
+      return { success: false, error: errorMsg }
+    } catch (err: any) {
+      return { success: false, error: err?.message || 'Erro ao comunicar com o servidor.' }
+    }
   }
 
-  const register = async (returnUrl?: string) => {
-    const redirectUri = returnUrl
-      ? window.location.origin + returnUrl
-      : window.location.href
-    await keycloakInstance.register({ redirectUri, scope: "openid profile email" })
+  const registerWithCredentials = async (email: string, password: string) => {
+    try {
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ email, password }),
+      })
+
+      if (response.ok) {
+        // Automatically log in after registration
+        return await loginWithCredentials(email, password)
+      }
+
+      let errorMsg = 'Erro ao criar conta. Verifique os dados fornecidos.'
+      try {
+        const errorData = await response.json()
+        if (errorData?.errors) {
+          const messages = Object.values(errorData.errors).flat()
+          if (messages.length > 0) errorMsg = messages.join(' ')
+        } else if (errorData?.detail) {
+          errorMsg = errorData.detail
+        }
+      } catch {
+        // use default errorMsg
+      }
+
+      return { success: false, error: errorMsg }
+    } catch (err: any) {
+      return { success: false, error: err?.message || 'Erro ao comunicar com o servidor.' }
+    }
   }
 
-  const logout = () => {
-    localStorage.removeItem(LocalStoreKeys.AuthTokens)
-    keycloakInstance.logout({
-      redirectUri: window.location.origin + "/",
-    })
+  const loginWithGoogle = (returnUrl?: string) => {
+    const targetUrl = returnUrl
+      ? `/api/auth/login/google?returnUrl=${encodeURIComponent(returnUrl)}`
+      : '/api/auth/login/google'
+    window.location.href = targetUrl
+  }
+
+  const logout = async () => {
+    try {
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include',
+      })
+    } catch {
+      // Ignore network errors on logout
+    } finally {
+      setState({ isAuthenticated: false, isLoading: false })
+    }
   }
 
   return (
     <AuthContext.Provider
       value={{
         ...state,
-        login,
-        register,
+        loginWithCredentials,
+        registerWithCredentials,
+        loginWithGoogle,
         logout,
+        refetchAuth: checkAuth,
       }}
     >
       {children}
@@ -157,7 +133,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 export function useAuth() {
   const context = useContext(AuthContext)
   if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider")
+    throw new Error('useAuth must be used within an AuthProvider')
   }
   return context
 }

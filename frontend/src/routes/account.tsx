@@ -1,11 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate, Link } from '@tanstack/react-router'
 import { useAuth } from '@/lib/auth'
 import { $api } from '@/lib/api'
 import { Button } from '@/components/ui/button'
 import { useMutation } from '@tanstack/react-query'
-import { LocalStoreKeys } from '@/domain/constants/localStoreKeys'
-import type { StoredTokens } from '@/domain/auth'
 import type { components } from '@/generated/apiClient'
 
 type UserProfileResponse = components['schemas']['UserProfileResponse']
@@ -25,7 +23,8 @@ export const Route = createFileRoute('/account')({
 })
 
 function AccountPage() {
-  const { isAuthenticated, isLoading: isAuthLoading, login } = useAuth()
+  const { isAuthenticated, isLoading: isAuthLoading } = useAuth()
+  const navigate = useNavigate()
   
   // React Query - Profile fetching (types fully inferred)
   const { data: profile, isLoading: isProfileLoading, refetch } = $api.useQuery(
@@ -49,9 +48,9 @@ function AccountPage() {
   // Redirect if not authenticated
   useEffect(() => {
     if (!isAuthLoading && !isAuthenticated) {
-      login('/account')
+      navigate({ to: '/login', search: { returnUrl: '/account' } })
     }
-  }, [isAuthLoading, isAuthenticated, login])
+  }, [isAuthLoading, isAuthenticated, navigate])
 
   // Mutations (Errors and Responses are fully typed)
   const updateProfileMutation = $api.useMutation('put', '/api/Account', {
@@ -81,18 +80,12 @@ function AccountPage() {
 
   const uploadPhotoMutation = useMutation({
     mutationFn: async (file: File) => {
-      const tokensStr = localStorage.getItem(LocalStoreKeys.AuthTokens)
-      if (!tokensStr) throw new Error('Sessão expirada. Inicie sessão novamente.')
-      const tokens = JSON.parse(tokensStr) as StoredTokens
-
       const formData = new FormData()
       formData.append('file', file)
 
       const response = await fetch('/api/Images?format=Square', {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${tokens.token}`
-        },
+        credentials: 'include',
         body: formData
       })
 
@@ -202,9 +195,11 @@ function AccountPage() {
         <p className="text-muted-foreground max-w-md text-sm">
           Por favor, inicie sessão para aceder às configurações do seu perfil.
         </p>
-        <Button onClick={() => login('/account')} className="mt-2 font-semibold">
-          Iniciar Sessão
-        </Button>
+        <Link to="/login" search={{ returnUrl: '/account' }}>
+          <Button className="mt-2 font-semibold">
+            Iniciar Sessão
+          </Button>
+        </Link>
       </div>
     )
   }

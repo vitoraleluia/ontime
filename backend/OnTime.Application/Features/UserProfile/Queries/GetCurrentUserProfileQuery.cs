@@ -2,11 +2,11 @@ using MediatR;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+
 using OnTime.Application.Domain.Results;
 using OnTime.Application.Extensions;
 using OnTime.Application.Features.UserProfile.Responses;
 using OnTime.Application.Services;
-using OnTime.Domain.Enums;
 
 namespace OnTime.Application.Features.UserProfile.Queries;
 
@@ -27,7 +27,8 @@ public class GetCurrentUserProfileQueryHandler : BaseHandler<GetCurrentUserProfi
         this.dbContext = dbContext;
     }
 
-    protected override async Task<Result<UserProfileResponse>> HandleSafe(GetCurrentUserProfileQuery request, CancellationToken cancellationToken)
+    protected override async Task<Result<UserProfileResponse>> HandleSafe(GetCurrentUserProfileQuery request,
+        CancellationToken cancellationToken)
     {
         var profile = await this.dbContext.UserProfiles
             .Include(u => u.ProfilePicture)
@@ -35,14 +36,13 @@ public class GetCurrentUserProfileQueryHandler : BaseHandler<GetCurrentUserProfi
 
         if (profile == null)
         {
-            // Just-In-Time Profile creation for new Keycloak registrations
+            // Just-In-Time Profile creation for new registrations
             profile = new OnTime.Domain.Entities.UserProfile
             {
                 Id = request.UserId,
                 FirstName = request.FirstName,
                 LastName = request.LastName,
-                Email = request.Email,
-                Role = UserRole.Client
+                Email = request.Email
             };
 
             this.dbContext.UserProfiles.Add(profile);
@@ -55,8 +55,7 @@ public class GetCurrentUserProfileQueryHandler : BaseHandler<GetCurrentUserProfi
             LastName = profile.LastName,
             Email = profile.Email,
             PhoneNumber = profile.PhoneNumber,
-            ProfilePictureUrl = profile.ProfilePicture.BuildImageUrl(),
-            Role = profile.Role
+            ProfilePictureUrl = profile.ProfilePicture.BuildImageUrl()
         };
 
         return Result<UserProfileResponse>.Success(response);

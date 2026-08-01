@@ -4,6 +4,7 @@
         <Project Path="backend/OnTime.Bus/OnTime.Bus.csproj" />
         <Project Path="backend/OnTime.Domain/OnTime.Domain.csproj" />
         <Project Path="backend/OnTime.Infrastructure/OnTime.Infrastructure.csproj" />
+        <Project Path="backend/OnTime.Identity/OnTime.Identity.csproj" />
         <Project Path="backend\OnTime.Api\OnTime.Api.csproj" />
     </Folder>
 </Solution>

@@ -9,7 +9,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools"/>
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL"/>
     <PackageReference Include="MediatR"/>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer"/>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Google"/>
     <PackageReference Include="Swashbuckle.AspNetCore" />
   </ItemGroup>
 
@@ -17,6 +17,7 @@
     <ProjectReference Include="..\OnTime.Application\OnTime.Application.csproj"/>
     <ProjectReference Include="..\OnTime.Domain\OnTime.Domain.csproj"/>
     <ProjectReference Include="..\OnTime.Infrastructure\OnTime.Infrastructure.csproj"/>
+    <ProjectReference Include="..\OnTime.Identity\OnTime.Identity.csproj"/>
   </ItemGroup>
 
   <ItemGroup>

@@ -88,7 +88,7 @@ export function Navbar() {
 }
 
 function DesktopAuthSection() {
-    const { isAuthenticated, isLoading, login, register, logout } = useAuth()
+    const { isAuthenticated, isLoading, logout } = useAuth()
 
     if (isLoading) {
         return (
@@ -136,20 +136,22 @@ function DesktopAuthSection() {
 
     return (
         <>
-            <Button variant="ghost" size="sm" onClick={() => register()}
-                    className="cursor-pointer">
-                Registar
-            </Button>
-            <Button variant="default" size="sm" onClick={() => login()}
-                    className="cursor-pointer font-semibold shadow-xs">
-                Entrar
-            </Button>
+            <Link to="/register">
+                <Button variant="ghost" size="sm" className="cursor-pointer">
+                    Registar
+                </Button>
+            </Link>
+            <Link to="/login">
+                <Button variant="default" size="sm" className="cursor-pointer font-semibold shadow-xs">
+                    Entrar
+                </Button>
+            </Link>
         </>
     )
 }
 
 function MobileAuthSection({ closeMenu }: { closeMenu: () => void }) {
-    const { isAuthenticated, isLoading, login, register, logout } = useAuth()
+    const { isAuthenticated, isLoading, logout } = useAuth()
 
     if (isLoading) {
         return (
@@ -197,18 +199,16 @@ function MobileAuthSection({ closeMenu }: { closeMenu: () => void }) {
 
     return (
         <div className="flex flex-col gap-2">
-            <Button variant="outline" onClick={() => {
-                closeMenu()
-                register()
-            }} className="w-full justify-center">
-                Registar
-            </Button>
-            <Button variant="default" onClick={() => {
-                closeMenu()
-                login()
-            }} className="w-full justify-center">
-                Entrar
-            </Button>
+            <Link to="/register" onClick={closeMenu}>
+                <Button variant="outline" className="w-full justify-center">
+                    Registar
+                </Button>
+            </Link>
+            <Link to="/login" onClick={closeMenu}>
+                <Button variant="default" className="w-full justify-center">
+                    Entrar
+                </Button>
+            </Link>
         </div>
     )
 }

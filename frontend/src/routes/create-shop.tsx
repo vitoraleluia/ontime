@@ -4,8 +4,6 @@ import { useAuth } from '@/lib/auth'
 import { $api } from '@/lib/api'
 import { Button } from '@/components/ui/button'
 import { useMutation } from '@tanstack/react-query'
-import { LocalStoreKeys } from '@/domain/constants/localStoreKeys'
-import type { StoredTokens } from '@/domain/auth'
 import {
   Store,
   Building2,
@@ -46,7 +44,7 @@ function buildFriendlyUrl(text: string, maxLength = 50): string {
 }
 
 function CreateShopPage() {
-  const { isAuthenticated, isLoading: isAuthLoading, login } = useAuth()
+  const { isAuthenticated, isLoading: isAuthLoading } = useAuth()
   const navigate = useNavigate()
 
   const { data: profile, isLoading: isProfileLoading, refetch } = $api.useQuery(
@@ -58,9 +56,9 @@ function CreateShopPage() {
 
   useEffect(() => {
     if (!isAuthLoading && !isAuthenticated) {
-      login('/create-shop')
+      navigate({ to: '/login', search: { returnUrl: '/create-shop' } })
     }
-  }, [isAuthLoading, isAuthenticated, login])
+  }, [isAuthLoading, isAuthenticated, navigate])
 
   if (isAuthLoading || isProfileLoading) {
     return (
@@ -191,19 +189,14 @@ function ShopCreationForm({ navigate }: { navigate: ReturnType<typeof useNavigat
     }
   )
 
-  // Upload image mutation
   const uploadPhotoMutation = useMutation({
     mutationFn: async (file: File) => {
-      const tokensStr = localStorage.getItem(LocalStoreKeys.AuthTokens)
-      if (!tokensStr) throw new Error('Sessão expirada. Inicie sessão novamente.')
-      const tokens = JSON.parse(tokensStr) as StoredTokens
-
       const formData = new FormData()
       formData.append('file', file)
 
       const response = await fetch('/api/Images?format=Landscape', {
         method: 'POST',
-        headers: { Authorization: `Bearer ${tokens.token}` },
+        credentials: 'include',
         body: formData
       })
 

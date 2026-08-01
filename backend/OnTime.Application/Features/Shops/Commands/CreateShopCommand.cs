@@ -8,7 +8,6 @@ using OnTime.Application.Features.Shops.Responses;
 using OnTime.Application.Services;
 using OnTime.Domain.Common;
 using OnTime.Domain.Entities;
-using OnTime.Domain.Enums;
 
 using OnTime.Application.Extensions;
 
