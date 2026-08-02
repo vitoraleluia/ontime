@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 
 using OnTime.Application.Domain.Results;
 using OnTime.Application.Services;
+using OnTime.Domain.Enums;
 
 namespace OnTime.Application.Features.Auth.Commands;
 
@@ -29,13 +30,13 @@ public class ForgotPasswordCommandHandler : BaseHandler<ForgotPasswordCommand, R
     {
         if (string.IsNullOrWhiteSpace(request.Email))
         {
-            return Result.Failure(new Error("Auth.EmailRequired", "O endereço de email é obrigatório."));
+            return Result.Failure(new Error(ErrorCode.EmailRequired, "O endereço de email é obrigatório."));
         }
 
         var result = await this.identityService.GeneratePasswordResetToken(request.Email, cancellationToken);
         if (result.IsFailure)
         {
-            return Result.Failure(new Error("Auth.ForgotPasswordFailed", result.ErrorMessage ?? "Falha ao gerar pedido de recuperação de palavra-passe."));
+            return Result.Failure(new Error(ErrorCode.ForgotPasswordFailed, result.ErrorMessage ?? "Falha ao gerar pedido de recuperação de palavra-passe."));
         }
 
         if (result.IsSuccess && !string.IsNullOrEmpty(result.Token))

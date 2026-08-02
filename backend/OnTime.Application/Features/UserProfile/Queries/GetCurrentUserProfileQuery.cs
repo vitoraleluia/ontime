@@ -7,6 +7,7 @@ using OnTime.Application.Domain.Results;
 using OnTime.Application.Extensions;
 using OnTime.Application.Features.UserProfile.Responses;
 using OnTime.Application.Services;
+using OnTime.Domain.Enums;
 
 namespace OnTime.Application.Features.UserProfile.Queries;
 
@@ -33,7 +34,7 @@ public class GetCurrentUserProfileQueryHandler : BaseHandler<GetCurrentUserProfi
 
         if (profile == null)
         {
-            return Result<UserProfileResponse>.Failure(new Error("ProfileNotFound", "Perfil de utilizador não encontrado."));
+            return Result<UserProfileResponse>.Failure(new Error(ErrorCode.ProfileNotFound, "Perfil de utilizador não encontrado."));
         }
 
         var response = new UserProfileResponse

@@ -44,7 +44,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return { success: true }
     } catch (err: unknown) {
       const errorMsg = ErrorUtils.extractMessage(err, 'Credenciais inválidas. Verifique o email e a palavra-passe.')
-      return { success: false, error: errorMsg }
+      const errorCode = ErrorUtils.extractCode(err)
+      return { success: false, error: errorMsg, errorCode }
     }
   }
 
@@ -68,7 +69,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return { success: true }
     } catch (err: unknown) {
       const errorMsg = ErrorUtils.extractMessage(err, 'Erro ao criar conta. Verifique os dados fornecidos.')
-      return { success: false, error: errorMsg }
+      const errorCode = ErrorUtils.extractCode(err)
+      return { success: false, error: errorMsg, errorCode }
     }
   }
 
@@ -98,7 +100,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return { success: true }
     } catch (err: unknown) {
       const errorMsg = ErrorUtils.extractMessage(err, 'Erro ao processar pedido.')
-      return { success: false, error: errorMsg }
+      const errorCode = ErrorUtils.extractCode(err)
+      return { success: false, error: errorMsg, errorCode }
     }
   }
 
@@ -110,7 +113,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return { success: true }
     } catch (err: unknown) {
       const errorMsg = ErrorUtils.extractMessage(err, 'Erro ao redefinir palavra-passe.')
-      return { success: false, error: errorMsg }
+      const errorCode = ErrorUtils.extractCode(err)
+      return { success: false, error: errorMsg, errorCode }
     }
   }
 
@@ -122,7 +126,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return { success: true }
     } catch (err: unknown) {
       const errorMsg = ErrorUtils.extractMessage(err, 'Erro ao confirmar email.')
-      return { success: false, error: errorMsg }
+      const errorCode = ErrorUtils.extractCode(err)
+      return { success: false, error: errorMsg, errorCode }
     }
   }
 
@@ -134,7 +139,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return { success: true }
     } catch (err: unknown) {
       const errorMsg = ErrorUtils.extractMessage(err, 'Erro ao reenviar confirmação de email.')
-      return { success: false, error: errorMsg }
+      const errorCode = ErrorUtils.extractCode(err)
+      return { success: false, error: errorMsg, errorCode }
     }
   }
 

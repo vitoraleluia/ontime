@@ -92,7 +92,7 @@ function AccountPage() {
     setTempPictureUrl(localUrl)
 
     uploadPhotoMutation.mutate({
-      params: { query: { format: 0 } },
+      params: { query: { format: 'Square' } },
       body: { file: file as unknown as string },
     })
   }

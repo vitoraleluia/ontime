@@ -4,7 +4,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using OnTime.Application.Features.Images.Commands;
+using OnTime.Domain.Common;
 using OnTime.Domain.Entities;
+using OnTime.Domain.Enums;
+
 namespace OnTime.Api.Controllers;
 
 public record UploadImageResponse(Guid Id);
@@ -19,20 +22,20 @@ public class ImagesController : BaseApiController
 
     [HttpPost]
     [ProducesResponseType(typeof(UploadImageResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<UploadImageResponse>> Upload(IFormFile file,
         [FromQuery]
         ImageFormat format = ImageFormat.Square)
     {
         if (file == null || file.Length == 0)
         {
-            return BadRequest("Nenhum ficheiro enviado.");
+            return HandleFailure(ErrorCode.BadRequest, "Nenhum ficheiro enviado.");
         }
 
         if (!file.ContentType.StartsWith("image/"))
         {
-            return BadRequest("O ficheiro enviado não é uma imagem válida.");
+            return HandleFailure(ErrorCode.BadRequest, "O ficheiro enviado não é uma imagem válida.");
         }
 
         using var stream = file.OpenReadStream();
@@ -41,7 +44,7 @@ public class ImagesController : BaseApiController
 
         if (result.IsFailure)
         {
-            return BadRequest(result.Error?.Message);
+            return HandleFailure(result.Error!);
         }
 
         return Ok(new UploadImageResponse(result.Value));

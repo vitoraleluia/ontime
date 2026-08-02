@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 
 using OnTime.Application.Domain.Results;
 using OnTime.Application.Services;
+using OnTime.Domain.Enums;
 
 namespace OnTime.Application.Features.Auth.Commands;
 
@@ -33,17 +34,17 @@ public class LoginUserCommandHandler : BaseHandler<LoginUserCommand, Result>
         if (result.IsLockedOut)
         {
             var lockoutMinutes = this.configuration.GetValue<int>("AuthenticationSettings:Lockout:DefaultLockoutTimeSpanInMinutes", 5);
-            return Result.Failure(new Error("Auth.LockedOut", $"Conta bloqueada temporariamente. Tente novamente após {lockoutMinutes} minutos."));
+            return Result.Failure(new Error(ErrorCode.LockedOut, $"Conta bloqueada temporariamente. Tente novamente após {lockoutMinutes} minutos."));
         }
 
         if (result.RequiresEmailConfirmation)
         {
-            return Result.Failure(new Error("Auth.UnconfirmedEmail", result.ErrorMessage ?? "O seu endereço de email ainda não foi confirmado. Por favor, verifique a sua caixa de entrada."));
+            return Result.Failure(new Error(ErrorCode.EmailPendingVerification, result.ErrorMessage ?? "O seu endereço de email ainda não foi confirmado. Por favor, verifique a sua caixa de entrada."));
         }
 
         if (result.IsFailure)
         {
-            return Result.Failure(new Error("Auth.InvalidCredentials", result.ErrorMessage ?? "Credenciais inválidas. Verifique o email e a palavra-passe."));
+            return Result.Failure(new Error(ErrorCode.InvalidCredentials, result.ErrorMessage ?? "Credenciais inválidas. Verifique o email e a palavra-passe."));
         }
 
         return Result.Success();

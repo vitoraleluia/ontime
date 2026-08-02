@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 
 using OnTime.Application.Domain.Results;
 using OnTime.Application.Services;
+using OnTime.Domain.Enums;
 
 using UserProfileEntity = OnTime.Domain.Entities.UserProfile;
 
@@ -42,24 +43,24 @@ public class RegisterUserCommandHandler : BaseHandler<RegisterUserCommand, Resul
     {
         if (string.IsNullOrWhiteSpace(request.FirstName))
         {
-            return Result<string>.Failure(new Error("Auth.FirstNameRequired", "O primeiro nome é obrigatório."));
+            return Result<string>.Failure(new Error(ErrorCode.FirstNameRequired, "O primeiro nome é obrigatório."));
         }
 
         if (string.IsNullOrWhiteSpace(request.LastName))
         {
-            return Result<string>.Failure(new Error("Auth.LastNameRequired", "O apelido é obrigatório."));
+            return Result<string>.Failure(new Error(ErrorCode.LastNameRequired, "O apelido é obrigatório."));
         }
 
         if (!string.IsNullOrWhiteSpace(request.PhoneNumber) && !PtPhoneRegex.IsMatch(request.PhoneNumber))
         {
-            return Result<string>.Failure(new Error("Auth.InvalidPhoneNumber", "O número de telemóvel deve ser um número português válido (ex: 927431783)."));
+            return Result<string>.Failure(new Error(ErrorCode.InvalidPhoneNumber, "O número de telemóvel deve ser um número português válido (ex: 927431783)."));
         }
 
         var identityResult = await this.identityService.RegisterUser(request.Email, request.Password, cancellationToken);
         if (identityResult.IsFailure)
         {
             var errorMessage = identityResult.ErrorMessage ?? "Falha ao criar conta de utilizador.";
-            return Result<string>.Failure(new Error("Auth.RegistrationFailed", errorMessage));
+            return Result<string>.Failure(new Error(ErrorCode.RegistrationFailed, errorMessage));
         }
 
         var profile = new UserProfileEntity

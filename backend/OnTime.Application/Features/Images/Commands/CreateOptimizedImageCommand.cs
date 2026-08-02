@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using OnTime.Application.Domain.Results;
 using OnTime.Application.Services;
 using OnTime.Domain.Entities;
+using OnTime.Domain.Enums;
 
 namespace OnTime.Application.Features.Images.Commands;
 
@@ -34,7 +35,7 @@ public class CreateOptimizedImageCommandHandler : BaseHandler<CreateOptimizedIma
         var image = await this.dbContext.Images.FindAsync(new object[] { request.ImageId }, cancellationToken);
         if (image == null)
         {
-            return Result.Failure(new Error("ImageNotFound", $"Image {request.ImageId} not found."));
+            return Result.Failure(new Error(ErrorCode.ImageNotFound, $"Image {request.ImageId} not found."));
         }
 
         try
@@ -72,7 +73,7 @@ public class CreateOptimizedImageCommandHandler : BaseHandler<CreateOptimizedIma
             image.ErrorMessage = ex.Message;
             await this.dbContext.SaveChangesAsync(cancellationToken);
 
-            return Result.Failure(new Error("ImageProcessingFailed", ex.Message));
+            return Result.Failure(new Error(ErrorCode.ImageProcessingFailed, ex.Message));
         }
     }
 }

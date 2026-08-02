@@ -141,7 +141,7 @@ export function ShopCreationForm({ navigate }: ShopCreationFormProps) {
     if (file) {
       setImagePreviewUrl(URL.createObjectURL(file))
       uploadPhotoMutation.mutate({
-        params: { query: { format: 1 } },
+        params: { query: { format: 'Landscape' } },
         body: { file: file as unknown as string },
       })
     }

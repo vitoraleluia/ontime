@@ -29,13 +29,22 @@ export interface paths {
                         "application/json": components["schemas"]["UserProfileResponse"];
                     };
                 };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
                 /** @description Unauthorized */
                 401: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -70,7 +79,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ValidationProblemDetails"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
@@ -79,7 +88,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -118,13 +127,22 @@ export interface paths {
                         "application/json": components["schemas"]["UserProfileResponse"];
                     };
                 };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
+                    };
+                };
                 /** @description Unauthorized */
                 401: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -172,7 +190,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ValidationProblemDetails"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -220,7 +238,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ValidationProblemDetails"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -301,7 +319,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ValidationProblemDetails"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -349,7 +367,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ValidationProblemDetails"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -397,7 +415,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ValidationProblemDetails"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -445,7 +463,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ValidationProblemDetails"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -638,7 +656,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ValidationProblemDetails"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
@@ -647,7 +665,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -697,7 +715,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Unauthorized */
@@ -706,7 +724,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
                 /** @description Forbidden */
@@ -715,7 +733,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -751,6 +769,15 @@ export interface paths {
                     };
                     content: {
                         "application/json": components["schemas"]["SlugAvailabilityResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -796,7 +823,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ProblemDetails"];
+                        "application/json": components["schemas"]["ErrorResponse"];
                     };
                 };
             };
@@ -831,29 +858,22 @@ export interface components {
             /** Format: uuid */
             imageId?: string | null;
         };
+        /** @enum {string} */
+        ErrorCode: "Unknown" | "Unauthorized" | "Forbidden" | "NotFound" | "BadRequest" | "ValidationFailed" | "InvalidCredentials" | "EmailPendingVerification" | "LockedOut" | "InvalidToken" | "EmailAlreadyExists" | "RegistrationFailed" | "ProfileNotFound" | "ShopNotFound" | "SlugUnavailable" | "ImageNotFound" | "ImageProcessingFailed" | "ProfessionalRoleRequired" | "ResendConfirmationFailed" | "ResetPasswordFailed" | "ForgotPasswordFailed" | "ConfirmEmailFailed" | "InvalidConfirmationParameters" | "InvalidResetParameters" | "EmailRequired" | "FirstNameRequired" | "LastNameRequired" | "InvalidPhoneNumber";
+        ErrorResponse: {
+            errorCode?: components["schemas"]["ErrorCode"];
+            message?: string | null;
+        };
         ForgotPasswordRequest: {
             /** Format: email */
             email: string;
         };
-        /**
-         * Format: int32
-         * @enum {integer}
-         */
-        ImageFormat: 0 | 1 | 2;
+        /** @enum {string} */
+        ImageFormat: "Square" | "Landscape" | "Portrait";
         LoginRequest: {
             /** Format: email */
             email: string;
             password: string;
-        };
-        ProblemDetails: {
-            type?: string | null;
-            title?: string | null;
-            /** Format: int32 */
-            status?: number | null;
-            detail?: string | null;
-            instance?: string | null;
-        } & {
-            [key: string]: unknown;
         };
         RegisterRequest: {
             /** Format: email */
@@ -916,19 +936,6 @@ export interface components {
             phoneNumber?: string | null;
             profilePictureUrl?: string | null;
             isProfessional?: boolean;
-        };
-        ValidationProblemDetails: {
-            type?: string | null;
-            title?: string | null;
-            /** Format: int32 */
-            status?: number | null;
-            detail?: string | null;
-            instance?: string | null;
-            errors?: {
-                [key: string]: string[];
-            } | null;
-        } & {
-            [key: string]: unknown;
         };
     };
     responses: never;

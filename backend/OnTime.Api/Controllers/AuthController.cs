@@ -13,6 +13,7 @@ using OnTime.Api.Extensions;
 using OnTime.Api.Models.Auth;
 using OnTime.Application.Features.Auth.Commands;
 using OnTime.Application.Services;
+using OnTime.Domain.Common;
 using OnTime.Domain.Enums;
 using OnTime.Domain.Settings;
 using OnTime.Identity.Constants;
@@ -37,7 +38,7 @@ public class AuthController : BaseApiController
 
     [HttpPost("register")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Register([FromBody] RegisterRequest request)
     {
         var command = new RegisterUserCommand(request.Email, request.Password, request.FirstName, request.LastName,
@@ -46,7 +47,7 @@ public class AuthController : BaseApiController
 
         if (result.IsFailure)
         {
-            return BadRequest(result.Error?.Message);
+            return HandleFailure(result.Error!);
         }
 
         return Ok();
@@ -54,7 +55,7 @@ public class AuthController : BaseApiController
 
     [HttpPost("login")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
         var command = new LoginUserCommand(request.Email, request.Password);
@@ -62,7 +63,7 @@ public class AuthController : BaseApiController
 
         if (result.IsFailure)
         {
-            return BadRequest(result.Error?.Message);
+            return HandleFailure(result.Error!);
         }
 
         return Ok();
@@ -79,7 +80,7 @@ public class AuthController : BaseApiController
 
     [HttpPost("forgot-password")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
     {
         var command = new ForgotPasswordCommand(request.Email);
@@ -87,7 +88,7 @@ public class AuthController : BaseApiController
 
         if (result.IsFailure)
         {
-            return BadRequest(result.Error?.Message);
+            return HandleFailure(result.Error!);
         }
 
         return Ok();
@@ -95,7 +96,7 @@ public class AuthController : BaseApiController
 
     [HttpPost("reset-password")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
     {
         var command = new ResetPasswordCommand(request.Email, request.Token, request.NewPassword);
@@ -103,7 +104,7 @@ public class AuthController : BaseApiController
 
         if (result.IsFailure)
         {
-            return BadRequest(result.Error?.Message);
+            return HandleFailure(result.Error!);
         }
 
         return Ok();
@@ -111,7 +112,7 @@ public class AuthController : BaseApiController
 
     [HttpPost("confirm-email")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> ConfirmEmail([FromBody] ConfirmEmailRequest request)
     {
         var command = new ConfirmEmailCommand(request.UserId, request.Token);
@@ -119,7 +120,7 @@ public class AuthController : BaseApiController
 
         if (result.IsFailure)
         {
-            return BadRequest(result.Error?.Message);
+            return HandleFailure(result.Error!);
         }
 
         return Ok();
@@ -127,7 +128,7 @@ public class AuthController : BaseApiController
 
     [HttpPost("resend-confirmation-email")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> ResendConfirmationEmail([FromBody] ResendConfirmationEmailRequest request)
     {
         var command = new ResendConfirmationEmailCommand(request.Email);
@@ -135,7 +136,7 @@ public class AuthController : BaseApiController
 
         if (result.IsFailure)
         {
-            return BadRequest(result.Error?.Message);
+            return HandleFailure(result.Error!);
         }
 
         return Ok();
