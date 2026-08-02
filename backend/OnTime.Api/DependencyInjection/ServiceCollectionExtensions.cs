@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
 
-using OnTime.Domain.Settings;
 using OnTime.Api.Extensions;
+using OnTime.Domain.Settings;
 
 namespace OnTime.Api.DependencyInjection;
 

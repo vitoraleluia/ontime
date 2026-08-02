@@ -22,8 +22,5 @@ Content-Type: application/json
 POST {{host}}/api/auth/assign-professional
 Accept: application/json
 
-### Google Login Challenge
-GET {{host}}/api/auth/login/google
-
 ### Logout User
 POST {{host}}/api/auth/logout

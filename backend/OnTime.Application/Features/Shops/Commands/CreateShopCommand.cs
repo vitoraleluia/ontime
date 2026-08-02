@@ -4,14 +4,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 using OnTime.Application.Domain.Results;
+using OnTime.Application.Extensions;
+using OnTime.Application.Features.Shops.Queries;
 using OnTime.Application.Features.Shops.Responses;
 using OnTime.Application.Services;
 using OnTime.Domain.Common;
 using OnTime.Domain.Entities;
-
-using OnTime.Application.Extensions;
-
-using OnTime.Application.Features.Shops.Queries;
 
 namespace OnTime.Application.Features.Shops.Commands;
 

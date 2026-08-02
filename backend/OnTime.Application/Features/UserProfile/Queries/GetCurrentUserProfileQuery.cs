@@ -11,10 +11,7 @@ using OnTime.Application.Services;
 namespace OnTime.Application.Features.UserProfile.Queries;
 
 public record GetCurrentUserProfileQuery(
-    string UserId,
-    string Email,
-    string FirstName,
-    string LastName) : IRequest<Result<UserProfileResponse>>;
+    string UserId) : IRequest<Result<UserProfileResponse>>;
 
 public class GetCurrentUserProfileQueryHandler : BaseHandler<GetCurrentUserProfileQuery, Result<UserProfileResponse>>
 {
@@ -36,17 +33,7 @@ public class GetCurrentUserProfileQueryHandler : BaseHandler<GetCurrentUserProfi
 
         if (profile == null)
         {
-            // Just-In-Time Profile creation for new registrations
-            profile = new OnTime.Domain.Entities.UserProfile
-            {
-                Id = request.UserId,
-                FirstName = request.FirstName,
-                LastName = request.LastName,
-                Email = request.Email
-            };
-
-            this.dbContext.UserProfiles.Add(profile);
-            await this.dbContext.SaveChangesAsync(cancellationToken);
+            return Result<UserProfileResponse>.Failure(new Error("ProfileNotFound", "Perfil de utilizador não encontrado."));
         }
 
         var response = new UserProfileResponse

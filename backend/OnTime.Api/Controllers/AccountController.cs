@@ -40,32 +40,7 @@ public class AccountController : BaseApiController
             return Unauthorized("ID de utilizador ausente no token.");
         }
 
-        var email = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value
-                    ?? User.FindFirst(ClaimNames.Email)?.Value
-                    ?? string.Empty;
-
-        var givenName = User.FindFirst(System.Security.Claims.ClaimTypes.GivenName)?.Value
-                        ?? User.FindFirst(ClaimNames.GivenName)?.Value
-                        ?? string.Empty;
-
-        var familyName = User.FindFirst(System.Security.Claims.ClaimTypes.Surname)?.Value
-                         ?? User.FindFirst(ClaimNames.FamilyName)?.Value
-                         ?? string.Empty;
-
-        // If Name claims are empty, extract fallback from email or display name
-        if (string.IsNullOrEmpty(givenName))
-        {
-            var fullName = User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value
-                           ?? User.FindFirst(ClaimNames.Name)?.Value
-                           ?? User.FindFirst(ClaimNames.PreferredUsername)?.Value
-                           ?? email.Split('@')[0];
-
-            var nameParts = fullName.Split(' ', 2);
-            givenName = nameParts[0];
-            familyName = nameParts.Length > 1 ? nameParts[1] : "Utilizador";
-        }
-
-        var query = new GetCurrentUserProfileQuery(userId, email, givenName, familyName);
+        var query = new GetCurrentUserProfileQuery(userId);
         var result = await this.Mediator.Send(query);
 
         if (result.IsFailure)
@@ -124,19 +99,7 @@ public class AccountController : BaseApiController
             return BadRequest("Falha ao atribuir o papel profissional.");
         }
 
-        var email = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value
-                    ?? User.FindFirst(ClaimNames.Email)?.Value
-                    ?? string.Empty;
-
-        var givenName = User.FindFirst(System.Security.Claims.ClaimTypes.GivenName)?.Value
-                        ?? User.FindFirst(ClaimNames.GivenName)?.Value
-                        ?? string.Empty;
-
-        var familyName = User.FindFirst(System.Security.Claims.ClaimTypes.Surname)?.Value
-                         ?? User.FindFirst(ClaimNames.FamilyName)?.Value
-                         ?? string.Empty;
-
-        var query = new GetCurrentUserProfileQuery(userId, email, givenName, familyName);
+        var query = new GetCurrentUserProfileQuery(userId);
         var result = await this.Mediator.Send(query);
 
         if (result.IsFailure)

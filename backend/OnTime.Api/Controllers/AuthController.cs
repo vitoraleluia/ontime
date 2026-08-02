@@ -9,18 +9,17 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
-using OnTime.Domain.Settings;
 using OnTime.Api.Extensions;
 using OnTime.Api.Models.Auth;
 using OnTime.Application.Features.Auth.Commands;
 using OnTime.Application.Services;
 using OnTime.Domain.Enums;
+using OnTime.Domain.Settings;
 using OnTime.Identity.Constants;
 using OnTime.Identity.Entities;
 
 namespace OnTime.Api.Controllers;
 
-[Route("api/auth")]
 public class AuthController : BaseApiController
 {
     private readonly SignInManager<ApplicationUser> signInManager;
@@ -140,50 +139,5 @@ public class AuthController : BaseApiController
         }
 
         return Ok();
-    }
-
-    [HttpGet("login/google")]
-    public IActionResult GoogleLogin([FromQuery] string? returnUrl)
-    {
-        var redirectUrl = Url.Action(nameof(GoogleCallback), "Auth", new { returnUrl });
-        var properties =
-            this.signInManager.ConfigureExternalAuthenticationProperties(GoogleDefaults.AuthenticationScheme,
-                redirectUrl);
-        return Challenge(properties, GoogleDefaults.AuthenticationScheme);
-    }
-
-    [HttpGet("google-callback")]
-    public async Task<IActionResult> GoogleCallback([FromQuery] string? returnUrl)
-    {
-        var info = await this.signInManager.GetExternalLoginInfoAsync();
-        if (info == null)
-        {
-            return Redirect("/login?error=GoogleAuthFailed".BuildFrontendUrl());
-        }
-
-        var result = await this.signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey,
-            isPersistent: true, bypassTwoFactor: true);
-        if (!result.Succeeded)
-        {
-            var email = info.Principal.FindFirstValue(ClaimTypes.Email);
-            if (string.IsNullOrEmpty(email))
-            {
-                return Redirect("/login?error=EmailMissing".BuildFrontendUrl());
-            }
-
-            var user = await this.userManager.FindByEmailAsync(email);
-            if (user == null)
-            {
-                user = new ApplicationUser { UserName = email, Email = email, EmailConfirmed = true };
-                await this.userManager.CreateAsync(user);
-            }
-
-            await this.userManager.AddLoginAsync(user, info);
-            await this.signInManager.SignInAsync(user, isPersistent: true);
-        }
-
-        await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
-
-        return Redirect(returnUrl.BuildFrontendUrl());
     }
 }

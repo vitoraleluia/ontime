@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 
 using OnTime.Application.Domain.Results;
 using OnTime.Application.Services;
+
 using UserProfileEntity = OnTime.Domain.Entities.UserProfile;
 
 namespace OnTime.Application.Features.Auth.Commands;

@@ -97,8 +97,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const loginWithGoogle = (returnUrl?: string) => {
     const targetUrl = returnUrl
-      ? `/api/auth/login/google?returnUrl=${encodeURIComponent(returnUrl)}`
-      : '/api/auth/login/google'
+      ? `/api/GoogleAuth/login?returnUrl=${encodeURIComponent(returnUrl)}`
+      : '/api/GoogleAuth/login'
     window.location.href = targetUrl
   }
 
