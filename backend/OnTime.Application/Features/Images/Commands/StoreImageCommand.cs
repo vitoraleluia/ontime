@@ -1,3 +1,5 @@
+using Hangfire;
+
 using MediatR;
 
 using Microsoft.Extensions.Logging;
@@ -5,9 +7,7 @@ using Microsoft.Extensions.Options;
 
 using OnTime.Application.Domain.Results;
 using OnTime.Application.Domain.Settings;
-using OnTime.Application.Features.Images.Messages;
 using OnTime.Application.Services;
-using OnTime.Bus;
 using OnTime.Domain.Entities;
 
 namespace OnTime.Application.Features.Images.Commands;
@@ -22,19 +22,19 @@ public class StoreImageCommandHandler : BaseHandler<StoreImageCommand, Result<Gu
 {
     private readonly IAppDbContext dbContext;
     private readonly IFileService fileService;
-    private readonly IBusProducer<OptimizeImageMessage> producer;
+    private readonly IBackgroundJobClient backgroundJobClient;
     private readonly ImageStorageSettings storageSettings;
 
     public StoreImageCommandHandler(
         IAppDbContext dbContext,
         IFileService fileService,
-        IBusProducer<OptimizeImageMessage> producer,
+        IBackgroundJobClient backgroundJobClient,
         IOptions<ImageStorageSettings> storageSettings,
         ILogger<StoreImageCommandHandler> logger) : base(logger)
     {
         this.dbContext = dbContext;
         this.fileService = fileService;
-        this.producer = producer;
+        this.backgroundJobClient = backgroundJobClient;
         this.storageSettings = storageSettings.Value;
     }
 
@@ -69,7 +69,7 @@ public class StoreImageCommandHandler : BaseHandler<StoreImageCommand, Result<Gu
         this.dbContext.Images.Add(image);
         await this.dbContext.SaveChangesAsync(cancellationToken);
 
-        await this.producer.Publish(new OptimizeImageMessage(imageId), cancellationToken);
+        this.backgroundJobClient.Enqueue<IImageJobService>(service => service.OptimizeImage(imageId));
 
         return Result<Guid>.Success(imageId);
     }

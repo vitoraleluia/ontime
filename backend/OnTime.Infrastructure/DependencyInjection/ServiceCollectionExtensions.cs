@@ -6,9 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 using OnTime.Application.Domain.Settings;
-using OnTime.Application.Features.Images.Messages;
 using OnTime.Application.Services;
-using OnTime.Bus;
 using OnTime.Domain.Settings;
 using OnTime.Infrastructure.Data;
 using OnTime.Infrastructure.Services;
@@ -42,8 +40,7 @@ public static class ServiceCollectionExtensions
 
         services.AddHangfireServer();
 
-        // Bus
-        services.AddChannelBus<OptimizeImageMessage>();
+        services.AddScoped<IImageJobService, ImageJobService>();
 
         services.Configure<ImageStorageSettings>(configuration.GetSection(nameof(ImageStorageSettings)));
         services.Configure<ImageSizeSettings>(configuration.GetSection(nameof(ImageSizeSettings)));
