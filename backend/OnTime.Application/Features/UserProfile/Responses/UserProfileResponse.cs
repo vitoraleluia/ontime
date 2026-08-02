@@ -1,4 +1,3 @@
-using OnTime.Domain.Enums;
 
 namespace OnTime.Application.Features.UserProfile.Responses;
 
@@ -9,5 +8,5 @@ public class UserProfileResponse
     public string Email { get; set; } = string.Empty;
     public string? PhoneNumber { get; set; }
     public string? ProfilePictureUrl { get; set; }
-    public UserRole Role { get; set; }
+    public bool IsProfessional { get; set; }
 }

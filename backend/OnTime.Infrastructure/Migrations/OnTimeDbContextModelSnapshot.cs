@@ -537,9 +537,6 @@ namespace OnTime.Infrastructure.Migrations
                     b.Property<Guid?>("ProfilePictureId")
                         .HasColumnType("uuid");
 
-                    b.Property<int>("Role")
-                        .HasColumnType("integer");
-
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 

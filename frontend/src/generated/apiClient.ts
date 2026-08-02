@@ -135,6 +135,327 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/Auth/register": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["RegisterRequest"];
+                    "text/json": components["schemas"]["RegisterRequest"];
+                    "application/*+json": components["schemas"]["RegisterRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Auth/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["LoginRequest"];
+                    "text/json": components["schemas"]["LoginRequest"];
+                    "application/*+json": components["schemas"]["LoginRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Auth/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Auth/forgot-password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["ForgotPasswordRequest"];
+                    "text/json": components["schemas"]["ForgotPasswordRequest"];
+                    "application/*+json": components["schemas"]["ForgotPasswordRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Auth/reset-password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["ResetPasswordRequest"];
+                    "text/json": components["schemas"]["ResetPasswordRequest"];
+                    "application/*+json": components["schemas"]["ResetPasswordRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Auth/confirm-email": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["ConfirmEmailRequest"];
+                    "text/json": components["schemas"]["ConfirmEmailRequest"];
+                    "application/*+json": components["schemas"]["ConfirmEmailRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/Auth/resend-confirmation-email": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["ResendConfirmationEmailRequest"];
+                    "text/json": components["schemas"]["ResendConfirmationEmailRequest"];
+                    "application/*+json": components["schemas"]["ResendConfirmationEmailRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/no-login": {
         parameters: {
             query?: never;
@@ -181,6 +502,76 @@ export interface paths {
             parameters: {
                 query?: {
                     name?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/GoogleAuth/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    returnUrl?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/GoogleAuth/callback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    returnUrl?: string;
                 };
                 header?: never;
                 path?: never;
@@ -286,9 +677,12 @@ export interface paths {
             requestBody?: {
                 content: {
                     "application/json": components["schemas"]["CreateShopRequest"];
+                    "text/json": components["schemas"]["CreateShopRequest"];
+                    "application/*+json": components["schemas"]["CreateShopRequest"];
                 };
             };
             responses: {
+                /** @description Created */
                 201: {
                     headers: {
                         [name: string]: unknown;
@@ -297,15 +691,26 @@ export interface paths {
                         "application/json": components["schemas"]["ShopResponse"];
                     };
                 };
+                /** @description Bad Request */
                 400: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ValidationProblemDetails"];
+                        "application/json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Unauthorized */
                 401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -339,6 +744,7 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
+                /** @description OK */
                 200: {
                     headers: {
                         [name: string]: unknown;
@@ -375,12 +781,22 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
+                /** @description OK */
                 200: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
                         "application/json": components["schemas"]["ShopResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
                     };
                 };
             };
@@ -397,42 +813,38 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        ConfirmEmailRequest: {
+            userId: string;
+            token: string;
+        };
         CreateShopRequest: {
             name: string;
             slug?: string | null;
             description?: string | null;
             address?: string | null;
             phoneNumber?: string | null;
+            /** Format: int32 */
             slotDurationMinutes?: number;
             allowCancellation?: boolean;
+            /** Format: int32 */
             cancellationDeadlineHours?: number;
+            /** Format: uuid */
             imageId?: string | null;
         };
-        ShopResponse: {
-            id: number;
-            ownerId: string;
-            name: string;
-            description: string;
-            slug: string;
-            address?: string | null;
-            phoneNumber?: string | null;
-            slotDurationMinutes: number;
-            allowCancellation: boolean;
-            cancellationDeadlineHours: number;
-            imageId?: string | null;
-            imageUrl?: string | null;
-            createdAt: string;
-        };
-        SlugAvailabilityResponse: {
-            slug: string;
-            isAvailable: boolean;
-            message: string;
+        ForgotPasswordRequest: {
+            /** Format: email */
+            email: string;
         };
         /**
          * Format: int32
          * @enum {integer}
          */
         ImageFormat: 0 | 1 | 2;
+        LoginRequest: {
+            /** Format: email */
+            email: string;
+            password: string;
+        };
         ProblemDetails: {
             type?: string | null;
             title?: string | null;
@@ -442,6 +854,49 @@ export interface components {
             instance?: string | null;
         } & {
             [key: string]: unknown;
+        };
+        RegisterRequest: {
+            /** Format: email */
+            email: string;
+            password: string;
+            firstName: string;
+            lastName: string;
+            phoneNumber?: string | null;
+        };
+        ResendConfirmationEmailRequest: {
+            /** Format: email */
+            email: string;
+        };
+        ResetPasswordRequest: {
+            /** Format: email */
+            email: string;
+            token: string;
+            newPassword: string;
+        };
+        ShopResponse: {
+            /** Format: int32 */
+            id?: number;
+            ownerId?: string | null;
+            name?: string | null;
+            description?: string | null;
+            slug?: string | null;
+            address?: string | null;
+            phoneNumber?: string | null;
+            /** Format: int32 */
+            slotDurationMinutes?: number;
+            allowCancellation?: boolean;
+            /** Format: int32 */
+            cancellationDeadlineHours?: number;
+            /** Format: uuid */
+            imageId?: string | null;
+            imageUrl?: string | null;
+            /** Format: date-time */
+            createdAt?: string;
+        };
+        SlugAvailabilityResponse: {
+            slug?: string | null;
+            isAvailable?: boolean;
+            message?: string | null;
         };
         UpdateProfileRequest: {
             firstName?: string | null;
@@ -460,13 +915,8 @@ export interface components {
             email?: string | null;
             phoneNumber?: string | null;
             profilePictureUrl?: string | null;
-            role?: components["schemas"]["UserRole"];
+            isProfessional?: boolean;
         };
-        /**
-         * Format: int32
-         * @enum {integer}
-         */
-        UserRole: 0 | 1;
         ValidationProblemDetails: {
             type?: string | null;
             title?: string | null;

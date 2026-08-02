@@ -1,109 +1,59 @@
 import { useState, useEffect, useRef } from 'react'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate, Link } from '@tanstack/react-router'
 import { useAuth } from '@/lib/auth'
 import { $api } from '@/lib/api'
 import { Button } from '@/components/ui/button'
-import { useMutation } from '@tanstack/react-query'
-import { LocalStoreKeys } from '@/domain/constants/localStoreKeys'
-import type { StoredTokens } from '@/domain/auth'
-import type { components } from '@/generated/apiClient'
-
-type UserProfileResponse = components['schemas']['UserProfileResponse']
-import { 
-  User, 
-  Phone, 
-  Mail, 
-  Briefcase, 
-  CheckCircle, 
-  Loader2, 
-  Camera,
-  AlertCircle
-} from 'lucide-react'
+import { ErrorUtils } from '@/domain/utils/ErrorUtils'
+import { ProfilePhotoSection } from '@/components/account/ProfilePhotoSection'
+import { PersonalDetailsForm, PersonalDetailsFormFields } from '@/components/account/PersonalDetailsForm'
+import { ProfessionalAccountSection } from '@/components/account/ProfessionalAccountSection'
+import { CheckCircle, Loader2, AlertCircle } from 'lucide-react'
 
 export const Route = createFileRoute('/account')({
   component: AccountPage,
 })
 
 function AccountPage() {
-  const { isAuthenticated, isLoading: isAuthLoading, login } = useAuth()
-  
-  // React Query - Profile fetching (types fully inferred)
+  const { isAuthenticated, isLoading: isAuthLoading } = useAuth()
+  const navigate = useNavigate()
+
+  // React Query - Profile fetching
   const { data: profile, isLoading: isProfileLoading, refetch } = $api.useQuery(
     'get',
     '/api/Account',
     {},
-    {
-      enabled: isAuthenticated
-    }
+    { enabled: isAuthenticated }
   )
 
-  // Minimal state: only holds the newly uploaded image ID and preview URL override
   const [profilePictureId, setProfilePictureId] = useState<string | null>(null)
   const [tempPictureUrl, setTempPictureUrl] = useState<string | null>(null)
 
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const [successMsg, setSuccessMsg] = useState<string | null>(null)
-  
+
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Redirect if not authenticated
   useEffect(() => {
     if (!isAuthLoading && !isAuthenticated) {
-      login('/account')
+      navigate({ to: '/login', search: { returnUrl: '/account' } })
     }
-  }, [isAuthLoading, isAuthenticated, login])
+  }, [isAuthLoading, isAuthenticated, navigate])
 
-  // Mutations (Errors and Responses are fully typed)
+  // Mutations
   const updateProfileMutation = $api.useMutation('put', '/api/Account', {
     onSuccess: () => {
       setSuccessMsg('Perfil atualizado com sucesso!')
-      setProfilePictureId(null) // Reset temporary ID
-      setTempPictureUrl(null)   // Clear preview override
+      setProfilePictureId(null)
+      setTempPictureUrl(null)
       refetch()
     },
-    onError: (err) => {
-      let msg = 'Falha ao atualizar dados.'
-      if (err) {
-        if (err.errors) {
-          const messages = Object.values(err.errors).flat()
-          if (messages.length > 0) {
-            msg = messages.join(' ')
-          }
-        } else if (err.detail) {
-          msg = err.detail
-        } else if (err.title) {
-          msg = err.title
-        }
-      }
-      setErrorMsg(msg)
-    }
+    onError: (err: unknown) => {
+      setErrorMsg(ErrorUtils.extractMessage(err, 'Falha ao atualizar dados.'))
+    },
   })
 
-  const uploadPhotoMutation = useMutation({
-    mutationFn: async (file: File) => {
-      const tokensStr = localStorage.getItem(LocalStoreKeys.AuthTokens)
-      if (!tokensStr) throw new Error('Sessão expirada. Inicie sessão novamente.')
-      const tokens = JSON.parse(tokensStr) as StoredTokens
-
-      const formData = new FormData()
-      formData.append('file', file)
-
-      const response = await fetch('/api/Images?format=Square', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${tokens.token}`
-        },
-        body: formData
-      })
-
-      if (!response.ok) {
-        const errText = await response.text()
-        throw new Error(errText || 'Falha ao enviar imagem.')
-      }
-
-      const result: { id: string } = await response.json()
-      return result
-    },
+  const uploadPhotoMutation = $api.useMutation('post', '/api/Images', {
     onSuccess: (data) => {
       if (data && data.id) {
         setProfilePictureId(data.id)
@@ -112,7 +62,7 @@ function AccountPage() {
     },
     onError: () => {
       setErrorMsg('Erro ao fazer upload da foto de perfil.')
-    }
+    },
   })
 
   const assignProfessionalMutation = $api.useMutation('post', '/api/Account/assign-professional', {
@@ -122,7 +72,7 @@ function AccountPage() {
     },
     onError: () => {
       setErrorMsg('Erro ao ativar conta profissional.')
-    }
+    },
   })
 
   // Handlers
@@ -138,19 +88,21 @@ function AccountPage() {
     setErrorMsg(null)
     setSuccessMsg(null)
 
-    // Show temporary local preview
     const localUrl = URL.createObjectURL(file)
     setTempPictureUrl(localUrl)
 
-    uploadPhotoMutation.mutate(file)
+    uploadPhotoMutation.mutate({
+      params: { query: { format: 0 } },
+      body: { file: file as unknown as string },
+    })
   }
 
   const handleSaveProfile = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
-    const formFirstName = (formData.get('firstName') as string)?.trim()
-    const formLastName = (formData.get('lastName') as string)?.trim()
-    const formPhoneNumber = (formData.get('phoneNumber') as string)?.trim()
+    const formFirstName = (formData.get(PersonalDetailsFormFields.FIRST_NAME) as string)?.trim()
+    const formLastName = (formData.get(PersonalDetailsFormFields.LAST_NAME) as string)?.trim()
+    const formPhoneNumber = (formData.get(PersonalDetailsFormFields.PHONE_NUMBER) as string)?.trim()
 
     if (!formFirstName || !formLastName) {
       setErrorMsg('O nome e apelido são obrigatórios.')
@@ -165,13 +117,13 @@ function AccountPage() {
         firstName: formFirstName,
         lastName: formLastName,
         phoneNumber: formPhoneNumber || null,
-        profilePictureId: profilePictureId || undefined
-      }
+        profilePictureId: profilePictureId || undefined,
+      },
     })
   }
 
   const handleUpgradeAccount = () => {
-    if (profile?.role === 1) return
+    if (profile?.isProfessional) return
 
     setErrorMsg(null)
     setSuccessMsg(null)
@@ -179,7 +131,6 @@ function AccountPage() {
     assignProfessionalMutation.mutate({})
   }
 
-  // Simplify pending loading flags
   const isSaving = updateProfileMutation.isPending
   const isUploading = uploadPhotoMutation.isPending
   const isUpgrading = assignProfessionalMutation.isPending
@@ -202,20 +153,18 @@ function AccountPage() {
         <p className="text-muted-foreground max-w-md text-sm">
           Por favor, inicie sessão para aceder às configurações do seu perfil.
         </p>
-        <Button onClick={() => login('/account')} className="mt-2 font-semibold">
-          Iniciar Sessão
-        </Button>
+        <Link to="/login" search={{ returnUrl: '/account' }}>
+          <Button className="mt-2 font-semibold">Iniciar Sessão</Button>
+        </Link>
       </div>
     )
   }
 
-  // Declarative derived UI states
   const displayPictureUrl = tempPictureUrl || profile.profilePictureUrl || null
   const initials = `${profile.firstName?.charAt(0) || ''}${profile.lastName?.charAt(0) || ''}`.toUpperCase()
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
-      
       {/* Header */}
       <div className="mb-8 flex items-center justify-between">
         <div>
@@ -243,7 +192,6 @@ function AccountPage() {
       )}
 
       <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-        
         {/* Left Column: Photo upload */}
         <ProfilePhotoSection
           profile={profile}
@@ -271,299 +219,7 @@ function AccountPage() {
             onUpgrade={handleUpgradeAccount}
           />
         </div>
-
       </div>
     </div>
   )
 }
-
-interface ProfilePhotoSectionProps {
-  profile: UserProfileResponse
-  displayPictureUrl: string | null
-  initials: string
-  isUploading: boolean
-  isSaving: boolean
-  fileInputRef: React.RefObject<HTMLInputElement | null>
-  onPhotoUpload: (e: React.ChangeEvent<HTMLInputElement>) => void
-  onTriggerUpload: () => void
-}
-
-function ProfilePhotoSection({
-  profile,
-  displayPictureUrl,
-  initials,
-  isUploading,
-  isSaving,
-  fileInputRef,
-  onPhotoUpload,
-  onTriggerUpload
-}: ProfilePhotoSectionProps) {
-  return (
-    <div className="flex flex-col items-center">
-      <div className="w-full rounded-xl border border-border bg-card p-6 shadow-xs text-center">
-        <h3 className="text-sm font-semibold text-foreground mb-4">Foto de Perfil</h3>
-        
-        <div className="relative mx-auto h-32 w-32 group">
-          {displayPictureUrl ? (
-            <img 
-              src={displayPictureUrl} 
-              alt="Avatar" 
-              className="h-32 w-32 rounded-full object-cover border border-border shadow-xs" 
-            />
-          ) : (
-            <div className="flex h-32 w-32 items-center justify-center rounded-full bg-primary/10 text-primary border border-primary/20 text-3xl font-bold font-heading shadow-xs">
-              {initials || <User className="h-12 w-12" />}
-            </div>
-          )}
-          
-          {/* Overlay camera trigger */}
-          <button
-            type="button"
-            onClick={onTriggerUpload}
-            disabled={isUploading || isSaving}
-            className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer disabled:opacity-0 disabled:pointer-events-none"
-          >
-            <Camera className="h-6 w-6" />
-          </button>
-
-          {/* Uploading Spinner */}
-          {isUploading && (
-            <div className="absolute inset-0 flex items-center justify-center rounded-full bg-background/80 text-primary">
-              <Loader2 className="h-8 w-8 animate-spin" />
-            </div>
-          )}
-        </div>
-
-        <input 
-          type="file" 
-          ref={fileInputRef} 
-          onChange={onPhotoUpload} 
-          accept="image/*" 
-          className="hidden" 
-        />
-
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={onTriggerUpload}
-          disabled={isUploading || isSaving}
-          className="mt-6 w-full cursor-pointer"
-        >
-          {isUploading ? 'A enviar...' : 'Alterar Foto'}
-        </Button>
-        <p className="mt-2 text-xs text-muted-foreground">
-          Formatos recomendados: JPG, PNG ou WEBP. Imagens quadradas funcionam melhor.
-        </p>
-      </div>
-
-      {/* Account Role Badge */}
-      <div className="mt-4 w-full rounded-xl border border-border bg-card px-6 py-4 shadow-xs flex items-center justify-between">
-        <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Tipo de Conta</span>
-        <div className="flex items-center gap-1.5">
-          {profile.role === 1 ? (
-            <span className="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary">
-              <Briefcase className="mr-1 h-3.5 w-3.5" />
-              Profissional
-            </span>
-          ) : (
-            <span className="inline-flex items-center rounded-full bg-secondary px-2.5 py-0.5 text-xs font-semibold text-secondary-foreground">
-              <User className="mr-1 h-3.5 w-3.5" />
-              Cliente
-            </span>
-          )}
-        </div>
-      </div>
-    </div>
-  )
-}
-
-interface PersonalDetailsFormProps {
-  profile: UserProfileResponse
-  isSaving: boolean
-  isUploading: boolean
-  onSubmit: (e: React.FormEvent<HTMLFormElement>) => void
-}
-
-function PersonalDetailsForm({
-  profile,
-  isSaving,
-  isUploading,
-  onSubmit
-}: PersonalDetailsFormProps) {
-  return (
-    <div className="rounded-xl border border-border bg-card p-6 shadow-xs">
-      <h3 className="text-lg font-bold text-foreground border-b border-border pb-3 mb-5">
-        Dados Pessoais
-      </h3>
-
-      <form onSubmit={onSubmit} className="space-y-4">
-        
-        {/* Email (Read-only) */}
-        <div>
-          <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">
-            Endereço de Email
-          </label>
-          <div className="relative">
-            <Mail className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-            <input
-              type="email"
-              value={profile.email || ''}
-              disabled
-              className="w-full rounded-lg border border-border bg-muted/50 py-2 pl-10 pr-4 text-sm text-muted-foreground focus:outline-none cursor-not-allowed"
-            />
-          </div>
-          <p className="mt-1.5 text-xs text-muted-foreground">
-            O email é gerido pela sua conta de autenticação Keycloak e não pode ser editado.
-          </p>
-        </div>
-
-        {/* First Name & Last Name */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div>
-            <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">
-              Nome
-            </label>
-            <input
-              type="text"
-              name="firstName"
-              defaultValue={profile.firstName || ''}
-              placeholder="Introduza o seu nome"
-              required
-              disabled={isSaving}
-              className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-50"
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">
-              Apelido
-            </label>
-            <input
-              type="text"
-              name="lastName"
-              defaultValue={profile.lastName || ''}
-              placeholder="Introduza o seu apelido"
-              required
-              disabled={isSaving}
-              className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-50"
-            />
-          </div>
-        </div>
-
-        {/* Phone Number */}
-        <div>
-          <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">
-            Número de Telemóvel
-          </label>
-          <div className="relative">
-            <Phone className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-            <input
-              type="tel"
-              name="phoneNumber"
-              defaultValue={profile.phoneNumber || ''}
-              placeholder="Ex: 912345678"
-              disabled={isSaving}
-              className="w-full rounded-lg border border-border bg-background py-2 pl-10 pr-4 text-sm placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-50"
-            />
-          </div>
-        </div>
-
-        {/* Submit */}
-        <div className="pt-2 flex justify-end">
-          <Button 
-            type="submit" 
-            disabled={isSaving || isUploading}
-            className="cursor-pointer font-semibold shadow-xs"
-          >
-            {isSaving ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                A guardar...
-              </>
-            ) : (
-              'Guardar Alterações'
-            )}
-          </Button>
-        </div>
-
-      </form>
-    </div>
-  )
-}
-
-interface ProfessionalAccountSectionProps {
-  profile: UserProfileResponse
-  isUpgrading: boolean
-  onUpgrade: () => void
-}
-
-function ProfessionalAccountSection({
-  profile,
-  isUpgrading,
-  onUpgrade
-}: ProfessionalAccountSectionProps) {
-  return (
-    <div className="rounded-xl border border-border bg-card p-6 shadow-xs">
-      <h3 className="text-lg font-bold text-foreground border-b border-border pb-3 mb-5">
-        Conta Profissional
-      </h3>
-
-      {profile.role === 1 ? (
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-primary/5 rounded-lg border border-primary/10 p-5">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-            <CheckCircle className="h-6 w-6" />
-          </div>
-          <div>
-            <h4 className="text-sm font-semibold text-foreground">A sua conta profissional está ativa</h4>
-            <p className="mt-1 text-xs text-muted-foreground max-w-lg">
-              Agora já pode ser associado a salões ou lojas, gerir o seu horário de trabalho e organizar as suas marcações de serviços no OnTime.
-            </p>
-          </div>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          <p className="text-sm text-muted-foreground">
-            Quer prestar serviços na nossa plataforma? Ao atualizar para uma conta profissional, poderá gerir a sua própria agenda, receber marcações de clientes e definir os seus serviços.
-          </p>
-          
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 text-xs text-muted-foreground pb-2">
-            <div className="flex items-center gap-2">
-              <CheckCircle className="h-4 w-4 text-primary shrink-0" />
-              <span>Criação e Gestão de Serviços</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle className="h-4 w-4 text-primary shrink-0" />
-              <span>Controlo de Agenda e Horários</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle className="h-4 w-4 text-primary shrink-0" />
-              <span>Gestão de Calendário e Férias</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle className="h-4 w-4 text-primary shrink-0" />
-              <span>Reserva online direta por clientes</span>
-            </div>
-          </div>
-
-          <div className="pt-2 border-t border-border flex justify-end">
-            <Button
-              type="button"
-              onClick={onUpgrade}
-              disabled={isUpgrading}
-              className="cursor-pointer font-semibold shadow-xs bg-primary hover:bg-primary/90 text-primary-foreground"
-            >
-              {isUpgrading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  A ativar...
-                </>
-              ) : (
-                'Ativar Conta Profissional'
-              )}
-            </Button>
-          </div>
-        </div>
-      )}
-    </div>
-  )
-}
-

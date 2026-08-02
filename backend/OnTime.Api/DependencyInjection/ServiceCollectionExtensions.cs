@@ -1,5 +1,8 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
+
+using OnTime.Api.Extensions;
+using OnTime.Domain.Settings;
 
 namespace OnTime.Api.DependencyInjection;
 
@@ -9,74 +12,32 @@ public static class ServiceCollectionExtensions
     {
         services.AddHttpContextAccessor();
         services.AddControllers();
-
         services.AddAuthorization();
 
-        services.AddEndpointsApiExplorer();
+        services.Configure<AuthenticationSettings>(configuration.GetSection(nameof(AuthenticationSettings)));
 
-        services.AddSwaggerGenAuth(configuration);
-
-        return services;
-    }
-
-    private static IServiceCollection AddSwaggerGenAuth(this IServiceCollection services, IConfiguration configuration)
-    {
-        var authority = configuration["Authentication:Authority"];
-        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(options =>
-            {
-                options.Authority = authority;
-                options.Audience = configuration["Authentication:Audience"];
-                options.RequireHttpsMetadata = configuration.GetValue<bool>("Authentication:RequireHttpsMetadata");
-                options.TokenValidationParameters = new()
+        var authenticationSettings = configuration.GetRequiredSection(nameof(AuthenticationSettings))
+            .Get<AuthenticationSettings>();
+        if (!string.IsNullOrEmpty(authenticationSettings?.Google.ClientId) &&
+            !string.IsNullOrEmpty(authenticationSettings?.Google.ClientSecret))
+        {
+            services.AddAuthentication()
+                .AddGoogle(options =>
                 {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidIssuer = authority,
-                };
-            });
+                    options.ClientId = authenticationSettings.Google.ClientId;
+                    options.ClientSecret = authenticationSettings.Google.ClientSecret;
+                    options.SignInScheme = IdentityConstants.ExternalScheme;
+                });
+        }
 
-
+        services.AddEndpointsApiExplorer();
         services.AddSwaggerGen(options =>
         {
             options.SwaggerDoc("v1", new OpenApiInfo { Title = "OnTime API", Version = "v1" });
-
-            options.AddSecurityDefinition(nameof(SecuritySchemeType.OAuth2),
-                new OpenApiSecurityScheme
-                {
-                    Type = SecuritySchemeType.OAuth2,
-                    Flows = new OpenApiOAuthFlows
-                    {
-                        AuthorizationCode = new OpenApiOAuthFlow
-                        {
-                            AuthorizationUrl =
-                                new Uri($"{authority?.TrimEnd('/')}/protocol/openid-connect/auth"),
-                            TokenUrl =
-                                new Uri($"{authority?.TrimEnd('/')}/protocol/openid-connect/token"),
-                            Scopes = new Dictionary<string, string>
-                            {
-                                { "openid", "OpenID Connect scope" }, { "profile", "User profile" }
-                            }
-                        }
-                    }
-                });
-
-            options.AddSecurityRequirement(new OpenApiSecurityRequirement
-            {
-                {
-                    new OpenApiSecurityScheme
-                    {
-                        Reference = new OpenApiReference
-                        {
-                            Type = ReferenceType.SecurityScheme, Id = nameof(SecuritySchemeType.OAuth2)
-                        }
-                    },
-                    Array.Empty<string>()
-                }
-            });
         });
+
+
+        StringExtensions.Configure(authenticationSettings?.ClientUrl);
 
         return services;
     }

@@ -1,3 +1,6 @@
+using Hangfire;
+using Hangfire.PostgreSql;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -6,6 +9,7 @@ using OnTime.Application.Domain.Settings;
 using OnTime.Application.Features.Images.Messages;
 using OnTime.Application.Services;
 using OnTime.Bus;
+using OnTime.Domain.Settings;
 using OnTime.Infrastructure.Data;
 using OnTime.Infrastructure.Services;
 
@@ -24,6 +28,19 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IAppDbContext>(provider => provider.GetRequiredService<AppDbContext>());
         services.AddScoped<IFileService, FileService>();
         services.AddScoped<IImageProcessor, ImageProcessor>();
+
+        // Email & SMTP
+        services.Configure<EmailSettings>(configuration.GetSection(nameof(EmailSettings)));
+        services.AddScoped<IEmailSender, SmtpEmailSender>();
+
+        // Hangfire with PostgreSQL storage
+        services.AddHangfire(config => config
+            .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+            .UseSimpleAssemblyNameTypeSerializer()
+            .UseRecommendedSerializerSettings()
+            .UsePostgreSqlStorage(options => options.UseNpgsqlConnection(connectionString)));
+
+        services.AddHangfireServer();
 
         // Bus
         services.AddChannelBus<OptimizeImageMessage>();

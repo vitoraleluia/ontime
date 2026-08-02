@@ -1,17 +1,22 @@
-export interface StoredTokens {
-  token: string
-  refreshToken: string
-  idToken?: string
-}
-
 export interface AuthState {
   isAuthenticated: boolean
   isLoading: boolean
-  token: string | null
 }
 
 export interface AuthContextType extends AuthState {
-  login: (returnUrl?: string) => Promise<void>
-  register: (returnUrl?: string) => Promise<void>
-  logout: () => void
+  loginWithCredentials: (email: string, password: string) => Promise<{ success: boolean; error?: string }>
+  registerWithCredentials: (
+    email: string,
+    password: string,
+    firstName: string,
+    lastName: string,
+    phoneNumber?: string
+  ) => Promise<{ success: boolean; error?: string }>
+  loginWithGoogle: (returnUrl?: string) => void
+  logout: () => Promise<void>
+  refetchAuth: () => Promise<void>
+  forgotPassword: (email: string) => Promise<{ success: boolean; error?: string }>
+  resetPassword: (email: string, token: string, newPassword: string) => Promise<{ success: boolean; error?: string }>
+  confirmEmail: (userId: string, token: string) => Promise<{ success: boolean; error?: string }>
+  resendConfirmationEmail: (email: string) => Promise<{ success: boolean; error?: string }>
 }

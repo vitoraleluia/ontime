@@ -34,6 +34,11 @@ public class ShopsController : BaseApiController
             return Unauthorized("ID de utilizador ausente no token.");
         }
 
+        if (!User.IsInRole(OnTime.Identity.Constants.IdentityRoles.Professional))
+        {
+            return StatusCode(StatusCodes.Status403Forbidden, "Apenas contas com perfil profissional podem criar estabelecimentos.");
+        }
+
         var command = new CreateShopCommand(
             userId,
             request.Name,

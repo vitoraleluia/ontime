@@ -1,152 +1,161 @@
-import { createContext, useContext, useState, useEffect, useRef } from 'react'
+import { createContext, useContext } from 'react'
 import type { ReactNode } from 'react'
-import Keycloak from 'keycloak-js'
-import type { StoredTokens, AuthState, AuthContextType } from '@/domain/auth'
-import { LocalStoreKeys } from '@/domain/constants/localStoreKeys'
+import { useQueryClient } from '@tanstack/react-query'
+import type { AuthContextType } from '@/domain/auth'
+import { $api } from '@/lib/api'
+import { ErrorUtils } from '@/domain/utils/ErrorUtils'
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
-const keycloakInstance = new Keycloak({
-  url: "http://localhost:5000",
-  realm: "OnTime",
-  clientId: "ontime-api"
-})
-
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState<AuthState>({
-    isAuthenticated: false,
-    isLoading: true,
-    token: null,
-  })
-  
-  const isInitialized = useRef(false)
+  const queryClient = useQueryClient()
 
-  useEffect(() => {
-    if (isInitialized.current) return
-    isInitialized.current = true
-
-    let intervalId: any = null
-
-    const initAuth = async () => {
-      // Retrieve stored tokens if they exist
-      const storedTokensStr = localStorage.getItem(LocalStoreKeys.AuthTokens)
-      let storedTokens: StoredTokens | null = null
-      try {
-        if (storedTokensStr) {
-          storedTokens = JSON.parse(storedTokensStr)
-        }
-      } catch (e) {
-        console.warn("Failed to parse stored auth tokens", e)
-        localStorage.removeItem(LocalStoreKeys.AuthTokens)
-      }
-
-      const initOptions: any = {
-        checkLoginIframe: false,
-        pkceMethod: "S256",
-        scope: "openid profile email",
-      }
-
-      if (storedTokens) {
-        initOptions.token = storedTokens.token
-        initOptions.refreshToken = storedTokens.refreshToken
-        if (storedTokens.idToken) {
-          initOptions.idToken = storedTokens.idToken
-        }
-      }
-
-      try {
-        const authenticated = await keycloakInstance.init(initOptions)
-        
-        if (authenticated) {
-          localStorage.setItem(
-            LocalStoreKeys.AuthTokens,
-            JSON.stringify({
-              token: keycloakInstance.token,
-              refreshToken: keycloakInstance.refreshToken,
-              idToken: keycloakInstance.idToken,
-            })
-          )
-        } else {
-          localStorage.removeItem(LocalStoreKeys.AuthTokens)
-        }
-
-        setState({
-          isAuthenticated: authenticated,
-          token: keycloakInstance.token || null,
-          isLoading: false,
-        })
-
-        // Set up periodic token refresh (check every 30s, refresh if expiring within 30s)
-        intervalId = setInterval(async () => {
-          try {
-            const refreshed = await keycloakInstance.updateToken(30)
-            if (refreshed) {
-              localStorage.setItem(
-                LocalStoreKeys.AuthTokens,
-                JSON.stringify({
-                  token: keycloakInstance.token,
-                  refreshToken: keycloakInstance.refreshToken,
-                  idToken: keycloakInstance.idToken,
-                })
-              )
-              setState(prev => ({
-                ...prev,
-                token: keycloakInstance.token || null,
-              }))
-            }
-          } catch (err) {
-            console.error("Failed to refresh token", err)
-            logout()
-          }
-        }, 30000)
-      } catch (err) {
-        console.error("Keycloak initialization failed", err)
-        localStorage.removeItem(LocalStoreKeys.AuthTokens)
-        setState({
-          isAuthenticated: false,
-          token: null,
-          isLoading: false,
-        })
-      }
+  const {
+    data: profile,
+    isLoading,
+    isError,
+    refetch,
+  } = $api.useQuery(
+    'get',
+    '/api/Account',
+    {},
+    {
+      retry: false,
     }
+  )
 
-    initAuth()
+  const loginMutation = $api.useMutation('post', '/api/Auth/login')
+  const registerMutation = $api.useMutation('post', '/api/Auth/register')
+  const logoutMutation = $api.useMutation('post', '/api/Auth/logout')
+  const forgotPasswordMutation = $api.useMutation('post', '/api/Auth/forgot-password')
+  const resetPasswordMutation = $api.useMutation('post', '/api/Auth/reset-password')
+  const confirmEmailMutation = $api.useMutation('post', '/api/Auth/confirm-email')
+  const resendConfirmationEmailMutation = $api.useMutation('post', '/api/Auth/resend-confirmation-email')
 
-    return () => {
-      if (intervalId) {
-        clearInterval(intervalId)
-      }
+  const isAuthenticated = !isLoading && !isError && !!profile
+
+  const loginWithCredentials = async (email: string, password: string) => {
+    try {
+      await loginMutation.mutateAsync({
+        body: { email, password },
+      })
+      await queryClient.invalidateQueries()
+      await refetch()
+      return { success: true }
+    } catch (err: unknown) {
+      const errorMsg = ErrorUtils.extractMessage(err, 'Credenciais inválidas. Verifique o email e a palavra-passe.')
+      return { success: false, error: errorMsg }
     }
-  }, [])
-
-  const login = async (returnUrl?: string) => {
-    const redirectUri = returnUrl
-      ? window.location.origin + returnUrl
-      : window.location.href
-    await keycloakInstance.login({ redirectUri, scope: "openid profile email" })
   }
 
-  const register = async (returnUrl?: string) => {
-    const redirectUri = returnUrl
-      ? window.location.origin + returnUrl
-      : window.location.href
-    await keycloakInstance.register({ redirectUri, scope: "openid profile email" })
+  const registerWithCredentials = async (
+    email: string,
+    password: string,
+    firstName: string,
+    lastName: string,
+    phoneNumber?: string
+  ) => {
+    try {
+      await registerMutation.mutateAsync({
+        body: {
+          email,
+          password,
+          firstName,
+          lastName,
+          phoneNumber: phoneNumber ?? undefined,
+        },
+      })
+      return { success: true }
+    } catch (err: unknown) {
+      const errorMsg = ErrorUtils.extractMessage(err, 'Erro ao criar conta. Verifique os dados fornecidos.')
+      return { success: false, error: errorMsg }
+    }
   }
 
-  const logout = () => {
-    localStorage.removeItem(LocalStoreKeys.AuthTokens)
-    keycloakInstance.logout({
-      redirectUri: window.location.origin + "/",
-    })
+  const loginWithGoogle = (returnUrl?: string) => {
+    const targetUrl = returnUrl
+      ? `/api/GoogleAuth/login?returnUrl=${encodeURIComponent(returnUrl)}`
+      : '/api/GoogleAuth/login'
+    window.location.href = targetUrl
+  }
+
+  const logout = async () => {
+    try {
+      await logoutMutation.mutateAsync({})
+    } catch {
+      // Ignore network errors on logout
+    } finally {
+      queryClient.setQueryData(['get', '/api/Account'], null)
+      await queryClient.invalidateQueries()
+    }
+  }
+
+  const forgotPassword = async (email: string) => {
+    try {
+      await forgotPasswordMutation.mutateAsync({
+        body: { email },
+      })
+      return { success: true }
+    } catch (err: unknown) {
+      const errorMsg = ErrorUtils.extractMessage(err, 'Erro ao processar pedido.')
+      return { success: false, error: errorMsg }
+    }
+  }
+
+  const resetPassword = async (email: string, token: string, newPassword: string) => {
+    try {
+      await resetPasswordMutation.mutateAsync({
+        body: { email, token, newPassword },
+      })
+      return { success: true }
+    } catch (err: unknown) {
+      const errorMsg = ErrorUtils.extractMessage(err, 'Erro ao redefinir palavra-passe.')
+      return { success: false, error: errorMsg }
+    }
+  }
+
+  const confirmEmail = async (userId: string, token: string) => {
+    try {
+      await confirmEmailMutation.mutateAsync({
+        body: { userId, token },
+      })
+      return { success: true }
+    } catch (err: unknown) {
+      const errorMsg = ErrorUtils.extractMessage(err, 'Erro ao confirmar email.')
+      return { success: false, error: errorMsg }
+    }
+  }
+
+  const resendConfirmationEmail = async (email: string) => {
+    try {
+      await resendConfirmationEmailMutation.mutateAsync({
+        body: { email },
+      })
+      return { success: true }
+    } catch (err: unknown) {
+      const errorMsg = ErrorUtils.extractMessage(err, 'Erro ao reenviar confirmação de email.')
+      return { success: false, error: errorMsg }
+    }
+  }
+
+  const refetchAuth = async () => {
+    await refetch()
   }
 
   return (
     <AuthContext.Provider
       value={{
-        ...state,
-        login,
-        register,
+        isAuthenticated,
+        isLoading,
+        loginWithCredentials,
+        registerWithCredentials,
+        loginWithGoogle,
         logout,
+        refetchAuth,
+        forgotPassword,
+        resetPassword,
+        confirmEmail,
+        resendConfirmationEmail,
       }}
     >
       {children}
@@ -157,7 +166,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 export function useAuth() {
   const context = useContext(AuthContext)
   if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider")
+    throw new Error('useAuth must be used within an AuthProvider')
   }
   return context
 }

@@ -2,6 +2,7 @@ using MediatR;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+
 using OnTime.Application.Domain.Results;
 using OnTime.Application.Extensions;
 using OnTime.Application.Features.UserProfile.Responses;
@@ -68,8 +69,7 @@ public class UpdateUserProfileCommandHandler : BaseHandler<UpdateUserProfileComm
             LastName = updatedProfile.LastName,
             Email = updatedProfile.Email,
             PhoneNumber = updatedProfile.PhoneNumber,
-            ProfilePictureUrl = updatedProfile.ProfilePicture.BuildImageUrl(),
-            Role = updatedProfile.Role
+            ProfilePictureUrl = updatedProfile.ProfilePicture.BuildImageUrl()
         };
 
         return Result<UserProfileResponse>.Success(response);

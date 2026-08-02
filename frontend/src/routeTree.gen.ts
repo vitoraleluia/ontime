@@ -9,14 +9,50 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as RegisterRouteImport } from './routes/register'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as CreateShopRouteImport } from './routes/create-shop'
+import { Route as ConfirmEmailPendingRouteImport } from './routes/confirm-email-pending'
+import { Route as ConfirmEmailRouteImport } from './routes/confirm-email'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ShopsSlugRouteImport } from './routes/shops/$slug'
 
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegisterRoute = RegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CreateShopRoute = CreateShopRouteImport.update({
   id: '/create-shop',
   path: '/create-shop',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConfirmEmailPendingRoute = ConfirmEmailPendingRouteImport.update({
+  id: '/confirm-email-pending',
+  path: '/confirm-email-pending',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConfirmEmailRoute = ConfirmEmailRouteImport.update({
+  id: '/confirm-email',
+  path: '/confirm-email',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AccountRoute = AccountRouteImport.update({
@@ -38,44 +74,141 @@ const ShopsSlugRoute = ShopsSlugRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
+  '/confirm-email': typeof ConfirmEmailRoute
+  '/confirm-email-pending': typeof ConfirmEmailPendingRoute
   '/create-shop': typeof CreateShopRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/shops/$slug': typeof ShopsSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
+  '/confirm-email': typeof ConfirmEmailRoute
+  '/confirm-email-pending': typeof ConfirmEmailPendingRoute
   '/create-shop': typeof CreateShopRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/shops/$slug': typeof ShopsSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
+  '/confirm-email': typeof ConfirmEmailRoute
+  '/confirm-email-pending': typeof ConfirmEmailPendingRoute
   '/create-shop': typeof CreateShopRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/shops/$slug': typeof ShopsSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/account' | '/create-shop' | '/shops/$slug'
+  fullPaths:
+    | '/'
+    | '/account'
+    | '/confirm-email'
+    | '/confirm-email-pending'
+    | '/create-shop'
+    | '/forgot-password'
+    | '/login'
+    | '/register'
+    | '/reset-password'
+    | '/shops/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/account' | '/create-shop' | '/shops/$slug'
-  id: '__root__' | '/' | '/account' | '/create-shop' | '/shops/$slug'
+  to:
+    | '/'
+    | '/account'
+    | '/confirm-email'
+    | '/confirm-email-pending'
+    | '/create-shop'
+    | '/forgot-password'
+    | '/login'
+    | '/register'
+    | '/reset-password'
+    | '/shops/$slug'
+  id:
+    | '__root__'
+    | '/'
+    | '/account'
+    | '/confirm-email'
+    | '/confirm-email-pending'
+    | '/create-shop'
+    | '/forgot-password'
+    | '/login'
+    | '/register'
+    | '/reset-password'
+    | '/shops/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AccountRoute: typeof AccountRoute
+  ConfirmEmailRoute: typeof ConfirmEmailRoute
+  ConfirmEmailPendingRoute: typeof ConfirmEmailPendingRoute
   CreateShopRoute: typeof CreateShopRoute
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
+  LoginRoute: typeof LoginRoute
+  RegisterRoute: typeof RegisterRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   ShopsSlugRoute: typeof ShopsSlugRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/create-shop': {
       id: '/create-shop'
       path: '/create-shop'
       fullPath: '/create-shop'
       preLoaderRoute: typeof CreateShopRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/confirm-email-pending': {
+      id: '/confirm-email-pending'
+      path: '/confirm-email-pending'
+      fullPath: '/confirm-email-pending'
+      preLoaderRoute: typeof ConfirmEmailPendingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/confirm-email': {
+      id: '/confirm-email'
+      path: '/confirm-email'
+      fullPath: '/confirm-email'
+      preLoaderRoute: typeof ConfirmEmailRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/account': {
@@ -105,7 +238,13 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountRoute: AccountRoute,
+  ConfirmEmailRoute: ConfirmEmailRoute,
+  ConfirmEmailPendingRoute: ConfirmEmailPendingRoute,
   CreateShopRoute: CreateShopRoute,
+  ForgotPasswordRoute: ForgotPasswordRoute,
+  LoginRoute: LoginRoute,
+  RegisterRoute: RegisterRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   ShopsSlugRoute: ShopsSlugRoute,
 }
 export const routeTree = rootRouteImport

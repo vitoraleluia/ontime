@@ -4,15 +4,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 using OnTime.Application.Domain.Results;
+using OnTime.Application.Extensions;
+using OnTime.Application.Features.Shops.Queries;
 using OnTime.Application.Features.Shops.Responses;
 using OnTime.Application.Services;
 using OnTime.Domain.Common;
 using OnTime.Domain.Entities;
-using OnTime.Domain.Enums;
-
-using OnTime.Application.Extensions;
-
-using OnTime.Application.Features.Shops.Queries;
 
 namespace OnTime.Application.Features.Shops.Commands;
 
@@ -48,11 +45,11 @@ public class CreateShopCommandHandler : BaseHandler<CreateShopCommand, Result<Sh
         var profile = await this.dbContext.UserProfiles
             .FirstOrDefaultAsync(u => u.Id == request.OwnerId, cancellationToken);
 
-        if (profile == null || profile.Role != UserRole.Professional)
+        if (profile == null)
         {
             return Result<ShopResponse>.Failure(new Error(
-                "Forbidden",
-                "Apenas contas com perfil profissional podem criar estabelecimentos."));
+                "NotFound",
+                "Perfil de utilizador não encontrado."));
         }
 
         var rawSlug = string.IsNullOrWhiteSpace(request.Slug) ? request.Name : request.Slug;

@@ -31,7 +31,7 @@ export default defineConfig({
         }
     },
     build: {
-        outDir: path.resolve(__dirname, "../backend/OnTime.Api/wwwroot"),
+        outDir: 'dist',
         emptyOutDir: true,
     }
 })
