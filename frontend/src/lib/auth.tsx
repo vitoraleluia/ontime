@@ -1,56 +1,54 @@
-import { createContext, useContext, useState, useEffect, useCallback } from 'react'
+import { createContext, useContext } from 'react'
 import type { ReactNode } from 'react'
-import type { AuthState, AuthContextType } from '@/domain/auth'
-import { api } from '@/lib/api'
+import { useQueryClient } from '@tanstack/react-query'
+import type { AuthContextType } from '@/domain/auth'
+import { $api } from '@/lib/api'
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState<AuthState>({
-    isAuthenticated: false,
-    isLoading: true,
-  })
+  const queryClient = useQueryClient()
 
-  const checkAuth = useCallback(async () => {
-    try {
-      const { response } = await api.GET('/api/Account')
-
-      if (response.ok) {
-        setState({ isAuthenticated: true, isLoading: false })
-      } else {
-        setState({ isAuthenticated: false, isLoading: false })
-      }
-    } catch {
-      setState({ isAuthenticated: false, isLoading: false })
+  const {
+    data: profile,
+    isLoading,
+    isError,
+    refetch,
+  } = $api.useQuery(
+    'get',
+    '/api/Account',
+    {},
+    {
+      retry: false,
     }
-  }, [])
+  )
 
-  useEffect(() => {
-    checkAuth()
-  }, [checkAuth])
+  const loginMutation = $api.useMutation('post', '/api/auth/login')
+  const registerMutation = $api.useMutation('post', '/api/auth/register')
+  const logoutMutation = $api.useMutation('post', '/api/auth/logout')
+  const forgotPasswordMutation = $api.useMutation('post', '/api/auth/forgot-password')
+  const resetPasswordMutation = $api.useMutation('post', '/api/auth/reset-password')
+  const confirmEmailMutation = $api.useMutation('post', '/api/auth/confirm-email')
+  const resendConfirmationEmailMutation = $api.useMutation('post', '/api/auth/resend-confirmation-email')
+
+  const isAuthenticated = !isLoading && !isError && !!profile
 
   const loginWithCredentials = async (email: string, password: string) => {
     try {
-      const { response, error } = await api.POST('/api/auth/login', {
+      await loginMutation.mutateAsync({
         body: { email, password },
       })
-
-      if (response.ok) {
-        await checkAuth()
-        return { success: true }
-      }
-
-      let errorMsg = 'Credenciais inválidas. Verifique o email e a palavra-passe.'
-      if (error) {
-        const errData = error as any
-        if (typeof errData === 'string') errorMsg = errData
-        else if (errData?.detail) errorMsg = errData.detail
-        else if (errData?.title) errorMsg = errData.title
-      }
-
-      return { success: false, error: errorMsg }
+      await queryClient.invalidateQueries()
+      await refetch()
+      return { success: true }
     } catch (err: any) {
-      return { success: false, error: err?.message ?? 'Erro ao comunicar com o servidor.' }
+      let errorMsg = 'Credenciais inválidas. Verifique o email e a palavra-passe.'
+      if (err) {
+        if (typeof err === 'string') errorMsg = err
+        else if (err?.detail) errorMsg = err.detail
+        else if (err?.title) errorMsg = err.title
+      }
+      return { success: false, error: errorMsg }
     }
   }
 
@@ -62,7 +60,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     phoneNumber?: string
   ) => {
     try {
-      const { response, error } = await api.POST('/api/auth/register', {
+      await registerMutation.mutateAsync({
         body: {
           email,
           password,
@@ -71,27 +69,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           phoneNumber: phoneNumber ?? undefined,
         },
       })
-
-      if (response.ok) {
-        return { success: true }
-      }
-
+      return { success: true }
+    } catch (err: any) {
       let errorMsg = 'Erro ao criar conta. Verifique os dados fornecidos.'
-      if (error) {
-        const errData = error as any
-        if (typeof errData === 'string') {
-          errorMsg = errData
-        } else if (errData?.errors) {
-          const messages = Object.values(errData.errors).flat()
+      if (err) {
+        if (typeof err === 'string') {
+          errorMsg = err
+        } else if (err?.errors) {
+          const messages = Object.values(err.errors).flat()
           if (messages.length > 0) errorMsg = messages.join(' ')
-        } else if (errData?.detail) {
-          errorMsg = errData.detail
+        } else if (err?.detail) {
+          errorMsg = err.detail
         }
       }
-
       return { success: false, error: errorMsg }
-    } catch (err: any) {
-      return { success: false, error: err?.message ?? 'Erro ao comunicar com o servidor.' }
     }
   }
 
@@ -104,95 +95,77 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = async () => {
     try {
-      await api.POST('/api/auth/logout', {})
+      await logoutMutation.mutateAsync({})
     } catch {
       // Ignore network errors on logout
     } finally {
-      setState({ isAuthenticated: false, isLoading: false })
+      queryClient.setQueryData(['get', '/api/Account'], null)
+      await queryClient.invalidateQueries()
     }
   }
 
   const forgotPassword = async (email: string) => {
     try {
-      const { response, error } = await api.POST('/api/auth/forgot-password', {
+      await forgotPasswordMutation.mutateAsync({
         body: { email },
       })
-
-      if (response.ok) {
-        return { success: true }
-      }
-
-      const errData = error as any
-      const errorMsg = typeof errData === 'string' ? errData : errData?.detail || 'Erro ao processar pedido.'
-      return { success: false, error: errorMsg }
+      return { success: true }
     } catch (err: any) {
-      return { success: false, error: err?.message ?? 'Erro ao comunicar com o servidor.' }
+      const errorMsg = typeof err === 'string' ? err : err?.detail || 'Erro ao processar pedido.'
+      return { success: false, error: errorMsg }
     }
   }
 
   const resetPassword = async (email: string, token: string, newPassword: string) => {
     try {
-      const { response, error } = await api.POST('/api/auth/reset-password', {
+      await resetPasswordMutation.mutateAsync({
         body: { email, token, newPassword },
       })
-
-      if (response.ok) {
-        return { success: true }
-      }
-
-      const errData = error as any
-      const errorMsg = typeof errData === 'string' ? errData : errData?.detail || 'Erro ao redefinir palavra-passe.'
-      return { success: false, error: errorMsg }
+      return { success: true }
     } catch (err: any) {
-      return { success: false, error: err?.message ?? 'Erro ao comunicar com o servidor.' }
+      const errorMsg = typeof err === 'string' ? err : err?.detail || 'Erro ao redefinir palavra-passe.'
+      return { success: false, error: errorMsg }
     }
   }
 
   const confirmEmail = async (userId: string, token: string) => {
     try {
-      const { response, error } = await api.POST('/api/auth/confirm-email', {
+      await confirmEmailMutation.mutateAsync({
         body: { userId, token },
       })
-
-      if (response.ok) {
-        return { success: true }
-      }
-
-      const errData = error as any
-      const errorMsg = typeof errData === 'string' ? errData : errData?.detail ?? 'Erro ao confirmar email.'
-      return { success: false, error: errorMsg }
+      return { success: true }
     } catch (err: any) {
-      return { success: false, error: err?.message ?? 'Erro ao comunicar com o servidor.' }
+      const errorMsg = typeof err === 'string' ? err : err?.detail ?? 'Erro ao confirmar email.'
+      return { success: false, error: errorMsg }
     }
   }
 
   const resendConfirmationEmail = async (email: string) => {
     try {
-      const { response, error } = await api.POST('/api/auth/resend-confirmation-email', {
+      await resendConfirmationEmailMutation.mutateAsync({
         body: { email },
       })
-
-      if (response.ok) {
-        return { success: true }
-      }
-
-      const errData = error as any
-      const errorMsg = typeof errData === 'string' ? errData : errData?.detail ?? 'Erro ao reenviar confirmação de email.'
-      return { success: false, error: errorMsg }
+      return { success: true }
     } catch (err: any) {
-      return { success: false, error: err?.message ?? 'Erro ao comunicar com o servidor.' }
+      const errorMsg = typeof err === 'string' ? err : err?.detail ?? 'Erro ao reenviar confirmação de email.'
+      return { success: false, error: errorMsg }
     }
+  }
+
+  const refetchAuth = async () => {
+    await refetch()
   }
 
   return (
     <AuthContext.Provider
       value={{
-        ...state,
+        isAuthenticated,
+        isLoading,
         loginWithCredentials,
         registerWithCredentials,
         loginWithGoogle,
         logout,
-        refetchAuth: checkAuth,
+        refetchAuth,
         forgotPassword,
         resetPassword,
         confirmEmail,

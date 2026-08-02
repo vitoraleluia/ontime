@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
 import { CalendarRange, Mail, Loader2, AlertCircle, CheckCircle2, ArrowLeft } from 'lucide-react'
-import { api } from '@/lib/api'
+import { $api } from '@/lib/api'
 
 export const Route = createFileRoute('/forgot-password')({
   component: ForgotPasswordPage,
@@ -10,36 +10,31 @@ export const Route = createFileRoute('/forgot-password')({
 
 function ForgotPasswordPage() {
   const [email, setEmail] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const [isSubmitted, setIsSubmitted] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [errorMsg, setErrorMsg] = useState<string | null>(null)
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const forgotPasswordMutation = $api.useMutation('post', '/api/auth/forgot-password', {
+    onError: (err: any) => {
+      let msg = 'Falha ao enviar o pedido de recuperação. Tente novamente.'
+      if (err?.detail) {
+        msg = err.detail
+      } else if (err?.title) {
+        msg = err.title
+      }
+      setErrorMsg(msg)
+    },
+  })
+
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!email) {
-      setError('Por favor, introduza o seu endereço de email.')
+      setErrorMsg('Por favor, introduza o seu endereço de email.')
       return
     }
 
-    setError(null)
-    setIsLoading(true)
-
-    try {
-      await api.POST('/api/auth/forgot-password', {
-        body: { email: email.trim() },
-      })
-      setIsSubmitted(true)
-    } catch (err: any) {
-      let errorMsg = 'Falha ao enviar o pedido de recuperação. Tente novamente.'
-      if (err?.detail) {
-        errorMsg = err.detail
-      } else if (err?.title) {
-        errorMsg = err.title
-      }
-      setError(errorMsg)
-    } finally {
-      setIsLoading(false)
-    }
+    setErrorMsg(null)
+    forgotPasswordMutation.mutate({
+      body: { email: email.trim() },
+    })
   }
 
   return (
@@ -62,14 +57,14 @@ function ForgotPasswordPage() {
 
         {/* Card */}
         <div className="rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-8">
-          {isSubmitted ? (
+          {forgotPasswordMutation.isSuccess ? (
             <SuccessState email={email} />
           ) : (
             <ForgotPasswordForm
               email={email}
               setEmail={setEmail}
-              error={error}
-              isLoading={isLoading}
+              error={errorMsg}
+              isLoading={forgotPasswordMutation.isPending}
               onSubmit={handleSubmit}
             />
           )}

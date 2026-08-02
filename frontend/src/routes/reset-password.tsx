@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { createFileRoute, useSearch, Link } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
 import { CalendarRange, Lock, Loader2, AlertCircle, CheckCircle2, ArrowLeft } from 'lucide-react'
-import { api } from '@/lib/api'
+import { $api } from '@/lib/api'
 
 export const Route = createFileRoute('/reset-password')({
   component: ResetPasswordPage,
@@ -15,52 +15,47 @@ function ResetPasswordPage() {
 
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const [isSuccess, setIsSuccess] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [errorMsg, setErrorMsg] = useState<string | null>(null)
 
   const isInvalidLink = !email || !token
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const resetPasswordMutation = $api.useMutation('post', '/api/auth/reset-password', {
+    onError: (err: any) => {
+      let msg = 'Falha ao redefinir a palavra-passe. O link pode ter expirado.'
+      if (err?.detail) {
+        msg = err.detail
+      } else if (err?.title) {
+        msg = err.title
+      }
+      setErrorMsg(msg)
+    },
+  })
+
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!newPassword || !confirmPassword) {
-      setError('Por favor, preencha todos os campos.')
+      setErrorMsg('Por favor, preencha todos os campos.')
       return
     }
 
     if (newPassword !== confirmPassword) {
-      setError('As palavras-passe não coincidem.')
+      setErrorMsg('As palavras-passe não coincidem.')
       return
     }
 
     if (newPassword.length < 6) {
-      setError('A palavra-passe deve ter pelo menos 6 caracteres.')
+      setErrorMsg('A palavra-passe deve ter pelo menos 6 caracteres.')
       return
     }
 
-    setError(null)
-    setIsLoading(true)
-
-    try {
-      await api.POST('/api/auth/reset-password', {
-        body: {
-          email,
-          token,
-          newPassword,
-        },
-      })
-      setIsSuccess(true)
-    } catch (err: any) {
-      let errorMsg = 'Falha ao redefinir a palavra-passe. O link pode ter expirado.'
-      if (err?.detail) {
-        errorMsg = err.detail
-      } else if (err?.title) {
-        errorMsg = err.title
-      }
-      setError(errorMsg)
-    } finally {
-      setIsLoading(false)
-    }
+    setErrorMsg(null)
+    resetPasswordMutation.mutate({
+      body: {
+        email,
+        token,
+        newPassword,
+      },
+    })
   }
 
   return (
@@ -85,13 +80,13 @@ function ResetPasswordPage() {
         <div className="rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-8">
           <ResetPasswordCardContent
             isInvalidLink={isInvalidLink}
-            isSuccess={isSuccess}
+            isSuccess={resetPasswordMutation.isSuccess}
             newPassword={newPassword}
             setNewPassword={setNewPassword}
             confirmPassword={confirmPassword}
             setConfirmPassword={setConfirmPassword}
-            error={error}
-            isLoading={isLoading}
+            error={errorMsg}
+            isLoading={resetPasswordMutation.isPending}
             onSubmit={handleSubmit}
           />
         </div>
