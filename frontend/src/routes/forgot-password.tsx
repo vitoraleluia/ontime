@@ -3,14 +3,18 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 import { CalendarRange } from 'lucide-react'
 import { $api } from '@/lib/api'
 import { ErrorUtils } from '@/domain/utils/ErrorUtils'
-import { ForgotPasswordSuccessState, ForgotPasswordForm } from '@/components/auth/ForgotPasswordComponents'
+import {
+  ForgotPasswordSuccessState,
+  ForgotPasswordForm,
+  ForgotPasswordFormFields,
+} from '@/components/auth/ForgotPasswordComponents'
 
 export const Route = createFileRoute('/forgot-password')({
   component: ForgotPasswordPage,
 })
 
 function ForgotPasswordPage() {
-  const [email, setEmail] = useState('')
+  const [submittedEmail, setSubmittedEmail] = useState<string | null>(null)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
 
   const forgotPasswordMutation = $api.useMutation('post', '/api/Auth/forgot-password', {
@@ -20,16 +24,20 @@ function ForgotPasswordPage() {
     },
   })
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    const formData = new FormData(e.currentTarget)
+    const email = (formData.get(ForgotPasswordFormFields.EMAIL) as string)?.trim()
+
     if (!email) {
       setErrorMsg('Por favor, introduza o seu endereço de email.')
       return
     }
 
     setErrorMsg(null)
+    setSubmittedEmail(email)
     forgotPasswordMutation.mutate({
-      body: { email: email.trim() },
+      body: { email },
     })
   }
 
@@ -53,12 +61,10 @@ function ForgotPasswordPage() {
 
         {/* Card */}
         <div className="rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-8">
-          {forgotPasswordMutation.isSuccess ? (
-            <ForgotPasswordSuccessState email={email} />
+          {forgotPasswordMutation.isSuccess && submittedEmail ? (
+            <ForgotPasswordSuccessState email={submittedEmail} />
           ) : (
             <ForgotPasswordForm
-              email={email}
-              setEmail={setEmail}
               error={errorMsg}
               isLoading={forgotPasswordMutation.isPending}
               onSubmit={handleSubmit}

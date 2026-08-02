@@ -5,6 +5,11 @@ import { Button } from '@/components/ui/button'
 import { CalendarRange, Mail, Lock, Loader2, AlertCircle } from 'lucide-react'
 import { GoogleIcon } from '@/components/icons/GoogleIcon'
 
+export class LoginFormFields {
+  public static readonly EMAIL = 'email'
+  public static readonly PASSWORD = 'password'
+}
+
 export const Route = createFileRoute('/login')({
   component: LoginPage,
 })
@@ -17,8 +22,6 @@ function LoginPage() {
   const { loginWithCredentials, loginWithGoogle, isAuthenticated } = useAuth()
   const navigate = useNavigate()
 
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
   let initialError: string | null = null
   if (queryError === 'GoogleAuthFailed') {
     initialError = 'Falha ao autenticar com a conta Google.'
@@ -35,8 +38,12 @@ function LoginPage() {
     return null
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    const formData = new FormData(e.currentTarget)
+    const email = (formData.get(LoginFormFields.EMAIL) as string)?.trim()
+    const password = formData.get(LoginFormFields.PASSWORD) as string
+
     if (!email || !password) {
       setError('Por favor, preencha todos os campos.')
       return
@@ -52,7 +59,7 @@ function LoginPage() {
       navigate({ to: returnUrl })
     } else {
       if (result.error && (result.error.toLowerCase().includes('não foi confirmado') || result.error.toLowerCase().includes('verifique a sua caixa'))) {
-        navigate({ to: '/confirm-email-pending', search: { email: email.trim() } })
+        navigate({ to: '/confirm-email-pending', search: { email } })
         return
       }
       setError(result.error ?? 'Falha ao iniciar sessão.')
@@ -118,8 +125,7 @@ function LoginPage() {
                   <Mail className="absolute left-3.5 top-3 h-4 w-4 text-muted-foreground" />
                   <input
                     type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    name={LoginFormFields.EMAIL}
                     placeholder="exemplo@email.com"
                     required
                     disabled={isLoading}
@@ -136,10 +142,10 @@ function LoginPage() {
                   <Lock className="absolute left-3.5 top-3 h-4 w-4 text-muted-foreground" />
                   <input
                     type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    name={LoginFormFields.PASSWORD}
                     placeholder="••••••••"
                     required
+                    minLength={6}
                     disabled={isLoading}
                     className="w-full rounded-xl border border-border bg-background py-2.5 pl-10 pr-4 text-sm placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-50"
                   />

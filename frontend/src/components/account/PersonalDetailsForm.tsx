@@ -5,6 +5,12 @@ import type { components } from '@/generated/apiClient'
 
 type UserProfileResponse = components['schemas']['UserProfileResponse']
 
+export class PersonalDetailsFormFields {
+  public static readonly FIRST_NAME = 'firstName'
+  public static readonly LAST_NAME = 'lastName'
+  public static readonly PHONE_NUMBER = 'phoneNumber'
+}
+
 interface PersonalDetailsFormProps {
   profile: UserProfileResponse
   isSaving: boolean
@@ -49,10 +55,12 @@ export function PersonalDetailsForm({
             </label>
             <input
               type="text"
-              name="firstName"
+              name={PersonalDetailsFormFields.FIRST_NAME}
               defaultValue={profile.firstName || ''}
               placeholder="Introduza o seu nome"
               required
+              minLength={2}
+              maxLength={50}
               disabled={isSaving}
               className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-50"
             />
@@ -63,10 +71,12 @@ export function PersonalDetailsForm({
             </label>
             <input
               type="text"
-              name="lastName"
+              name={PersonalDetailsFormFields.LAST_NAME}
               defaultValue={profile.lastName || ''}
               placeholder="Introduza o seu apelido"
               required
+              minLength={2}
+              maxLength={50}
               disabled={isSaving}
               className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-50"
             />
@@ -82,7 +92,7 @@ export function PersonalDetailsForm({
             <Phone className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
             <input
               type="tel"
-              name="phoneNumber"
+              name={PersonalDetailsFormFields.PHONE_NUMBER}
               defaultValue={profile.phoneNumber || ''}
               placeholder="Ex: 912345678"
               disabled={isSaving}

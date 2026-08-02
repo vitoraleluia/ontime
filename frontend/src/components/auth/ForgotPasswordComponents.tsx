@@ -2,6 +2,10 @@ import { Link } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
 import { Mail, Loader2, AlertCircle, CheckCircle2, ArrowLeft } from 'lucide-react'
 
+export class ForgotPasswordFormFields {
+  public static readonly EMAIL = 'email'
+}
+
 export function ForgotPasswordSuccessState({ email }: { email: string }) {
   return (
     <div className="space-y-6 text-center animate-fade-in">
@@ -34,17 +38,13 @@ export function ForgotPasswordSuccessState({ email }: { email: string }) {
 }
 
 export function ForgotPasswordForm({
-  email,
-  setEmail,
   error,
   isLoading,
   onSubmit,
 }: {
-  email: string
-  setEmail: (val: string) => void
   error: string | null
   isLoading: boolean
-  onSubmit: (e: React.FormEvent) => void
+  onSubmit: (e: React.FormEvent<HTMLFormElement>) => void
 }) {
   return (
     <div className="space-y-4">
@@ -64,8 +64,7 @@ export function ForgotPasswordForm({
             <Mail className="absolute left-3.5 top-3 h-4 w-4 text-muted-foreground" />
             <input
               type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              name={ForgotPasswordFormFields.EMAIL}
               placeholder="exemplo@email.com"
               required
               disabled={isLoading}

@@ -5,7 +5,7 @@ import { $api } from '@/lib/api'
 import { Button } from '@/components/ui/button'
 import { ErrorUtils } from '@/domain/utils/ErrorUtils'
 import { ProfilePhotoSection } from '@/components/account/ProfilePhotoSection'
-import { PersonalDetailsForm } from '@/components/account/PersonalDetailsForm'
+import { PersonalDetailsForm, PersonalDetailsFormFields } from '@/components/account/PersonalDetailsForm'
 import { ProfessionalAccountSection } from '@/components/account/ProfessionalAccountSection'
 import { CheckCircle, Loader2, AlertCircle } from 'lucide-react'
 
@@ -100,9 +100,9 @@ function AccountPage() {
   const handleSaveProfile = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
-    const formFirstName = (formData.get('firstName') as string)?.trim()
-    const formLastName = (formData.get('lastName') as string)?.trim()
-    const formPhoneNumber = (formData.get('phoneNumber') as string)?.trim()
+    const formFirstName = (formData.get(PersonalDetailsFormFields.FIRST_NAME) as string)?.trim()
+    const formLastName = (formData.get(PersonalDetailsFormFields.LAST_NAME) as string)?.trim()
+    const formPhoneNumber = (formData.get(PersonalDetailsFormFields.PHONE_NUMBER) as string)?.trim()
 
     if (!formFirstName || !formLastName) {
       setErrorMsg('O nome e apelido são obrigatórios.')

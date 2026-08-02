@@ -2,26 +2,23 @@ import { Link } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
 import { Lock, Loader2, AlertCircle, CheckCircle2, ArrowLeft } from 'lucide-react'
 
+export class ResetPasswordFormFields {
+  public static readonly NEW_PASSWORD = 'newPassword'
+  public static readonly CONFIRM_PASSWORD = 'confirmPassword'
+}
+
 export function ResetPasswordCardContent({
   isInvalidLink,
   isSuccess,
-  newPassword,
-  setNewPassword,
-  confirmPassword,
-  setConfirmPassword,
   error,
   isLoading,
   onSubmit,
 }: {
   isInvalidLink: boolean
   isSuccess: boolean
-  newPassword: string
-  setNewPassword: (val: string) => void
-  confirmPassword: string
-  setConfirmPassword: (val: string) => void
   error: string | null
   isLoading: boolean
-  onSubmit: (e: React.FormEvent) => void
+  onSubmit: (e: React.FormEvent<HTMLFormElement>) => void
 }) {
   if (isInvalidLink) {
     return <InvalidLinkState />
@@ -33,10 +30,6 @@ export function ResetPasswordCardContent({
 
   return (
     <ResetPasswordForm
-      newPassword={newPassword}
-      setNewPassword={setNewPassword}
-      confirmPassword={confirmPassword}
-      setConfirmPassword={setConfirmPassword}
       error={error}
       isLoading={isLoading}
       onSubmit={onSubmit}
@@ -96,21 +89,13 @@ function ResetSuccessState() {
 }
 
 function ResetPasswordForm({
-  newPassword,
-  setNewPassword,
-  confirmPassword,
-  setConfirmPassword,
   error,
   isLoading,
   onSubmit,
 }: {
-  newPassword: string
-  setNewPassword: (val: string) => void
-  confirmPassword: string
-  setConfirmPassword: (val: string) => void
   error: string | null
   isLoading: boolean
-  onSubmit: (e: React.FormEvent) => void
+  onSubmit: (e: React.FormEvent<HTMLFormElement>) => void
 }) {
   return (
     <div className="space-y-4">
@@ -130,10 +115,11 @@ function ResetPasswordForm({
             <Lock className="absolute left-3.5 top-3 h-4 w-4 text-muted-foreground" />
             <input
               type="password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
+              name={ResetPasswordFormFields.NEW_PASSWORD}
               placeholder="Mínimo 6 caracteres"
               required
+              minLength={6}
+              maxLength={100}
               disabled={isLoading}
               className="w-full rounded-xl border border-border bg-background py-2.5 pl-10 pr-4 text-sm placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-50"
             />
@@ -148,10 +134,11 @@ function ResetPasswordForm({
             <Lock className="absolute left-3.5 top-3 h-4 w-4 text-muted-foreground" />
             <input
               type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              name={ResetPasswordFormFields.CONFIRM_PASSWORD}
               placeholder="Repita a nova palavra-passe"
               required
+              minLength={6}
+              maxLength={100}
               disabled={isLoading}
               className="w-full rounded-xl border border-border bg-background py-2.5 pl-10 pr-4 text-sm placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-50"
             />

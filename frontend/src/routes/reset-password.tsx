@@ -3,7 +3,7 @@ import { createFileRoute, useSearch, Link } from '@tanstack/react-router'
 import { CalendarRange } from 'lucide-react'
 import { $api } from '@/lib/api'
 import { ErrorUtils } from '@/domain/utils/ErrorUtils'
-import { ResetPasswordCardContent } from '@/components/auth/ResetPasswordComponents'
+import { ResetPasswordCardContent, ResetPasswordFormFields } from '@/components/auth/ResetPasswordComponents'
 
 export const Route = createFileRoute('/reset-password')({
   component: ResetPasswordPage,
@@ -14,8 +14,6 @@ function ResetPasswordPage() {
   const email = search?.email ?? ''
   const token = search?.token ?? ''
 
-  const [newPassword, setNewPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
 
   const isInvalidLink = !email || !token
@@ -27,8 +25,12 @@ function ResetPasswordPage() {
     },
   })
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    const formData = new FormData(e.currentTarget)
+    const newPassword = formData.get(ResetPasswordFormFields.NEW_PASSWORD) as string
+    const confirmPassword = formData.get(ResetPasswordFormFields.CONFIRM_PASSWORD) as string
+
     if (!newPassword || !confirmPassword) {
       setErrorMsg('Por favor, preencha todos os campos.')
       return
@@ -77,10 +79,6 @@ function ResetPasswordPage() {
           <ResetPasswordCardContent
             isInvalidLink={isInvalidLink}
             isSuccess={resetPasswordMutation.isSuccess}
-            newPassword={newPassword}
-            setNewPassword={setNewPassword}
-            confirmPassword={confirmPassword}
-            setConfirmPassword={setConfirmPassword}
             error={errorMsg}
             isLoading={resetPasswordMutation.isPending}
             onSubmit={handleSubmit}

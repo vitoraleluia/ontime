@@ -17,6 +17,17 @@ import {
   ArrowRight,
 } from 'lucide-react'
 
+export class ShopCreationFormFields {
+  public static readonly NAME = 'name'
+  public static readonly SLUG = 'slug'
+  public static readonly DESCRIPTION = 'description'
+  public static readonly ADDRESS = 'address'
+  public static readonly PHONE_NUMBER = 'phoneNumber'
+  public static readonly SLOT_DURATION = 'slotDuration'
+  public static readonly ALLOW_CANCELLATION = 'allowCancellation'
+  public static readonly CANCELLATION_DEADLINE = 'cancellationDeadline'
+}
+
 interface ShopCreationFormProps {
   navigate: ReturnType<typeof useNavigate>
 }
@@ -93,12 +104,12 @@ export function ShopCreationForm({ navigate }: ShopCreationFormProps) {
 
     const formData = new FormData(e.currentTarget)
     const nameValue = name.trim()
-    const descriptionValue = (formData.get('description') as string)?.trim() || ''
-    const addressValue = (formData.get('address') as string)?.trim() || undefined
-    const phoneValue = (formData.get('phoneNumber') as string)?.trim() || undefined
-    const slotDuration = Number(formData.get('slotDuration')) || 30
-    const allowCancellation = formData.get('allowCancellation') === 'yes'
-    const cancellationDeadline = Number(formData.get('cancellationDeadline')) || 24
+    const descriptionValue = (formData.get(ShopCreationFormFields.DESCRIPTION) as string)?.trim() || ''
+    const addressValue = (formData.get(ShopCreationFormFields.ADDRESS) as string)?.trim() || undefined
+    const phoneValue = (formData.get(ShopCreationFormFields.PHONE_NUMBER) as string)?.trim() || undefined
+    const slotDuration = Number(formData.get(ShopCreationFormFields.SLOT_DURATION)) || 30
+    const allowCancellation = formData.get(ShopCreationFormFields.ALLOW_CANCELLATION) === 'yes'
+    const cancellationDeadline = Number(formData.get(ShopCreationFormFields.CANCELLATION_DEADLINE)) || 24
 
     if (!nameValue) {
       setErrorMsg('Por favor introduza o nome do estabelecimento.')
@@ -176,6 +187,7 @@ export function ShopCreationForm({ navigate }: ShopCreationFormProps) {
               </label>
               <input
                 type="text"
+                name={ShopCreationFormFields.NAME}
                 required
                 maxLength={100}
                 placeholder="Ex: Barbearia Martinéz"
@@ -193,6 +205,7 @@ export function ShopCreationForm({ navigate }: ShopCreationFormProps) {
               <div className="relative mt-1.5">
                 <input
                   type="text"
+                  name={ShopCreationFormFields.SLUG}
                   required
                   maxLength={50}
                   placeholder="barbearia-martinez"
@@ -227,7 +240,7 @@ export function ShopCreationForm({ navigate }: ShopCreationFormProps) {
             <div>
               <label className="block text-sm font-medium text-foreground">Descrição</label>
               <textarea
-                name="description"
+                name={ShopCreationFormFields.DESCRIPTION}
                 rows={3}
                 maxLength={500}
                 placeholder="Descreva os serviços, atmosfera e diferenciais do seu espaço..."
@@ -248,7 +261,7 @@ export function ShopCreationForm({ navigate }: ShopCreationFormProps) {
             <div>
               <label className="block text-sm font-medium text-foreground">Endereço</label>
               <input
-                name="address"
+                name={ShopCreationFormFields.ADDRESS}
                 type="text"
                 maxLength={200}
                 placeholder="Ex: Rua Augusta 123, Lisboa"
@@ -259,7 +272,7 @@ export function ShopCreationForm({ navigate }: ShopCreationFormProps) {
             <div>
               <label className="block text-sm font-medium text-foreground">Telefone de Contacto</label>
               <input
-                name="phoneNumber"
+                name={ShopCreationFormFields.PHONE_NUMBER}
                 type="tel"
                 maxLength={20}
                 placeholder="Ex: +351 912 345 678"
@@ -282,7 +295,7 @@ export function ShopCreationForm({ navigate }: ShopCreationFormProps) {
                 Duração Padrão do Slot (Minutos)
               </label>
               <select
-                name="slotDuration"
+                name={ShopCreationFormFields.SLOT_DURATION}
                 defaultValue={30}
                 className="mt-1.5 w-full rounded-lg border border-input bg-background px-3.5 py-2 text-sm text-foreground focus:border-ring focus:ring-2 focus:ring-ring/20 focus:outline-none"
               >
@@ -296,7 +309,7 @@ export function ShopCreationForm({ navigate }: ShopCreationFormProps) {
             <div>
               <label className="block text-sm font-medium text-foreground">Permitir Cancelamento</label>
               <select
-                name="allowCancellation"
+                name={ShopCreationFormFields.ALLOW_CANCELLATION}
                 defaultValue="yes"
                 className="mt-1.5 w-full rounded-lg border border-input bg-background px-3.5 py-2 text-sm text-foreground focus:border-ring focus:ring-2 focus:ring-ring/20 focus:outline-none"
               >
@@ -310,7 +323,7 @@ export function ShopCreationForm({ navigate }: ShopCreationFormProps) {
                 Limite para Cancelar (Horas antes)
               </label>
               <input
-                name="cancellationDeadline"
+                name={ShopCreationFormFields.CANCELLATION_DEADLINE}
                 type="number"
                 min={0}
                 max={168}

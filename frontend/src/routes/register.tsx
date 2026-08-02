@@ -5,6 +5,15 @@ import { Button } from '@/components/ui/button'
 import { CalendarRange, Mail, Lock, User, Phone, Loader2, AlertCircle } from 'lucide-react'
 import { GoogleIcon } from '@/components/icons/GoogleIcon'
 
+export class RegisterFormFields {
+  public static readonly FIRST_NAME = 'firstName'
+  public static readonly LAST_NAME = 'lastName'
+  public static readonly PHONE_NUMBER = 'phoneNumber'
+  public static readonly EMAIL = 'email'
+  public static readonly PASSWORD = 'password'
+  public static readonly CONFIRM_PASSWORD = 'confirmPassword'
+}
+
 export const Route = createFileRoute('/register')({
   component: RegisterPage,
 })
@@ -18,12 +27,6 @@ function RegisterPage() {
   const { registerWithCredentials, loginWithGoogle, isAuthenticated } = useAuth()
   const navigate = useNavigate()
 
-  const [firstName, setFirstName] = useState('')
-  const [lastName, setLastName] = useState('')
-  const [phoneNumber, setPhoneNumber] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 
@@ -33,15 +36,22 @@ function RegisterPage() {
     return null
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    const formData = new FormData(e.currentTarget)
+    const firstName = (formData.get(RegisterFormFields.FIRST_NAME) as string)?.trim()
+    const lastName = (formData.get(RegisterFormFields.LAST_NAME) as string)?.trim()
+    const phoneNumber = (formData.get(RegisterFormFields.PHONE_NUMBER) as string)?.trim() ?? ''
+    const email = (formData.get(RegisterFormFields.EMAIL) as string)?.trim()
+    const password = formData.get(RegisterFormFields.PASSWORD) as string
+    const confirmPassword = formData.get(RegisterFormFields.CONFIRM_PASSWORD) as string
 
-    if (!firstName.trim() || !lastName.trim() || !email || !password || !confirmPassword) {
+    if (!firstName || !lastName || !email || !password || !confirmPassword) {
       setError('Por favor, preencha todos os campos obrigatórios.')
       return
     }
 
-    if (phoneNumber.trim() && !PT_PHONE_REGEX.test(phoneNumber.trim())) {
+    if (phoneNumber && !PT_PHONE_REGEX.test(phoneNumber)) {
       setError('O número de telemóvel deve ser um número português válido (ex: 927431783).')
       return
     }
@@ -60,16 +70,16 @@ function RegisterPage() {
     setIsLoading(true)
 
     const result = await registerWithCredentials(
-      email.trim(),
+      email,
       password,
-      firstName.trim(),
-      lastName.trim(),
-      phoneNumber.trim() || undefined
+      firstName,
+      lastName,
+      phoneNumber || undefined
     )
     setIsLoading(false)
 
     if (result.success) {
-      navigate({ to: '/confirm-email-pending', search: { email: email.trim() } })
+      navigate({ to: '/confirm-email-pending', search: { email } })
     } else {
       setError(result.error ?? 'Falha ao criar conta.')
     }
@@ -135,10 +145,11 @@ function RegisterPage() {
                     <User className="absolute left-3.5 top-3 h-4 w-4 text-muted-foreground" />
                     <input
                       type="text"
-                      value={firstName}
-                      onChange={(e) => setFirstName(e.target.value)}
+                      name={RegisterFormFields.FIRST_NAME}
                       placeholder="João"
                       required
+                      minLength={2}
+                      maxLength={50}
                       disabled={isLoading}
                       className="w-full rounded-xl border border-border bg-background py-2.5 pl-10 pr-4 text-sm placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-50"
                     />
@@ -153,10 +164,11 @@ function RegisterPage() {
                     <User className="absolute left-3.5 top-3 h-4 w-4 text-muted-foreground" />
                     <input
                       type="text"
-                      value={lastName}
-                      onChange={(e) => setLastName(e.target.value)}
+                      name={RegisterFormFields.LAST_NAME}
                       placeholder="Silva"
                       required
+                      minLength={2}
+                      maxLength={50}
                       disabled={isLoading}
                       className="w-full rounded-xl border border-border bg-background py-2.5 pl-10 pr-4 text-sm placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-50"
                     />
@@ -172,9 +184,9 @@ function RegisterPage() {
                   <Phone className="absolute left-3.5 top-3 h-4 w-4 text-muted-foreground" />
                   <input
                     type="tel"
-                    value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    name={RegisterFormFields.PHONE_NUMBER}
                     placeholder="927431783"
+                    pattern="^(\+351)?9\d{8}$"
                     disabled={isLoading}
                     className="w-full rounded-xl border border-border bg-background py-2.5 pl-10 pr-4 text-sm placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-50"
                   />
@@ -189,8 +201,7 @@ function RegisterPage() {
                   <Mail className="absolute left-3.5 top-3 h-4 w-4 text-muted-foreground" />
                   <input
                     type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    name={RegisterFormFields.EMAIL}
                     placeholder="exemplo@email.com"
                     required
                     disabled={isLoading}
@@ -207,10 +218,11 @@ function RegisterPage() {
                   <Lock className="absolute left-3.5 top-3 h-4 w-4 text-muted-foreground" />
                   <input
                     type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    name={RegisterFormFields.PASSWORD}
                     placeholder="Mínimo 6 caracteres"
                     required
+                    minLength={6}
+                    maxLength={100}
                     disabled={isLoading}
                     className="w-full rounded-xl border border-border bg-background py-2.5 pl-10 pr-4 text-sm placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-50"
                   />
@@ -225,10 +237,11 @@ function RegisterPage() {
                   <Lock className="absolute left-3.5 top-3 h-4 w-4 text-muted-foreground" />
                   <input
                     type="password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    name={RegisterFormFields.CONFIRM_PASSWORD}
                     placeholder="Repita a palavra-passe"
                     required
+                    minLength={6}
+                    maxLength={100}
                     disabled={isLoading}
                     className="w-full rounded-xl border border-border bg-background py-2.5 pl-10 pr-4 text-sm placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-50"
                   />
