@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="OnTime DB" uuid="fa94f6c2-900b-4507-993d-9f1fde3a6c1c">
-      <driver-ref>sqlite.xerial</driver-ref>
+    <data-source source="LOCAL" name="ontime@127.0.0.1" uuid="4308af70-10cf-4b5a-ae1b-5bb76b605ed3">
+      <driver-ref>postgresql</driver-ref>
       <synchronize>true</synchronize>
-      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
-      <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/OnTime.Site/app.db</jdbc-url>
+      <configured-by-url>true</configured-by-url>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://127.0.0.1:5432/ontime?password=password&amp;user=postgres</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </component>

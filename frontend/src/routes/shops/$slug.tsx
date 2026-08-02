@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { $api } from '@/lib/api'
 import { Button } from '@/components/ui/button'
@@ -10,7 +11,8 @@ import {
   Loader2,
   ArrowLeft,
   CheckCircle2,
-  Share2
+  Share2,
+  Check
 } from 'lucide-react'
 
 export const Route = createFileRoute('/shops/$slug')({
@@ -19,6 +21,7 @@ export const Route = createFileRoute('/shops/$slug')({
 
 function PublicShopPage() {
   const { slug } = Route.useParams()
+  const [isCopied, setIsCopied] = useState(false)
 
   const { data: shop, isLoading, isError } = $api.useQuery(
     'get',
@@ -27,6 +30,12 @@ function PublicShopPage() {
       params: { path: { slug } }
     }
   )
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(window.location.href)
+    setIsCopied(true)
+    setTimeout(() => setIsCopied(false), 2000)
+  }
 
   if (isLoading) {
     return (
@@ -91,11 +100,7 @@ function PublicShopPage() {
               <h1 className="mt-3 font-heading text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
                 {shop.name}
               </h1>
-
-              <p className="mt-2 text-sm text-muted-foreground font-mono">
-                ontime.pt/shops/{shop.slug}
-              </p>
-
+              
               {shop.description && (
                 <p className="mt-4 max-w-2xl text-base text-muted-foreground leading-relaxed">
                   {shop.description}
@@ -106,15 +111,21 @@ function PublicShopPage() {
             <div className="flex shrink-0 gap-3">
               <Button
                 variant="outline"
-                size="icon"
-                onClick={() => {
-                  navigator.clipboard.writeText(window.location.href)
-                  alert('Link copiado para a área de transferência!')
-                }}
-                className="cursor-pointer"
+                onClick={handleCopyLink}
+                className="cursor-pointer gap-2"
                 title="Partilhar link"
               >
-                <Share2 className="h-4 w-4" />
+                {isCopied ? (
+                  <>
+                    <Check className="h-4 w-4 text-emerald-500" />
+                    <span>Copiado!</span>
+                  </>
+                ) : (
+                  <>
+                    <Share2 className="h-4 w-4" />
+                    <span>Partilhar</span>
+                  </>
+                )}
               </Button>
 
               <Button size="lg" className="cursor-pointer gap-2 font-semibold shadow-md">

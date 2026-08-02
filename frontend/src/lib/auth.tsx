@@ -3,6 +3,7 @@ import type { ReactNode } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import type { AuthContextType } from '@/domain/auth'
 import { $api } from '@/lib/api'
+import { ErrorUtils } from '@/domain/utils/ErrorUtils'
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
@@ -23,13 +24,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   )
 
-  const loginMutation = $api.useMutation('post', '/api/auth/login')
-  const registerMutation = $api.useMutation('post', '/api/auth/register')
-  const logoutMutation = $api.useMutation('post', '/api/auth/logout')
-  const forgotPasswordMutation = $api.useMutation('post', '/api/auth/forgot-password')
-  const resetPasswordMutation = $api.useMutation('post', '/api/auth/reset-password')
-  const confirmEmailMutation = $api.useMutation('post', '/api/auth/confirm-email')
-  const resendConfirmationEmailMutation = $api.useMutation('post', '/api/auth/resend-confirmation-email')
+  const loginMutation = $api.useMutation('post', '/api/Auth/login')
+  const registerMutation = $api.useMutation('post', '/api/Auth/register')
+  const logoutMutation = $api.useMutation('post', '/api/Auth/logout')
+  const forgotPasswordMutation = $api.useMutation('post', '/api/Auth/forgot-password')
+  const resetPasswordMutation = $api.useMutation('post', '/api/Auth/reset-password')
+  const confirmEmailMutation = $api.useMutation('post', '/api/Auth/confirm-email')
+  const resendConfirmationEmailMutation = $api.useMutation('post', '/api/Auth/resend-confirmation-email')
 
   const isAuthenticated = !isLoading && !isError && !!profile
 
@@ -41,13 +42,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await queryClient.invalidateQueries()
       await refetch()
       return { success: true }
-    } catch (err: any) {
-      let errorMsg = 'Credenciais inválidas. Verifique o email e a palavra-passe.'
-      if (err) {
-        if (typeof err === 'string') errorMsg = err
-        else if (err?.detail) errorMsg = err.detail
-        else if (err?.title) errorMsg = err.title
-      }
+    } catch (err: unknown) {
+      const errorMsg = ErrorUtils.extractMessage(err, 'Credenciais inválidas. Verifique o email e a palavra-passe.')
       return { success: false, error: errorMsg }
     }
   }
@@ -70,18 +66,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         },
       })
       return { success: true }
-    } catch (err: any) {
-      let errorMsg = 'Erro ao criar conta. Verifique os dados fornecidos.'
-      if (err) {
-        if (typeof err === 'string') {
-          errorMsg = err
-        } else if (err?.errors) {
-          const messages = Object.values(err.errors).flat()
-          if (messages.length > 0) errorMsg = messages.join(' ')
-        } else if (err?.detail) {
-          errorMsg = err.detail
-        }
-      }
+    } catch (err: unknown) {
+      const errorMsg = ErrorUtils.extractMessage(err, 'Erro ao criar conta. Verifique os dados fornecidos.')
       return { success: false, error: errorMsg }
     }
   }
@@ -110,8 +96,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         body: { email },
       })
       return { success: true }
-    } catch (err: any) {
-      const errorMsg = typeof err === 'string' ? err : err?.detail || 'Erro ao processar pedido.'
+    } catch (err: unknown) {
+      const errorMsg = ErrorUtils.extractMessage(err, 'Erro ao processar pedido.')
       return { success: false, error: errorMsg }
     }
   }
@@ -122,8 +108,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         body: { email, token, newPassword },
       })
       return { success: true }
-    } catch (err: any) {
-      const errorMsg = typeof err === 'string' ? err : err?.detail || 'Erro ao redefinir palavra-passe.'
+    } catch (err: unknown) {
+      const errorMsg = ErrorUtils.extractMessage(err, 'Erro ao redefinir palavra-passe.')
       return { success: false, error: errorMsg }
     }
   }
@@ -134,8 +120,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         body: { userId, token },
       })
       return { success: true }
-    } catch (err: any) {
-      const errorMsg = typeof err === 'string' ? err : err?.detail ?? 'Erro ao confirmar email.'
+    } catch (err: unknown) {
+      const errorMsg = ErrorUtils.extractMessage(err, 'Erro ao confirmar email.')
       return { success: false, error: errorMsg }
     }
   }
@@ -146,8 +132,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         body: { email },
       })
       return { success: true }
-    } catch (err: any) {
-      const errorMsg = typeof err === 'string' ? err : err?.detail ?? 'Erro ao reenviar confirmação de email.'
+    } catch (err: unknown) {
+      const errorMsg = ErrorUtils.extractMessage(err, 'Erro ao reenviar confirmação de email.')
       return { success: false, error: errorMsg }
     }
   }
