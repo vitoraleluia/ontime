@@ -145,17 +145,9 @@ function LoginPage() {
               </div>
 
               <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    Palavra-passe
-                  </label>
-                  <Link
-                    to="/forgot-password"
-                    className="text-xs font-semibold text-primary hover:underline"
-                  >
-                    Esqueceu-se da palavra-passe?
-                  </Link>
-                </div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+                  Palavra-passe
+                </label>
                 <div className="relative">
                   <Lock className="absolute left-3.5 top-3 h-4 w-4 text-muted-foreground" />
                   <input
@@ -167,6 +159,14 @@ function LoginPage() {
                     disabled={isLoading}
                     className="w-full rounded-xl border border-border bg-background py-2.5 pl-10 pr-4 text-sm placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-50"
                   />
+                </div>
+                <div className="mt-1.5 text-right">
+                  <Link
+                    to="/forgot-password"
+                    className="text-xs font-semibold text-primary hover:underline"
+                  >
+                    Esqueceu-se da palavra-passe?
+                  </Link>
                 </div>
               </div>
 
