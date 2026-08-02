@@ -74,4 +74,31 @@ public class SmtpEmailSender : IEmailSender
 
         await SendEmail(toEmail, subject, htmlBody, cancellationToken);
     }
+
+    public async Task SendPasswordResetEmail(string toEmail, string token, CancellationToken cancellationToken = default)
+    {
+        var clientUrl = string.IsNullOrWhiteSpace(this.authenticationSettings.ClientUrl)
+            ? "http://localhost:3001"
+            : this.authenticationSettings.ClientUrl.TrimEnd('/');
+
+        var resetLink = $"{clientUrl}/reset-password?email={Uri.EscapeDataString(toEmail)}&token={Uri.EscapeDataString(token)}";
+
+        var subject = "Recuperação de Palavra-passe - OnTime";
+        var htmlBody = $"""
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;">
+                <h2 style="color: #333333;">Recuperação de Palavra-passe</h2>
+                <p>Recebemos um pedido para redefinir a palavra-passe da sua conta na OnTime.</p>
+                <p>Para escolher uma nova palavra-passe, por favor clique no botão abaixo:</p>
+                <div style="text-align: center; margin: 30px 0;">
+                    <a href="{resetLink}" style="background-color: #2563eb; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">Redefinir Palavra-passe</a>
+                </div>
+                <p style="color: #666666; font-size: 14px;">Se não conseguir clicar no botão, copie e cole o seguinte link no seu navegador:</p>
+                <p style="color: #2563eb; font-size: 13px; word-break: break-all;">{resetLink}</p>
+                <hr style="border: none; border-top: 1px solid #eeeeee; margin: 20px 0;" />
+                <p style="color: #999999; font-size: 12px;">Se não solicitou a alteração da sua palavra-passe, por favor ignore este email.</p>
+            </div>
+            """;
+
+        await SendEmail(toEmail, subject, htmlBody, cancellationToken);
+    }
 }

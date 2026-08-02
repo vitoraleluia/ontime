@@ -9,8 +9,10 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as CreateShopRouteImport } from './routes/create-shop'
 import { Route as ConfirmEmailPendingRouteImport } from './routes/confirm-email-pending'
 import { Route as ConfirmEmailRouteImport } from './routes/confirm-email'
@@ -18,6 +20,11 @@ import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ShopsSlugRouteImport } from './routes/shops/$slug'
 
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
   path: '/register',
@@ -26,6 +33,11 @@ const RegisterRoute = RegisterRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CreateShopRoute = CreateShopRouteImport.update({
@@ -65,8 +77,10 @@ export interface FileRoutesByFullPath {
   '/confirm-email': typeof ConfirmEmailRoute
   '/confirm-email-pending': typeof ConfirmEmailPendingRoute
   '/create-shop': typeof CreateShopRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/shops/$slug': typeof ShopsSlugRoute
 }
 export interface FileRoutesByTo {
@@ -75,8 +89,10 @@ export interface FileRoutesByTo {
   '/confirm-email': typeof ConfirmEmailRoute
   '/confirm-email-pending': typeof ConfirmEmailPendingRoute
   '/create-shop': typeof CreateShopRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/shops/$slug': typeof ShopsSlugRoute
 }
 export interface FileRoutesById {
@@ -86,8 +102,10 @@ export interface FileRoutesById {
   '/confirm-email': typeof ConfirmEmailRoute
   '/confirm-email-pending': typeof ConfirmEmailPendingRoute
   '/create-shop': typeof CreateShopRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/shops/$slug': typeof ShopsSlugRoute
 }
 export interface FileRouteTypes {
@@ -98,8 +116,10 @@ export interface FileRouteTypes {
     | '/confirm-email'
     | '/confirm-email-pending'
     | '/create-shop'
+    | '/forgot-password'
     | '/login'
     | '/register'
+    | '/reset-password'
     | '/shops/$slug'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -108,8 +128,10 @@ export interface FileRouteTypes {
     | '/confirm-email'
     | '/confirm-email-pending'
     | '/create-shop'
+    | '/forgot-password'
     | '/login'
     | '/register'
+    | '/reset-password'
     | '/shops/$slug'
   id:
     | '__root__'
@@ -118,8 +140,10 @@ export interface FileRouteTypes {
     | '/confirm-email'
     | '/confirm-email-pending'
     | '/create-shop'
+    | '/forgot-password'
     | '/login'
     | '/register'
+    | '/reset-password'
     | '/shops/$slug'
   fileRoutesById: FileRoutesById
 }
@@ -129,13 +153,22 @@ export interface RootRouteChildren {
   ConfirmEmailRoute: typeof ConfirmEmailRoute
   ConfirmEmailPendingRoute: typeof ConfirmEmailPendingRoute
   CreateShopRoute: typeof CreateShopRoute
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
   LoginRoute: typeof LoginRoute
   RegisterRoute: typeof RegisterRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   ShopsSlugRoute: typeof ShopsSlugRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/register': {
       id: '/register'
       path: '/register'
@@ -148,6 +181,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/create-shop': {
@@ -201,8 +241,10 @@ const rootRouteChildren: RootRouteChildren = {
   ConfirmEmailRoute: ConfirmEmailRoute,
   ConfirmEmailPendingRoute: ConfirmEmailPendingRoute,
   CreateShopRoute: CreateShopRoute,
+  ForgotPasswordRoute: ForgotPasswordRoute,
   LoginRoute: LoginRoute,
   RegisterRoute: RegisterRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   ShopsSlugRoute: ShopsSlugRoute,
 }
 export const routeTree = rootRouteImport

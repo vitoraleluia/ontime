@@ -145,9 +145,17 @@ function LoginPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
-                  Palavra-passe
-                </label>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    Palavra-passe
+                  </label>
+                  <Link
+                    to="/forgot-password"
+                    className="text-xs font-semibold text-primary hover:underline"
+                  >
+                    Esqueceu-se da palavra-passe?
+                  </Link>
+                </div>
                 <div className="relative">
                   <Lock className="absolute left-3.5 top-3 h-4 w-4 text-muted-foreground" />
                   <input
