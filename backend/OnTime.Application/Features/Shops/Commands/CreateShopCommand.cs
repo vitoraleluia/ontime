@@ -10,6 +10,7 @@ using OnTime.Application.Features.Shops.Responses;
 using OnTime.Application.Services;
 using OnTime.Domain.Common;
 using OnTime.Domain.Entities;
+using OnTime.Domain.Enums;
 
 namespace OnTime.Application.Features.Shops.Commands;
 
@@ -48,7 +49,7 @@ public class CreateShopCommandHandler : BaseHandler<CreateShopCommand, Result<Sh
         if (profile == null)
         {
             return Result<ShopResponse>.Failure(new Error(
-                "NotFound",
+                ErrorCode.ProfileNotFound,
                 "Perfil de utilizador não encontrado."));
         }
 
@@ -62,8 +63,7 @@ public class CreateShopCommandHandler : BaseHandler<CreateShopCommand, Result<Sh
 
         if (!slugCheckResult.Value!.IsAvailable)
         {
-            var errorCode = string.IsNullOrEmpty(slugCheckResult.Value.Slug) ? "InvalidSlug" : "SlugAlreadyExists";
-            return Result<ShopResponse>.Failure(new Error(errorCode, slugCheckResult.Value.Message));
+            return Result<ShopResponse>.Failure(new Error(ErrorCode.SlugUnavailable, slugCheckResult.Value.Message));
         }
 
         var formattedSlug = slugCheckResult.Value.Slug;

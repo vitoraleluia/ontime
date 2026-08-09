@@ -140,9 +140,11 @@ export function ShopCreationForm({ navigate }: ShopCreationFormProps) {
     const file = e.target.files?.[0]
     if (file) {
       setImagePreviewUrl(URL.createObjectURL(file))
+      const formData = new FormData()
+      formData.append('file', file)
       uploadPhotoMutation.mutate({
-        params: { query: { format: 1 } },
-        body: { file: file as unknown as string },
+        params: { query: { format: 'Landscape' } },
+        body: formData as unknown as { file?: string },
       })
     }
   }

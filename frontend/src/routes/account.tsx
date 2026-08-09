@@ -43,7 +43,7 @@ function AccountPage() {
   // Mutations
   const updateProfileMutation = $api.useMutation('put', '/api/Account', {
     onSuccess: () => {
-      setSuccessMsg('Perfil atualizado com sucesso!')
+      setSuccessMsg('Perfil e foto atualizados com sucesso!')
       setProfilePictureId(null)
       setTempPictureUrl(null)
       refetch()
@@ -55,9 +55,16 @@ function AccountPage() {
 
   const uploadPhotoMutation = $api.useMutation('post', '/api/Images', {
     onSuccess: (data) => {
-      if (data && data.id) {
+      if (data && data.id && profile) {
         setProfilePictureId(data.id)
-        setSuccessMsg('Foto carregada com sucesso! Clique em "Guardar Alterações" para aplicar.')
+        updateProfileMutation.mutate({
+          body: {
+            firstName: profile.firstName ?? '',
+            lastName: profile.lastName ?? '',
+            phoneNumber: profile.phoneNumber || null,
+            profilePictureId: data.id,
+          },
+        })
       }
     },
     onError: () => {
@@ -91,9 +98,12 @@ function AccountPage() {
     const localUrl = URL.createObjectURL(file)
     setTempPictureUrl(localUrl)
 
+    const formData = new FormData()
+    formData.append('file', file)
+
     uploadPhotoMutation.mutate({
-      params: { query: { format: 0 } },
-      body: { file: file as unknown as string },
+      params: { query: { format: 'Square' } },
+      body: formData as unknown as { file?: string },
     })
   }
 

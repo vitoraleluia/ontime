@@ -9,6 +9,7 @@ using OnTime.Application.Features.UserProfile.Commands;
 using OnTime.Application.Features.UserProfile.Queries;
 using OnTime.Application.Features.UserProfile.Responses;
 using OnTime.Application.Services;
+using OnTime.Domain.Common;
 using OnTime.Domain.Enums;
 using OnTime.Identity.Constants;
 
@@ -29,7 +30,8 @@ public class AccountController : BaseApiController
 
     [HttpGet]
     [ProducesResponseType(typeof(UserProfileResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<UserProfileResponse>> GetCurrentProfile()
     {
         var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
@@ -37,7 +39,7 @@ public class AccountController : BaseApiController
 
         if (string.IsNullOrEmpty(userId))
         {
-            return Unauthorized("ID de utilizador ausente no token.");
+            return HandleFailure(ErrorCode.Unauthorized, "ID de utilizador ausente no token.", StatusCodes.Status401Unauthorized);
         }
 
         var query = new GetCurrentUserProfileQuery(userId);
@@ -45,7 +47,7 @@ public class AccountController : BaseApiController
 
         if (result.IsFailure)
         {
-            return BadRequest(result.Error?.Message);
+            return HandleFailure(result.Error!);
         }
 
         var response = result.Value!;
@@ -55,8 +57,8 @@ public class AccountController : BaseApiController
 
     [HttpPut]
     [ProducesResponseType(typeof(UserProfileResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<UserProfileResponse>> UpdateProfile([FromBody] UpdateProfileRequest request)
     {
         var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
@@ -64,7 +66,7 @@ public class AccountController : BaseApiController
 
         if (string.IsNullOrEmpty(userId))
         {
-            return Unauthorized("ID de utilizador ausente no token.");
+            return HandleFailure(ErrorCode.Unauthorized, "ID de utilizador ausente no token.", StatusCodes.Status401Unauthorized);
         }
 
         var command = new UpdateUserProfileCommand(userId, request.FirstName, request.LastName, request.PhoneNumber, request.ProfilePictureId);
@@ -72,7 +74,7 @@ public class AccountController : BaseApiController
 
         if (result.IsFailure)
         {
-            return BadRequest(result.Error?.Message);
+            return HandleFailure(result.Error!);
         }
 
         var response = result.Value!;
@@ -82,7 +84,8 @@ public class AccountController : BaseApiController
 
     [HttpPost("assign-professional")]
     [ProducesResponseType(typeof(UserProfileResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<UserProfileResponse>> AssignProfessional()
     {
         var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
@@ -90,13 +93,13 @@ public class AccountController : BaseApiController
 
         if (string.IsNullOrEmpty(userId))
         {
-            return Unauthorized("ID de utilizador ausente no token.");
+            return HandleFailure(ErrorCode.Unauthorized, "ID de utilizador ausente no token.", StatusCodes.Status401Unauthorized);
         }
 
         var assigned = await this.identityService.AssignRole(userId, UserRole.Professional);
         if (!assigned)
         {
-            return BadRequest("Falha ao atribuir o papel profissional.");
+            return HandleFailure(ErrorCode.BadRequest, "Falha ao atribuir o papel profissional.");
         }
 
         var query = new GetCurrentUserProfileQuery(userId);
@@ -104,7 +107,7 @@ public class AccountController : BaseApiController
 
         if (result.IsFailure)
         {
-            return BadRequest(result.Error?.Message);
+            return HandleFailure(result.Error!);
         }
 
         var response = result.Value!;

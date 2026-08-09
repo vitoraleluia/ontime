@@ -1,3 +1,5 @@
+using OnTime.Domain.Enums;
+
 namespace OnTime.Application.Domain.Results;
 
-public record Error(string Code, string Message);
+public record Error(ErrorCode Code, string Message);

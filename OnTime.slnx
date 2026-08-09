@@ -1,7 +1,6 @@
 <Solution>
     <Folder Name="/backend/">
         <Project Path="backend/OnTime.Application/OnTime.Application.csproj" />
-        <Project Path="backend/OnTime.Bus/OnTime.Bus.csproj" />
         <Project Path="backend/OnTime.Domain/OnTime.Domain.csproj" />
         <Project Path="backend/OnTime.Infrastructure/OnTime.Infrastructure.csproj" />
         <Project Path="backend/OnTime.Identity/OnTime.Identity.csproj" />

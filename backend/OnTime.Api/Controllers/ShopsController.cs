@@ -8,6 +8,8 @@ using OnTime.Application.Domain.Constants;
 using OnTime.Application.Features.Shops.Commands;
 using OnTime.Application.Features.Shops.Queries;
 using OnTime.Application.Features.Shops.Responses;
+using OnTime.Domain.Common;
+using OnTime.Domain.Enums;
 
 namespace OnTime.Api.Controllers;
 
@@ -21,9 +23,9 @@ public class ShopsController : BaseApiController
     [HttpPost]
     [Authorize]
     [ProducesResponseType(typeof(ShopResponse), StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<ShopResponse>> CreateShop([FromBody] CreateShopRequest request)
     {
         var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
@@ -31,12 +33,12 @@ public class ShopsController : BaseApiController
 
         if (string.IsNullOrEmpty(userId))
         {
-            return Unauthorized("ID de utilizador ausente no token.");
+            return HandleFailure(ErrorCode.Unauthorized, "ID de utilizador ausente no token.", StatusCodes.Status401Unauthorized);
         }
 
         if (!User.IsInRole(OnTime.Identity.Constants.IdentityRoles.Professional))
         {
-            return StatusCode(StatusCodes.Status403Forbidden, "Apenas contas com perfil profissional podem criar estabelecimentos.");
+            return HandleFailure(ErrorCode.ProfessionalRoleRequired, "Apenas contas com perfil profissional podem criar estabelecimentos.", StatusCodes.Status403Forbidden);
         }
 
         var command = new CreateShopCommand(
@@ -56,12 +58,7 @@ public class ShopsController : BaseApiController
 
         if (result.IsFailure)
         {
-            if (result.Error?.Code == "Forbidden")
-            {
-                return StatusCode(StatusCodes.Status403Forbidden, result.Error.Message);
-            }
-
-            return BadRequest(result.Error?.Message);
+            return HandleFailure(result.Error!);
         }
 
         return CreatedAtAction(nameof(GetShopBySlug), new { slug = result.Value!.Slug }, result.Value);
@@ -70,6 +67,7 @@ public class ShopsController : BaseApiController
     [HttpGet("check-slug")]
     [AllowAnonymous]
     [ProducesResponseType(typeof(SlugAvailabilityResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<SlugAvailabilityResponse>> CheckSlugAvailability([FromQuery] string slug)
     {
         var query = new CheckSlugAvailabilityQuery(slug);
@@ -77,7 +75,7 @@ public class ShopsController : BaseApiController
 
         if (result.IsFailure)
         {
-            return BadRequest(result.Error?.Message);
+            return HandleFailure(result.Error!);
         }
 
         return Ok(result.Value!);
@@ -86,7 +84,7 @@ public class ShopsController : BaseApiController
     [HttpGet("{slug}")]
     [AllowAnonymous]
     [ProducesResponseType(typeof(ShopResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ShopResponse>> GetShopBySlug(string slug)
     {
         var query = new GetShopBySlugQuery(slug);
@@ -94,7 +92,7 @@ public class ShopsController : BaseApiController
 
         if (result.IsFailure)
         {
-            return NotFound(result.Error?.Message);
+            return HandleFailure(result.Error!);
         }
 
         return Ok(result.Value!);

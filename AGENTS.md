@@ -60,9 +60,8 @@ ontime/
 │   ├── Directory.Packages.props   # Centrally managed package versions
 │   ├── OnTime.Domain/             # Pure Domain Layer (Entities, Common, Enums)
 │   ├── OnTime.Application/        # Application Core (CQRS, MediatR, interfaces)
-│   ├── OnTime.Infrastructure/     # Infrastructure (EF Core AppDbContext, files, bus implementation)
+│   ├── OnTime.Infrastructure/     # Infrastructure (EF Core AppDbContext, files, Hangfire jobs)
 │   ├── OnTime.Identity/           # ASP.NET Core Identity (AppIdentityDbContext, auth handlers, roles)
-│   ├── OnTime.Bus/                # Channel-based lightweight event broker wrapper
 │   └── OnTime.Api/                # Web API (Controllers, Swagger, DI, Program)
 ├── frontend/                      # Frontend Application Folder (React, Vite, TypeScript)
 │   ├── src/
@@ -91,8 +90,8 @@ ontime/
 
 ### Architecture & Patterns
 - **Architecture**: Clean Architecture with strict layer isolation.
-- **CQRS & Events**: CQRS implemented via MediatR; in-process async event dispatching via `OnTime.Bus`.
-- **Controllers**: All API controllers must inherit from `BaseApiController`.
+- **CQRS & Background Jobs**: CQRS implemented via MediatR; async background job processing via Hangfire.
+- **Controllers**: All API controllers must inherit from `BaseApiController`, always return ErrorResponse when the return is not a an HTTP 2XX code and there is an error message to be sent.
 - **Handlers**: Must inherit from `BaseHandler<TRequest, TResponse>` and implement `HandleSafe` returning `Result<TResponse>`.
 - **Instance Scope**: Always use `this.` explicitly for instance variables.
 - **Strict Build Quality**: `TreatWarningsAsErrors` is set to `true` in `Directory.Build.props`. All code must compile cleanly without warnings.

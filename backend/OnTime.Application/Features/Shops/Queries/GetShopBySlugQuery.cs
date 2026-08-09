@@ -8,6 +8,7 @@ using OnTime.Application.Extensions;
 using OnTime.Application.Features.Shops.Responses;
 using OnTime.Application.Services;
 using OnTime.Domain.Common;
+using OnTime.Domain.Enums;
 
 namespace OnTime.Application.Features.Shops.Queries;
 
@@ -34,7 +35,7 @@ public class GetShopBySlugQueryHandler : BaseHandler<GetShopBySlugQuery, Result<
 
         if (shop == null)
         {
-            return Result<ShopResponse>.Failure(new Error("ShopNotFound", "Estabelecimento não encontrado."));
+            return Result<ShopResponse>.Failure(new Error(ErrorCode.ShopNotFound, "Estabelecimento não encontrado."));
         }
 
         var response = new ShopResponse

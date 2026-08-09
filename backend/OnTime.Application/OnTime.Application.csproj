@@ -2,12 +2,14 @@
   
   <ItemGroup>
     <ProjectReference Include="..\OnTime.Domain\OnTime.Domain.csproj" />
-    <ProjectReference Include="..\OnTime.Bus\OnTime.Bus.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="MediatR" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" />
+    <PackageReference Include="Microsoft.Extensions.Options" />
     <PackageReference Include="Hangfire.Core" />
     <PackageReference Include="Newtonsoft.Json" />
   </ItemGroup>
