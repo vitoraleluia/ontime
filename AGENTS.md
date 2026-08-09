@@ -91,7 +91,7 @@ ontime/
 ### Architecture & Patterns
 - **Architecture**: Clean Architecture with strict layer isolation.
 - **CQRS & Background Jobs**: CQRS implemented via MediatR; async background job processing via Hangfire.
-- **Controllers**: All API controllers must inherit from `BaseApiController`.
+- **Controllers**: All API controllers must inherit from `BaseApiController`, always return ErrorResponse when the return is not a an HTTP 2XX code and there is an error message to be sent.
 - **Handlers**: Must inherit from `BaseHandler<TRequest, TResponse>` and implement `HandleSafe` returning `Result<TResponse>`.
 - **Instance Scope**: Always use `this.` explicitly for instance variables.
 - **Strict Build Quality**: `TreatWarningsAsErrors` is set to `true` in `Directory.Build.props`. All code must compile cleanly without warnings.
