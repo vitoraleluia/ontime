@@ -153,6 +153,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       value={{
         isAuthenticated,
         isLoading,
+        profile: profile ?? null,
         loginWithCredentials,
         registerWithCredentials,
         loginWithGoogle,

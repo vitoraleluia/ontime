@@ -87,8 +87,18 @@ export function Navbar() {
     )
 }
 
+function UserAvatar({ pictureUrl, initials, className = "h-4 w-4" }: { pictureUrl?: string | null; initials?: string; className?: string }) {
+    if (pictureUrl) {
+        return <img src={pictureUrl} alt="Avatar" className="h-full w-full object-cover" />
+    }
+    if (initials) {
+        return <span className="text-xs font-bold text-foreground">{initials}</span>
+    }
+    return <User className={className} />
+}
+
 function DesktopAuthSection() {
-    const { isAuthenticated, isLoading, logout } = useAuth()
+    const { isAuthenticated, isLoading, logout, profile } = useAuth()
 
     if (isLoading) {
         return (
@@ -100,15 +110,25 @@ function DesktopAuthSection() {
     }
 
     if (isAuthenticated) {
+        const userName = [profile?.firstName, profile?.lastName].filter(Boolean).join(' ') || 'A minha conta'
+        const initials = `${profile?.firstName?.charAt(0) || ''}${profile?.lastName?.charAt(0) || ''}`.toUpperCase()
+
         return (
             <DropdownMenu>
                 <DropdownMenuTrigger
-                    className="group/button inline-flex shrink-0 items-center justify-center rounded-full border border-border bg-background size-9 cursor-pointer hover:bg-muted text-muted-foreground hover:text-foreground transition-colors outline-hidden focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50">
-                    <User className="h-4 w-4"/>
+                    className="group/button inline-flex shrink-0 items-center justify-center rounded-full border border-border bg-background size-9 cursor-pointer hover:bg-muted text-muted-foreground hover:text-foreground transition-colors outline-hidden focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 overflow-hidden">
+                    <UserAvatar pictureUrl={profile?.profilePictureUrl} initials={initials} />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
                     <DropdownMenuGroup>
-                        <DropdownMenuLabel>A minha conta</DropdownMenuLabel>
+                        <DropdownMenuLabel className="font-normal">
+                            <div className="flex flex-col space-y-1">
+                                <p className="text-sm font-medium leading-none text-foreground">{userName}</p>
+                                {profile?.email && (
+                                    <p className="text-xs leading-none text-muted-foreground truncate">{profile.email}</p>
+                                )}
+                            </div>
+                        </DropdownMenuLabel>
                         <DropdownMenuSeparator/>
                         <DropdownMenuItem className="p-0">
                             <Link to="/account" className="cursor-pointer flex w-full items-center px-2 py-1.5">
@@ -151,7 +171,7 @@ function DesktopAuthSection() {
 }
 
 function MobileAuthSection({ closeMenu }: { closeMenu: () => void }) {
-    const { isAuthenticated, isLoading, logout } = useAuth()
+    const { isAuthenticated, isLoading, logout, profile } = useAuth()
 
     if (isLoading) {
         return (
@@ -163,15 +183,18 @@ function MobileAuthSection({ closeMenu }: { closeMenu: () => void }) {
     }
 
     if (isAuthenticated) {
+        const userName = [profile?.firstName, profile?.lastName].filter(Boolean).join(' ') || 'Utilizador Autenticado'
+        const initials = `${profile?.firstName?.charAt(0) || ''}${profile?.lastName?.charAt(0) || ''}`.toUpperCase()
+
         return (
             <div className="space-y-3">
                 <div className="flex items-center gap-3">
-                    <div
-                        className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-secondary-foreground border border-border">
-                        <User className="h-5 w-5"/>
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-secondary text-secondary-foreground border border-border overflow-hidden">
+                        <UserAvatar pictureUrl={profile?.profilePictureUrl} initials={initials} className="h-5 w-5" />
                     </div>
                     <div>
-                        <p className="text-base font-semibold leading-none text-foreground">Utilizador Autenticado</p>
+                        <p className="text-base font-semibold leading-none text-foreground">{userName}</p>
+                        {profile?.email && <p className="text-xs text-muted-foreground mt-1">{profile.email}</p>}
                     </div>
                 </div>
                 <Link

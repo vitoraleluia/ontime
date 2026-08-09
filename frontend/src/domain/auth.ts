@@ -1,8 +1,11 @@
 import type { ErrorCode } from './utils/ErrorUtils'
 
+import type { components } from '@/generated/apiClient'
+
 export interface AuthState {
   isAuthenticated: boolean
   isLoading: boolean
+  profile?: components['schemas']['UserProfileResponse'] | null
 }
 
 export interface AuthContextType extends AuthState {
